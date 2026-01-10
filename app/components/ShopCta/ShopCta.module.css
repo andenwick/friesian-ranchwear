@@ -7,8 +7,8 @@
   width: 100%;
   background-color: var(--background);
   padding: var(--space-4xl) var(--space-lg);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .content {
@@ -64,9 +64,9 @@
 /* Hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   .cta:hover {
-    background-color: var(--color-white);
+    background-color: var(--color-accent-hover);
     transform: translateY(-2px);
-    box-shadow: 0 10px 40px rgba(196, 163, 90, 0.25);
+    box-shadow: 0 10px 40px rgba(196, 163, 90, 0.35);
   }
 }
 

@@ -6,7 +6,7 @@
 .showcase {
   padding: var(--space-3xl) var(--space-lg);
   background-color: var(--background-elevated);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .container {
