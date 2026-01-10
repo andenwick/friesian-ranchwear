@@ -42,6 +42,7 @@
   height: 140px;
   object-fit: contain;
   margin-bottom: var(--space-lg);
+  filter: invert(1);
 }
 
 /* Wrapper for positioning */

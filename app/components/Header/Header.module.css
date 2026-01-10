@@ -64,6 +64,7 @@
   height: 48px;
   object-fit: contain;
   transition: transform var(--transition-base);
+  filter: invert(1);
 }
 
 .brandName {
