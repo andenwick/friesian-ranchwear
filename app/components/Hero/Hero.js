@@ -10,7 +10,8 @@ export default function Hero() {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const logoRef = useRef(null);
-  const brandRef = useRef(null);
+  const brandWrapperRef = useRef(null);
+  const brandNameRef = useRef(null);
   const subtitleRef = useRef(null);
   const ctaRef = useRef(null);
 
@@ -25,7 +26,7 @@ export default function Hero() {
         { opacity: 0.9, scale: 1, y: 0, filter: "blur(0px)", duration: 1.8 }
       )
         .fromTo(
-          brandRef.current,
+          brandWrapperRef.current,
           { opacity: 0, y: 25, filter: "blur(6px)" },
           { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.5 },
           "-=1.2"
@@ -49,7 +50,7 @@ export default function Hero() {
   // Scroll-triggered shimmer animation on FRIESIAN text
   useGSAP(
     () => {
-      gsap.to(brandRef.current, {
+      gsap.to(brandNameRef.current, {
         backgroundPosition: "-50% 50%",
         ease: "none",
         scrollTrigger: {
@@ -96,9 +97,11 @@ export default function Hero() {
           priority
         />
 
-        <h1 className={styles.brandName} ref={brandRef}>
-          FRIESIAN
-        </h1>
+        <div className={styles.brandWrapper} ref={brandWrapperRef}>
+          <h1 className={styles.brandName} ref={brandNameRef}>
+            FRIESIAN
+          </h1>
+        </div>
         <p className={styles.subtitle} ref={subtitleRef}>
           Nothing you wear is an accident.
         </p>
