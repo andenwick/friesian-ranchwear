@@ -14,33 +14,33 @@ export default function Hero() {
   const subtitleRef = useRef(null);
   const ctaRef = useRef(null);
 
-  // GSAP entrance animations
+  // GSAP entrance animations - ghostly, graceful
   useGSAP(
     () => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      const tl = gsap.timeline({ defaults: { ease: "power1.out" } });
 
       tl.fromTo(
         logoRef.current,
-        { opacity: 0, scale: 0.8, y: 20 },
-        { opacity: 0.9, scale: 1, y: 0, duration: 1 }
+        { opacity: 0, scale: 0.95, y: 15, filter: "blur(8px)" },
+        { opacity: 0.9, scale: 1, y: 0, filter: "blur(0px)", duration: 1.8 }
       )
         .fromTo(
           brandRef.current,
-          { opacity: 0, y: 40 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.5"
+          { opacity: 0, y: 25, filter: "blur(6px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.5 },
+          "-=1.2"
         )
         .fromTo(
           subtitleRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.6 },
-          "-=0.4"
+          { opacity: 0, y: 15, filter: "blur(4px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 },
+          "-=1.0"
         )
         .fromTo(
           ctaRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.6 },
-          "-=0.3"
+          { opacity: 0, y: 20, filter: "blur(4px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 },
+          "-=0.8"
         );
     },
     { scope: sectionRef }

@@ -14,11 +14,12 @@ export default function Footer() {
     () => {
       gsap.fromTo(
         contentRef.current,
-        { y: 20, opacity: 0 },
+        { y: 15, opacity: 0, filter: "blur(4px)" },
         {
           y: 0,
           opacity: 1,
-          duration: 0.5,
+          filter: "blur(0px)",
+          duration: 1.2,
           ease: "power1.out",
           immediateRender: false,
           scrollTrigger: {

@@ -24,25 +24,25 @@ export default function EmailSignup() {
           start: "top 80%",
           toggleActions: "play none none none",
         },
-        defaults: { immediateRender: false },
+        defaults: { immediateRender: false, ease: "power1.out" },
       });
 
       tl.fromTo(
         headingRef.current,
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" }
+        { y: 25, opacity: 0, filter: "blur(6px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.4 }
       )
         .fromTo(
           textRef.current,
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-          "-=0.4"
+          { y: 20, opacity: 0, filter: "blur(4px)" },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 },
+          "-=1.0"
         )
         .fromTo(
           formRef.current,
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-          "-=0.3"
+          { y: 20, opacity: 0, filter: "blur(4px)" },
+          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 },
+          "-=0.8"
         );
     },
     { scope: sectionRef }

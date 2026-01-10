@@ -18,18 +18,18 @@ export default function SocialLinks() {
           start: "top 85%",
           toggleActions: "play none none none",
         },
-        defaults: { immediateRender: false },
+        defaults: { immediateRender: false, ease: "power1.out" },
       });
 
       tl.fromTo(
         headingRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }
+        { y: 20, opacity: 0, filter: "blur(4px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 }
       ).fromTo(
         iconsRef.current,
-        { scale: 0, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)", stagger: 0.15 },
-        "-=0.3"
+        { y: 15, opacity: 0, filter: "blur(4px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0, stagger: 0.2 },
+        "-=0.8"
       );
     },
     { scope: sectionRef }

@@ -21,15 +21,16 @@ export default function ProductShowcase() {
 
   useGSAP(
     () => {
-      // Heading animation
+      // Heading animation - ghostly fade
       gsap.fromTo(
         headingRef.current,
-        { y: 50, opacity: 0 },
+        { y: 30, opacity: 0, filter: "blur(6px)" },
         {
           y: 0,
           opacity: 1,
-          duration: 0.8,
-          ease: "power2.out",
+          filter: "blur(0px)",
+          duration: 1.4,
+          ease: "power1.out",
           immediateRender: false,
           scrollTrigger: {
             trigger: sectionRef.current,
@@ -39,18 +40,18 @@ export default function ProductShowcase() {
         }
       );
 
-      // Staggered card reveal
+      // Staggered card reveal - graceful emergence
       gsap.fromTo(
         cardsRef.current,
-        { y: 60, opacity: 0, scale: 0.95 },
+        { y: 40, opacity: 0, filter: "blur(4px)" },
         {
           y: 0,
           opacity: 1,
-          scale: 1,
-          duration: 0.6,
-          ease: "power2.out",
+          filter: "blur(0px)",
+          duration: 1.2,
+          ease: "power1.out",
           stagger: {
-            amount: 0.8,
+            amount: 1.2,
             from: "start",
           },
           immediateRender: false,
