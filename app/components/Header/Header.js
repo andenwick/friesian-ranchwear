@@ -67,7 +67,12 @@ export default function Header() {
           </div>
           <a href="#tiktok-shop" className={styles.shopLink} onClick={(e) => {
             e.preventDefault();
-            document.getElementById('tiktok-shop')?.scrollIntoView({ behavior: 'smooth' });
+            const target = document.getElementById('tiktok-shop');
+            if (target) {
+              const offset = 120;
+              const top = target.getBoundingClientRect().top + window.scrollY - offset;
+              window.scrollTo({ top, behavior: 'smooth' });
+            }
           }}>
             Shop Now
           </a>

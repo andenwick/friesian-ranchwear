@@ -44,6 +44,7 @@
   letter-spacing: 0.04em;
   line-height: 0.95;
   margin: 0;
+  text-shadow: var(--shadow-text);
 }
 
 .headingAccent {
@@ -125,6 +126,7 @@
   line-height: 1.2;
   margin: 0;
   position: relative;
+  text-shadow: var(--shadow-xs);
 }
 
 .quoteOpen,

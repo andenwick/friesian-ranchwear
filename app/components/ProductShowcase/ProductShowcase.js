@@ -70,7 +70,7 @@ export default function ProductShowcase() {
     <section className={styles.showcase} ref={sectionRef}>
       <div className={styles.container}>
         <h2 className={styles.heading} ref={headingRef}>
-          The Lineup
+          The Collection
         </h2>
         <div className={styles.grid}>
           {products.map((product, index) => (

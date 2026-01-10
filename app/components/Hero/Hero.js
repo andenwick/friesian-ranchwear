@@ -46,6 +46,23 @@ export default function Hero() {
     { scope: sectionRef }
   );
 
+  // Scroll-triggered shimmer animation on FRIESIAN text
+  useGSAP(
+    () => {
+      gsap.to(brandRef.current, {
+        backgroundPosition: "-50% 50%",
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+        },
+      });
+    },
+    { scope: sectionRef }
+  );
+
   // Parallax scroll effect
   useEffect(() => {
     const handleScroll = () => {
@@ -83,11 +100,19 @@ export default function Hero() {
           FRIESIAN
         </h1>
         <p className={styles.subtitle} ref={subtitleRef}>
-          Western Style, Street Ready
+          Nothing you wear is an accident.
         </p>
 
-        <a href="#tiktok-shop" className={styles.cta} ref={ctaRef}>
-          <span>Shop the Drop</span>
+        <a href="#tiktok-shop" className={styles.cta} ref={ctaRef} onClick={(e) => {
+          e.preventDefault();
+          const target = document.getElementById('tiktok-shop');
+          if (target) {
+            const offset = 120;
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
+          }
+        }}>
+          <span>See the Drop</span>
           <svg
             className={styles.ctaArrow}
             width="20"

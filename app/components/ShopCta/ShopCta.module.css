@@ -29,6 +29,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-tight);
   line-height: var(--leading-tight);
+  text-shadow: var(--shadow-text);
 }
 
 .text {
@@ -53,6 +54,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
   border: none;
+  box-shadow: var(--shadow-md);
   transition:
     background-color var(--transition-base),
     transform var(--transition-base),

@@ -98,16 +98,16 @@ export default function EmailSignup() {
     <section className={`${styles.emailSignup} canvas-texture`} ref={sectionRef}>
       <div className={styles.content}>
         <h2 className={styles.heading} ref={headingRef}>
-          Join the List
+          Get Updates
         </h2>
         <p className={styles.text} ref={textRef}>
-          Be first to know about new drops, exclusive offers, and what is coming next.
+          New drops and behind-the-scenes. No spam.
         </p>
 
         <div ref={formRef}>
           {success ? (
             <div className={styles.successMessage}>
-              You are on the list. We will be in touch soon.
+              You are on the list.
             </div>
           ) : (
             <form className={styles.form} onSubmit={handleSubmit}>
@@ -126,7 +126,7 @@ export default function EmailSignup() {
                   className={styles.button}
                   disabled={loading}
                 >
-                  {loading ? "..." : "Subscribe"}
+                  {loading ? "..." : "Sign Up"}
                 </button>
               </div>
               {error && <p className={styles.errorMessage}>{error}</p>}

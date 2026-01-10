@@ -36,10 +36,20 @@ export default function Footer() {
   return (
     <footer className={styles.footer} ref={footerRef}>
       <div className={styles.content} ref={contentRef}>
-        <p className={styles.brand}>Friesian Ranchwear<span className={styles.trademark}>™</span></p>
-        <p className={styles.copyright}>
-          {currentYear} Friesian Ranchwear<span className={styles.trademark}>™</span>. All rights reserved.
-        </p>
+        <div className={styles.left}>
+          <p className={styles.brand}>Friesian Ranchwear<span className={styles.trademark}>™</span></p>
+          <p className={styles.location}>Salt Lake City, Utah</p>
+        </div>
+        <div className={styles.right}>
+          <div className={styles.links}>
+            <a href="/privacy" className={styles.link}>Privacy</a>
+            <span className={styles.divider}>·</span>
+            <a href="/terms" className={styles.link}>Terms</a>
+          </div>
+          <p className={styles.copyright}>
+            © {currentYear} Friesian Ranchwear. All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
   );

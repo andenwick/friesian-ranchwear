@@ -49,11 +49,36 @@
   font-family: var(--font-display);
   font-size: var(--font-size-hero);
   font-weight: 400;
-  color: var(--foreground);
   line-height: var(--leading-none);
   letter-spacing: var(--tracking-tight);
   text-transform: uppercase;
   margin: 0;
+  position: relative;
+
+  /* Hollow/outline text */
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.7);
+
+  /* Offset shadow for depth */
+  text-shadow:
+    4px 4px 0 rgba(0, 0, 0, 0.08),
+    8px 8px 0 rgba(0, 0, 0, 0.04);
+
+  /* Metallic shimmer gradient */
+  background: linear-gradient(
+    120deg,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.6) 46%,
+    rgba(196, 163, 90, 0.15) 48%,
+    rgba(220, 220, 230, 0.25) 50%,
+    rgba(196, 163, 90, 0.15) 52%,
+    rgba(0, 0, 0, 0.6) 54%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 150% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .trademark {
@@ -75,6 +100,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-widest);
   margin-top: calc(var(--space-sm) * -1);
+  text-shadow: var(--shadow-xs);
 }
 
 /* CTA - Minimal border style */

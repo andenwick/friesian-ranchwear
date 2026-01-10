@@ -26,6 +26,7 @@
   color: var(--foreground);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
+  text-shadow: var(--shadow-text);
 }
 
 .text {
@@ -59,11 +60,13 @@
   border: 1px solid rgba(196, 163, 90, 0.3);
   color: var(--foreground);
   outline: none;
-  transition: border-color var(--transition-base);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .input:focus {
   border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .input:disabled {
@@ -87,9 +90,11 @@
   color: var(--color-black);
   border: none;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
   transition:
     background-color var(--transition-base),
-    transform var(--transition-base);
+    transform var(--transition-base),
+    box-shadow var(--transition-base);
 }
 
 .button:disabled {

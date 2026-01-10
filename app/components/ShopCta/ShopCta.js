@@ -50,8 +50,7 @@ export default function ShopCta() {
           Shop the Collection
         </h2>
         <p className={styles.text} ref={textRef}>
-          Browse our full lineup on TikTok Shop. Fresh styles drop regularly—find
-          your next favorite piece.
+          Quality pieces. Real craftsmanship. See what we have been working on.
         </p>
         <a
           href="https://tiktok.com/@friesianranchwear"

@@ -23,6 +23,7 @@
   letter-spacing: var(--tracking-wide);
   text-align: center;
   margin-bottom: var(--space-2xl);
+  text-shadow: var(--shadow-text);
 }
 
 .grid {
@@ -37,7 +38,8 @@
   overflow: hidden;
   background: var(--background);
   border: 1px solid transparent;
-  transition: border-color var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
 .imageWrapper {
@@ -92,6 +94,7 @@
 
   .card:hover {
     border-color: var(--color-accent);
+    box-shadow: var(--shadow-lg);
   }
 
   .card:hover .imagePlaceholder {
