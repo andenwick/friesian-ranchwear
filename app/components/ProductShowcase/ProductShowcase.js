@@ -1,26 +1,80 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import styles from "./ProductShowcase.module.css";
 
-const products = [
-  { id: 1, name: "Classic Western Tee", price: "$45", color: "#2A2A2A" },
-  { id: 2, name: "Range Rider Hoodie", price: "$89", color: "#1F1F1F" },
-  { id: 3, name: "Trail Blazer Cap", price: "$35", color: "#333333" },
-  { id: 4, name: "Desert Storm Jacket", price: "$120", color: "#252525" },
-  { id: 5, name: "Frontier Jeans", price: "$75", color: "#2E2E2E" },
-  { id: 6, name: "Rancher Flannel", price: "$65", color: "#1A1A1A" },
-];
+// Number of skeleton cards to show during loading
+const SKELETON_COUNT = 6;
+
+/**
+ * Converts Google Drive share links to direct image URLs.
+ * Accepts:
+ *   - https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+ *   - https://drive.google.com/open?id=FILE_ID
+ *   - Already converted URLs (returns as-is)
+ *   - Non-Drive URLs (returns as-is)
+ */
+function convertDriveUrl(url) {
+  if (!url) return url;
+
+  // Already a direct lh3 URL
+  if (url.includes('lh3.googleusercontent.com')) return url;
+
+  // Match /file/d/FILE_ID/ pattern
+  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch) {
+    return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+  }
+
+  // Match open?id=FILE_ID or uc?id=FILE_ID pattern
+  const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idMatch) {
+    return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+  }
+
+  // Not a Drive link, return as-is
+  return url;
+}
 
 export default function ProductShowcase() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const cardsRef = useRef([]);
 
+  // State for dynamic product fetching
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch products from API on mount
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch("/api/products");
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Unable to load products");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
+
+  // GSAP animations - triggered when products load
   useGSAP(
     () => {
+      // Don't run animations while loading or if no products
+      if (loading || products.length === 0) return;
+
       // Heading animation - ghostly fade
       gsap.fromTo(
         headingRef.current,
@@ -42,7 +96,7 @@ export default function ProductShowcase() {
 
       // Staggered card reveal - graceful emergence
       gsap.fromTo(
-        cardsRef.current,
+        cardsRef.current.filter(Boolean),
         { y: 40, opacity: 0, filter: "blur(4px)" },
         {
           y: 0,
@@ -63,9 +117,66 @@ export default function ProductShowcase() {
         }
       );
     },
-    { scope: sectionRef }
+    { scope: sectionRef, dependencies: [loading, products] }
   );
 
+  // Render loading skeleton
+  if (loading) {
+    return (
+      <section className={styles.showcase} ref={sectionRef}>
+        <div className={styles.container}>
+          <h2 className={styles.heading} ref={headingRef}>
+            The Collection
+          </h2>
+          <div className={styles.grid}>
+            {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+              <div key={index} className={styles.skeletonCard}>
+                <div className={styles.skeletonImage} />
+                <div className={styles.skeletonContent}>
+                  <div className={styles.skeletonTitle} />
+                  <div className={styles.skeletonPrice} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <section className={styles.showcase} ref={sectionRef}>
+        <div className={styles.container}>
+          <h2 className={styles.heading} ref={headingRef}>
+            The Collection
+          </h2>
+          <div className={styles.emptyState}>
+            <p className={styles.emptyMessage}>{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Render empty state
+  if (products.length === 0) {
+    return (
+      <section className={styles.showcase} ref={sectionRef}>
+        <div className={styles.container}>
+          <h2 className={styles.heading} ref={headingRef}>
+            The Collection
+          </h2>
+          <div className={styles.emptyState}>
+            <p className={styles.emptyMessage}>No products available yet</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Render products
   return (
     <section className={styles.showcase} ref={sectionRef}>
       <div className={styles.container}>
@@ -81,10 +192,16 @@ export default function ProductShowcase() {
               ref={(el) => (cardsRef.current[index] = el)}
             >
               <div className={styles.imageWrapper}>
-                <div
-                  className={styles.imagePlaceholder}
-                  style={{ backgroundColor: product.color }}
-                />
+                {product.imageUrl ? (
+                  <img
+                    src={convertDriveUrl(product.imageUrl)}
+                    alt={product.name}
+                    className={styles.productImage}
+                  />
+                ) : (
+                  <div className={styles.imagePlaceholder} />
+                )}
+                <span className={styles.comingSoonBadge}>Coming Soon</span>
               </div>
               <div className={styles.cardContent}>
                 <h3 className={styles.productName}>{product.name}</h3>

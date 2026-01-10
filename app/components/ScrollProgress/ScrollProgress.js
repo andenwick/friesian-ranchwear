@@ -1,25 +1,27 @@
 "use client";
 
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useRef, useEffect } from "react";
 import styles from "./ScrollProgress.module.css";
 
 export default function ScrollProgress() {
   const progressRef = useRef(null);
 
-  useGSAP(() => {
-    gsap.to(progressRef.current, {
-      scaleY: 1,
-      ease: "none",
-      scrollTrigger: {
-        trigger: document.body,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0.3,
-      },
-    });
-  });
+  useEffect(() => {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleY(${Math.min(progress, 1)})`;
+      }
+    };
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress(); // Initial call
+
+    return () => window.removeEventListener('scroll', updateProgress);
+  }, []);
 
   return (
     <div className={styles.container} aria-hidden="true">

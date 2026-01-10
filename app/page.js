@@ -10,7 +10,7 @@ import ParallaxShapes from "./components/ParallaxShapes/ParallaxShapes";
 
 export default function Home() {
   return (
-    <main style={{ position: "relative" }}>
+    <main style={{ position: "relative", overflow: "hidden" }}>
       {/* Page-long decorative elements */}
       <ScrollProgress />
       <ParallaxShapes />
