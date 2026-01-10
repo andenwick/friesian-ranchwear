@@ -25,11 +25,11 @@
   --color-leather-tan: var(--color-accent-hover);
   --color-aged-brass: var(--color-accent);
 
-  /* Semantic Colors - Light Theme */
-  --background: var(--color-off-white);
-  --background-elevated: var(--color-white);
-  --foreground: rgba(0, 0, 0, 0.63);
-  --foreground-muted: var(--color-gray-mid);
+  /* Semantic Colors - Dark Theme */
+  --background: var(--color-charcoal);
+  --background-elevated: var(--color-gray-dark);
+  --foreground: rgba(255, 255, 255, 0.85);
+  --foreground-muted: var(--color-gray-light);
 
   /* Typography - Display (Bebas Neue) */
   --font-display: var(--font-bebas-neue), 'Bebas Neue', sans-serif;
@@ -133,6 +133,21 @@ body {
   background-size: 300px 300px;
 }
 
+/* Halftone dot texture - modern streetwear aesthetic for collections */
+.halftone-texture {
+  position: relative;
+}
+
+.halftone-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+
 /* Leather grain texture */
 .leather-texture {
   position: relative;
@@ -172,7 +187,7 @@ button {
 /* Selection */
 ::selection {
   background: var(--color-accent);
-  color: var(--color-black);
+  color: var(--color-charcoal);
 }
 
 /* Reduced motion */

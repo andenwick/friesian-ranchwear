@@ -9,29 +9,38 @@ import styles from "./ProductShowcase.module.css";
 const SKELETON_COUNT = 6;
 
 /**
- * Converts Google Drive share links to direct image URLs.
- * Accepts:
- *   - https://drive.google.com/file/d/FILE_ID/view?usp=sharing
- *   - https://drive.google.com/open?id=FILE_ID
- *   - Already converted URLs (returns as-is)
- *   - Non-Drive URLs (returns as-is)
+ * Converts Google Drive share links to proxied image URLs.
+ * Uses our API proxy to avoid CORS and redirect issues.
  */
 function convertDriveUrl(url) {
   if (!url) return url;
 
-  // Already a direct lh3 URL
-  if (url.includes('lh3.googleusercontent.com')) return url;
+  // Already using our proxy
+  if (url.startsWith('/api/image')) return url;
+
+  // Local images - return as-is
+  if (url.startsWith('/')) return url;
+
+  // Extract file ID from various Google Drive URL formats
+  let fileId = null;
 
   // Match /file/d/FILE_ID/ pattern
   const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (fileMatch) {
-    return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+    fileId = fileMatch[1];
   }
 
   // Match open?id=FILE_ID or uc?id=FILE_ID pattern
-  const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (idMatch) {
-    return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+  if (!fileId) {
+    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idMatch) {
+      fileId = idMatch[1];
+    }
+  }
+
+  // If we found a file ID, use our proxy
+  if (fileId) {
+    return `/api/image?id=${fileId}`;
   }
 
   // Not a Drive link, return as-is
@@ -123,7 +132,7 @@ export default function ProductShowcase() {
   // Render loading skeleton
   if (loading) {
     return (
-      <section className={styles.showcase} ref={sectionRef}>
+      <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
             The Collection
@@ -147,7 +156,7 @@ export default function ProductShowcase() {
   // Render error state
   if (error) {
     return (
-      <section className={styles.showcase} ref={sectionRef}>
+      <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
             The Collection
@@ -163,7 +172,7 @@ export default function ProductShowcase() {
   // Render empty state
   if (products.length === 0) {
     return (
-      <section className={styles.showcase} ref={sectionRef}>
+      <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
             The Collection
@@ -178,7 +187,7 @@ export default function ProductShowcase() {
 
   // Render products
   return (
-    <section className={styles.showcase} ref={sectionRef}>
+    <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
       <div className={styles.container}>
         <h2 className={styles.heading} ref={headingRef}>
           The Collection
