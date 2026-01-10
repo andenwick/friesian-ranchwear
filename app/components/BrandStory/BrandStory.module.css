@@ -1,0 +1,64 @@
+/* BrandStory Section - Mobile First */
+.brandStory {
+  padding: var(--space-3xl) var(--space-lg);
+  background-color: var(--color-off-white);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-saddle-brown);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.column p {
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  color: var(--color-charcoal);
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .brandStory {
+    padding: var(--space-4xl) var(--space-xl);
+  }
+
+  .heading {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .column p {
+    font-size: var(--font-size-md);
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .content {
+    flex-direction: row;
+    gap: var(--space-2xl);
+  }
+
+  .column {
+    flex: 1;
+  }
+}

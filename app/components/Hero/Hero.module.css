@@ -1,0 +1,92 @@
+/* Hero Section - Mobile First */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--color-saddle-brown) 0%,
+    var(--color-leather-tan) 50%,
+    var(--color-aged-brass) 100%
+  );
+  padding: var(--space-lg);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-lg);
+}
+
+.logo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.tagline {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-cream);
+  max-width: 300px;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.cta {
+  display: inline-block;
+  padding: var(--space-md) var(--space-xl);
+  background-color: var(--color-charcoal);
+  color: var(--color-cream);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover {
+    background-color: var(--color-off-white);
+    color: var(--color-charcoal);
+    transform: translateY(-2px);
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .hero {
+    min-height: 80vh;
+  }
+
+  .logo {
+    width: 280px;
+    height: 280px;
+  }
+
+  .tagline {
+    font-size: var(--font-size-2xl);
+    max-width: 500px;
+  }
+
+  .content {
+    gap: var(--space-xl);
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .tagline {
+    font-size: var(--font-size-3xl);
+    max-width: 600px;
+  }
+
+  .cta {
+    padding: var(--space-md) var(--space-2xl);
+    font-size: var(--font-size-lg);
+  }
+}

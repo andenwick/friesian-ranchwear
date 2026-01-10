@@ -1,0 +1,98 @@
+/* ProductShowcase Section - Mobile First */
+.showcase {
+  padding: var(--space-3xl) var(--space-lg);
+  background-color: var(--color-cream);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.heading {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-saddle-brown);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.card {
+  display: block;
+  background-color: var(--color-off-white);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.cardContent {
+  padding: var(--space-md);
+}
+
+.productName {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-charcoal);
+  margin-bottom: var(--space-xs);
+}
+
+.productPrice {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-leather-tan);
+}
+
+/* Hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .showcase {
+    padding: var(--space-4xl) var(--space-xl);
+  }
+
+  .heading {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .productName {
+    font-size: var(--font-size-base);
+  }
+
+  .productPrice {
+    font-size: var(--font-size-base);
+  }
+}
+
+/* Desktop and up */
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .cardContent {
+    padding: var(--space-lg);
+  }
+}

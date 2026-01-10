@@ -1,13 +1,42 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Color Palette - Black, White, Brown */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  --color-brown: #8B4513;
+  --color-brown-light: #A0522D;
+  --color-brown-dark: #5D2E0C;
+  --color-gray: #333333;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Legacy aliases for component compatibility */
+  --color-saddle-brown: var(--color-brown);
+  --color-leather-tan: var(--color-brown-light);
+  --color-aged-brass: var(--color-brown);
+  --color-cream: var(--color-white);
+  --color-off-white: var(--color-white);
+  --color-charcoal: var(--color-black);
+
+  /* Typography Scale */
+  --font-size-3xl: 48px;
+  --font-size-2xl: 40px;
+  --font-size-xl: 32px;
+  --font-size-lg: 24px;
+  --font-size-md: 18px;
+  --font-size-base: 16px;
+  --font-size-sm: 14px;
+
+  /* Spacing Scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+  /* Semantic Colors */
+  --background: var(--color-white);
+  --foreground: var(--color-black);
 }
 
 html,
@@ -33,10 +62,4 @@ body {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }
