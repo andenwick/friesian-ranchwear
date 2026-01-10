@@ -1,10 +1,46 @@
+"use client";
+
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import styles from "./SocialLinks.module.css";
 
 export default function SocialLinks() {
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const iconsRef = useRef([]);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+        defaults: { immediateRender: false },
+      });
+
+      tl.fromTo(
+        headingRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }
+      ).fromTo(
+        iconsRef.current,
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)", stagger: 0.15 },
+        "-=0.3"
+      );
+    },
+    { scope: sectionRef }
+  );
+
   return (
-    <section className={styles.socialLinks}>
+    <section className={styles.socialLinks} ref={sectionRef}>
       <div className={styles.content}>
-        <h2 className={styles.heading}>Follow Us</h2>
+        <h2 className={styles.heading} ref={headingRef}>
+          Follow Us
+        </h2>
         <div className={styles.icons}>
           <a
             href="https://tiktok.com/@friesianranchwear"
@@ -12,6 +48,7 @@ export default function SocialLinks() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on TikTok"
+            ref={(el) => (iconsRef.current[0] = el)}
           >
             <svg
               className={styles.icon}
@@ -28,6 +65,7 @@ export default function SocialLinks() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on Instagram"
+            ref={(el) => (iconsRef.current[1] = el)}
           >
             <svg
               className={styles.icon}

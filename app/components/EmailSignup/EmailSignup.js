@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import styles from "./EmailSignup.module.css";
 
 export default function EmailSignup() {
@@ -8,6 +10,43 @@ export default function EmailSignup() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  const sectionRef = useRef(null);
+  const headingRef = useRef(null);
+  const textRef = useRef(null);
+  const formRef = useRef(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+        defaults: { immediateRender: false },
+      });
+
+      tl.fromTo(
+        headingRef.current,
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" }
+      )
+        .fromTo(
+          textRef.current,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
+          "-=0.4"
+        )
+        .fromTo(
+          formRef.current,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
+          "-=0.3"
+        );
+    },
+    { scope: sectionRef }
+  );
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,7 +58,6 @@ export default function EmailSignup() {
     setError("");
     setSuccess(false);
 
-    // Client-side validation
     if (!email.trim()) {
       setError("Please enter your email address.");
       return;
@@ -57,40 +95,44 @@ export default function EmailSignup() {
   };
 
   return (
-    <section className={styles.emailSignup}>
+    <section className={`${styles.emailSignup} canvas-texture`} ref={sectionRef}>
       <div className={styles.content}>
-        <h2 className={styles.heading}>Stay Connected</h2>
-        <p className={styles.text}>
-          Be the first to know about new drops, exclusive deals, and behind-the-scenes content.
+        <h2 className={styles.heading} ref={headingRef}>
+          Join the List
+        </h2>
+        <p className={styles.text} ref={textRef}>
+          Be first to know about new drops, exclusive offers, and what is coming next.
         </p>
 
-        {success ? (
-          <div className={styles.successMessage}>
-            You are in! Check your inbox for updates.
-          </div>
-        ) : (
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.inputWrapper}>
-              <input
-                type="email"
-                className={styles.input}
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                aria-label="Email address"
-              />
-              <button
-                type="submit"
-                className={styles.button}
-                disabled={loading}
-              >
-                {loading ? "Joining..." : "Join"}
-              </button>
+        <div ref={formRef}>
+          {success ? (
+            <div className={styles.successMessage}>
+              You are on the list. We will be in touch soon.
             </div>
-            {error && <p className={styles.errorMessage}>{error}</p>}
-          </form>
-        )}
+          ) : (
+            <form className={styles.form} onSubmit={handleSubmit}>
+              <div className={styles.inputWrapper}>
+                <input
+                  type="email"
+                  className={styles.input}
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  aria-label="Email address"
+                />
+                <button
+                  type="submit"
+                  className={styles.button}
+                  disabled={loading}
+                >
+                  {loading ? "..." : "Subscribe"}
+                </button>
+              </div>
+              {error && <p className={styles.errorMessage}>{error}</p>}
+            </form>
+          )}
+        </div>
       </div>
     </section>
   );

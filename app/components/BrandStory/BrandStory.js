@@ -4,33 +4,52 @@ export default function BrandStory() {
   return (
     <section className={styles.brandStory}>
       <div className={styles.container}>
-        <h2 className={styles.heading}>Our Story</h2>
-        <div className={styles.content}>
-          <div className={styles.column}>
+        {/* Editorial Header */}
+        <header className={styles.header}>
+          <span className={styles.eyebrow}>The Story</span>
+          <h2 className={styles.heading}>
+            Where the Range
+            <br />
+            <span className={styles.headingAccent}>Meets the Streets</span>
+          </h2>
+          <div className={styles.rule} aria-hidden="true" />
+        </header>
+
+        {/* Lead Statement */}
+        <p className={styles.lead}>
+          Some of us grew up with boots in the dirt and dreams in the city.
+          Friesian was made for that in-between—where tradition meets ambition.
+        </p>
+
+        {/* Editorial Content Grid */}
+        <div className={styles.editorial}>
+          <div className={styles.columnMain}>
             <p>
-              Friesian Ranchwear was born from the crossroads of two worlds: the
-              rugged heritage of the American West and the bold pulse of urban
-              street culture. We believe that style should not be confined by
-              geography or tradition.
+              Our families taught us to work hard and stay humble. We took that
+              energy everywhere—from the ranch to the block, from small towns to
+              big stages. Friesian carries that same spirit in every piece.
             </p>
             <p>
-              Growing up between dusty ranch roads and city sidewalks, we saw
-              something that others missed. The same spirit that drives a cowboy
-              at dawn drives a hustler in the night. Both demand gear that can
-              keep up with their grind.
+              This is quality you can feel. Designs that respect where you have
+              been and look good wherever you are headed.
             </p>
           </div>
-          <div className={styles.column}>
+
+          {/* Pull Quote */}
+          <aside className={styles.pullQuote}>
+            <blockquote>
+              <span className={styles.quoteOpen}>"</span>
+              For those who never forgot where they came from.
+              <span className={styles.quoteClose}>"</span>
+            </blockquote>
+          </aside>
+
+          <div className={styles.columnSecondary}>
             <p>
-              Our pieces are designed for those who refuse to choose between
-              their roots and their ambitions. Whether you are working the land,
-              hitting the town, or building your empire, Friesian Ranchwear moves
-              with you.
+              You do not have to choose between country and city. Friesian
+              bridges both worlds so you can show up as your full self.
             </p>
-            <p>
-              This is not just clothing. This is a statement. Where the range
-              meets the streets, legends are made. Welcome to the movement.
-            </p>
+            <p className={styles.signoff}>This is your style. Own it.</p>
           </div>
         </div>
       </div>

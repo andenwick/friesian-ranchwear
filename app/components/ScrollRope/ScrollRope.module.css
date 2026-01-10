@@ -1,0 +1,42 @@
+/* ============================================
+   Scroll Rope - Center Weave Animation
+   SVG rope that draws itself on scroll
+   ============================================ */
+
+.container {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rope {
+  stroke: var(--color-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.4;
+}
+
+/* ============================================
+   Responsive - Desktop (wider weave)
+   ============================================ */
+@media (min-width: 1280px) {
+  .container {
+    width: 300px;
+  }
+
+  .rope {
+    stroke-width: 2.5;
+    opacity: 0.2;
+  }
+}

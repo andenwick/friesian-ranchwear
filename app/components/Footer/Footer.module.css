@@ -1,8 +1,12 @@
-/* Footer Section - Mobile First */
+/* ============================================
+   Footer Section - Minimal Dark
+   ============================================ */
+
 .footer {
   width: 100%;
-  background-color: var(--color-charcoal);
+  background-color: rgb(235, 235, 235);
   padding: var(--space-xl) var(--space-lg);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .content {
@@ -16,18 +20,35 @@
 }
 
 .brand {
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  color: var(--color-cream);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.trademark {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  vertical-align: super;
+  margin-left: 2px;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .copyright {
-  font-size: var(--font-size-sm);
-  color: var(--color-cream);
-  opacity: 0.7;
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-mid);
+  letter-spacing: var(--tracking-wide);
 }
 
-/* Tablet and up */
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
 @media (min-width: 768px) {
   .footer {
     padding: var(--space-2xl) var(--space-xl);

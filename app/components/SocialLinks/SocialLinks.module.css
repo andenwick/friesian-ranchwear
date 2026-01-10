@@ -1,8 +1,12 @@
-/* SocialLinks Section - Mobile First */
+/* ============================================
+   SocialLinks Section - Minimal Dark
+   ============================================ */
+
 .socialLinks {
   width: 100%;
-  background-color: var(--color-cream);
-  padding: var(--space-2xl) var(--space-lg);
+  background-color: var(--background);
+  padding: var(--space-3xl) var(--space-lg);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .content {
@@ -12,68 +16,78 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
 }
 
 .heading {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-charcoal);
-  line-height: 1.2;
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-gray-mid);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
 }
 
 .icons {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--space-xl);
+  gap: var(--space-2xl);
 }
 
 .iconLink {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-charcoal);
-  transition: color 0.2s ease, transform 0.2s ease;
+  color: var(--foreground);
+  transition:
+    color var(--transition-base),
+    transform var(--transition-base),
+    filter var(--transition-base);
 }
 
 .icon {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 }
 
 /* Hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   .iconLink:hover {
-    color: var(--color-aged-brass);
-    transform: translateY(-2px);
+    color: var(--color-accent);
+    transform: translateY(-3px);
+    filter: drop-shadow(0 4px 12px rgba(196, 163, 90, 0.4));
   }
 }
 
-/* Tablet and up */
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
 @media (min-width: 768px) {
   .socialLinks {
     padding: var(--space-3xl) var(--space-xl);
   }
 
   .heading {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-sm);
   }
 
   .icon {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
   }
 
   .icons {
-    gap: var(--space-2xl);
+    gap: var(--space-3xl);
   }
 }
 
-/* Desktop and up */
+/* ============================================
+   Responsive - Desktop
+   ============================================ */
 @media (min-width: 1024px) {
   .icon {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
   }
 }

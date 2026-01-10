@@ -1,42 +1,95 @@
 :root {
-  /* Color Palette - Black, White, Brown */
+  /* ============================================
+     FRIESIAN RANCHWEAR - Design System
+     Dark & Bold Streetwear Aesthetic
+     ============================================ */
+
+  /* Core Palette - Dark & Bold */
   --color-black: #000000;
+  --color-black-soft: #0A0A0A;
+  --color-charcoal: #1A1A1A;
+  --color-gray-dark: #2A2A2A;
+  --color-gray-mid: #4A4A4A;
+  --color-gray-light: #8A8A8A;
   --color-white: #FFFFFF;
-  --color-brown: #8B4513;
-  --color-brown-light: #A0522D;
-  --color-brown-dark: #5D2E0C;
-  --color-gray: #333333;
+  --color-off-white: #F5F5F5;
 
-  /* Legacy aliases for component compatibility */
-  --color-saddle-brown: var(--color-brown);
-  --color-leather-tan: var(--color-brown-light);
-  --color-aged-brass: var(--color-brown);
-  --color-cream: var(--color-white);
-  --color-off-white: var(--color-white);
-  --color-charcoal: var(--color-black);
+  /* Accent - Gold-brown (used sparingly) */
+  --color-accent: #C4A35A;
+  --color-accent-hover: #D4B36A;
 
-  /* Typography Scale */
-  --font-size-3xl: 48px;
-  --font-size-2xl: 40px;
-  --font-size-xl: 32px;
-  --font-size-lg: 24px;
+  /* Legacy aliases - keeping for component compatibility */
+  --color-brown: var(--color-accent);
+  --color-cream: var(--color-off-white);
+  --color-saddle-brown: var(--color-accent);
+  --color-leather-tan: var(--color-accent-hover);
+  --color-aged-brass: var(--color-accent);
+
+  /* Semantic Colors - Light Theme */
+  --background: var(--color-off-white);
+  --background-elevated: var(--color-white);
+  --foreground: rgba(0, 0, 0, 0.63);
+  --foreground-muted: var(--color-gray-mid);
+
+  /* Typography - Display (Bebas Neue) */
+  --font-display: var(--font-bebas-neue), 'Bebas Neue', sans-serif;
+
+  /* Typography - Body (Inter) */
+  --font-body: var(--font-inter), 'Inter', system-ui, sans-serif;
+
+  /* Display Font Sizes - Fluid scaling */
+  --font-size-hero: clamp(64px, 15vw, 160px);
+  --font-size-4xl: clamp(40px, 8vw, 72px);
+  --font-size-3xl: clamp(32px, 6vw, 56px);
+  --font-size-2xl: clamp(28px, 5vw, 44px);
+  --font-size-xl: clamp(24px, 4vw, 36px);
+
+  /* Body Font Sizes */
+  --font-size-lg: 20px;
   --font-size-md: 18px;
   --font-size-base: 16px;
   --font-size-sm: 14px;
+  --font-size-xs: 12px;
 
-  /* Spacing Scale */
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+  --tracking-widest: 0.2em;
+
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Spacing Scale - Premium generous spacing */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --space-3xl: 64px;
-  --space-4xl: 96px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 128px;
 
-  /* Semantic Colors */
-  --background: var(--color-white);
-  --foreground: var(--color-black);
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html,
@@ -48,18 +101,89 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* Film grain texture overlay - subtle on light bg */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
+/* Canvas/Paper texture - use on sections with .canvas-texture class */
+.canvas-texture {
+  position: relative;
+}
+
+.canvas-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='canvas'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.03' numOctaves='5' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23fff' surfaceScale='2.5'%3E%3CfeDistantLight azimuth='45' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23canvas)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+}
+
+/* Leather grain texture */
+.leather-texture {
+  position: relative;
+}
+
+.leather-texture::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leather'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='6' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23000' surfaceScale='1.2' result='light'%3E%3CfeDistantLight azimuth='135' elevation='45'/%3E%3C/feDiffuseLighting%3E%3CfeComposite in='light' in2='noise' operator='in'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leather)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* Links */
 a {
   color: inherit;
   text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+/* Buttons and interactive elements */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Focus states for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-accent);
+  color: var(--color-black);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,16 +1,29 @@
-/* Hero Section - Mobile First */
+/* ============================================
+   Hero Section - Dark & Bold
+   Massive typography, minimal elements
+   ============================================ */
+
 .hero {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    var(--color-saddle-brown) 0%,
-    var(--color-leather-tan) 50%,
-    var(--color-aged-brass) 100%
-  );
+  background: var(--background);
   padding: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle radial glow for depth */
+.backgroundGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 50% at 50% 50%,
+    rgba(196, 163, 90, 0.03) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
 .content {
@@ -18,75 +31,130 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-lg);
+  gap: var(--space-md);
+  z-index: 1;
+  will-change: transform, opacity;
 }
 
+/* Logo */
 .logo {
-  width: 200px;
-  height: 200px;
+  width: 140px;
+  height: 140px;
   object-fit: contain;
-  border-radius: 8px;
+  margin-bottom: var(--space-lg);
 }
 
-.tagline {
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--color-cream);
-  max-width: 300px;
-  line-height: 1.2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+/* THE STAR - Massive brand name */
+.brandName {
+  font-family: var(--font-display);
+  font-size: var(--font-size-hero);
+  font-weight: 400;
+  color: var(--foreground);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
+  text-transform: uppercase;
+  margin: 0;
 }
 
+.trademark {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--foreground-muted);
+  vertical-align: super;
+  margin-left: 4px;
+  letter-spacing: 0;
+}
+
+/* Subtitle - Refined, understated */
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  margin-top: calc(var(--space-sm) * -1);
+}
+
+/* CTA - Minimal border style */
 .cta {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl);
   padding: var(--space-md) var(--space-xl);
-  background-color: var(--color-charcoal);
-  color: var(--color-cream);
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  border-radius: 4px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  background: transparent;
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  border: 1px solid var(--color-accent);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base),
+    border-color var(--transition-base),
+    transform var(--transition-base);
 }
 
-/* Hover only on non-touch devices */
+.ctaArrow {
+  transition: transform var(--transition-base);
+}
+
+/* Hover - non-touch only */
 @media (hover: hover) and (pointer: fine) {
   .cta:hover {
-    background-color: var(--color-off-white);
-    color: var(--color-charcoal);
-    transform: translateY(-2px);
+    background: var(--color-accent);
+    color: var(--color-black);
+    border-color: var(--color-accent);
+  }
+
+  .cta:hover .ctaArrow {
+    transform: translateX(4px);
   }
 }
 
-/* Tablet and up */
+/* Active state for touch */
+.cta:active {
+  transform: scale(0.98);
+}
+
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
 @media (min-width: 768px) {
-  .hero {
-    min-height: 80vh;
-  }
-
   .logo {
-    width: 280px;
-    height: 280px;
-  }
-
-  .tagline {
-    font-size: var(--font-size-2xl);
-    max-width: 500px;
+    width: 170px;
+    height: 170px;
+    margin-bottom: var(--space-xl);
   }
 
   .content {
-    gap: var(--space-xl);
+    gap: var(--space-lg);
   }
-}
 
-/* Desktop and up */
-@media (min-width: 1024px) {
-  .tagline {
-    font-size: var(--font-size-3xl);
-    max-width: 600px;
+  .subtitle {
+    font-size: var(--font-size-base);
   }
 
   .cta {
-    padding: var(--space-md) var(--space-2xl);
-    font-size: var(--font-size-lg);
+    padding: var(--space-lg) var(--space-2xl);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ============================================
+   Responsive - Desktop
+   ============================================ */
+@media (min-width: 1024px) {
+  .logo {
+    width: 200px;
+    height: 200px;
+  }
+
+  .subtitle {
+    font-size: var(--font-size-md);
   }
 }

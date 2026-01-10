@@ -1,98 +1,148 @@
-/* ProductShowcase Section - Mobile First */
+/* ============================================
+   ProductShowcase Section - Fashion Grid
+   Dark cards with hover reveal
+   ============================================ */
+
 .showcase {
   padding: var(--space-3xl) var(--space-lg);
-  background-color: var(--color-cream);
+  background-color: var(--background-elevated);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .heading {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
-  color: var(--color-saddle-brown);
+  font-family: var(--font-display);
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
   text-align: center;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-2xl);
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  gap: 2px;
 }
 
 .card {
   display: block;
-  background-color: var(--color-off-white);
-  border-radius: 8px;
+  position: relative;
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: var(--background);
+  border: 1px solid transparent;
+  transition: border-color var(--transition-base);
+}
+
+.imageWrapper {
+  overflow: hidden;
 }
 
 .imagePlaceholder {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 3 / 4;
+  transition: transform var(--transition-slow);
 }
 
 .cardContent {
-  padding: var(--space-md);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-lg);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    transparent 100%
+  );
+  transform: translateY(0);
+  transition: transform var(--transition-base);
 }
 
 .productName {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  color: var(--color-charcoal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-white);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
   margin-bottom: var(--space-xs);
 }
 
 .productPrice {
+  font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-leather-tan);
+  font-weight: 600;
+  color: var(--color-accent);
 }
 
-/* Hover only on non-touch devices */
+/* Hover - desktop only: zoom image, gold border, content reveal */
 @media (hover: hover) and (pointer: fine) {
+  .cardContent {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
   .card:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--color-accent);
+  }
+
+  .card:hover .imagePlaceholder {
+    transform: scale(1.08);
+  }
+
+  .card:hover .cardContent {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-/* Tablet and up */
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
 @media (min-width: 768px) {
   .showcase {
     padding: var(--space-4xl) var(--space-xl);
   }
 
   .heading {
-    font-size: var(--font-size-3xl);
-    margin-bottom: var(--space-2xl);
+    margin-bottom: var(--space-3xl);
   }
 
   .grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-lg);
   }
 
   .productName {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
   }
 
   .productPrice {
     font-size: var(--font-size-base);
   }
+
+  .cardContent {
+    padding: var(--space-xl);
+  }
 }
 
-/* Desktop and up */
-@media (min-width: 1024px) {
+/* ============================================
+   Responsive - Desktop
+   ============================================ */
+@media (min-width: 1280px) {
   .grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
   }
 
   .cardContent {
-    padding: var(--space-lg);
+    padding: var(--space-2xl);
   }
 }
