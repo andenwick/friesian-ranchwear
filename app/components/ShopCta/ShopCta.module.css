@@ -7,21 +7,8 @@
   width: 100%;
   background-color: var(--background);
   padding: var(--space-4xl) var(--space-lg);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  position: relative;
-  margin-top: -100px;
-  padding-top: calc(var(--space-4xl) + 100px);
-}
-
-.shopCta::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: linear-gradient(to bottom, var(--background-elevated) 0%, var(--background) 100%);
-  pointer-events: none;
 }
 
 .content {
