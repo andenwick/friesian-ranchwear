@@ -199,6 +199,17 @@ export default function ProductShowcase() {
               href="#tiktok-shop"
               className={styles.card}
               ref={(el) => (cardsRef.current[index] = el)}
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById('tiktok-shop');
+                if (target) {
+                  gsap.to(window, {
+                    duration: 1.5,
+                    scrollTo: { y: target, offsetY: 120 },
+                    ease: "power2.inOut"
+                  });
+                }
+              }}
             >
               <div className={styles.imageWrapper}>
                 {product.imageUrl ? (

@@ -110,9 +110,11 @@ export default function Hero() {
           e.preventDefault();
           const target = document.getElementById('tiktok-shop');
           if (target) {
-            const offset = 120;
-            const top = target.getBoundingClientRect().top + window.scrollY - offset;
-            window.scrollTo({ top, behavior: 'smooth' });
+            gsap.to(window, {
+              duration: 1.5,
+              scrollTo: { y: target, offsetY: 120 },
+              ease: "power2.inOut"
+            });
           }
         }}>
           <span>See the Line</span>
