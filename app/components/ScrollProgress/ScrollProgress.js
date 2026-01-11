@@ -10,8 +10,10 @@ export default function ScrollProgress() {
   useEffect(() => {
     const updateProgress = () => {
       const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      const footer = document.querySelector('footer');
+      const footerTop = footer ? footer.offsetTop : document.documentElement.scrollHeight;
+      const stopPoint = footerTop - window.innerHeight;
+      const progress = stopPoint > 0 ? Math.min(scrollTop / stopPoint, 1) : 0;
 
       // Fade in after scrolling 100px
       if (containerRef.current) {
@@ -20,7 +22,7 @@ export default function ScrollProgress() {
       }
 
       if (progressRef.current) {
-        progressRef.current.style.transform = `scaleY(${Math.min(progress, 1)})`;
+        progressRef.current.style.transform = `scaleY(${progress})`;
       }
     };
 
