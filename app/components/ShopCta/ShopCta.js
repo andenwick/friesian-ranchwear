@@ -53,6 +53,7 @@ export default function ShopCta() {
           Limited runs. No restocks.
         </p>
         <a
+          id="shop-cta-button"
           href="https://tiktok.com/@friesianranchwear"
           className={styles.cta}
           target="_blank"

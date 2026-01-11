@@ -206,7 +206,15 @@ export default function ProductShowcase() {
                   gsap.to(window, {
                     duration: 1.5,
                     scrollTo: { y: target, offsetY: 120 },
-                    ease: "power2.inOut"
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                      const ctaButton = document.getElementById('shop-cta-button');
+                      if (ctaButton) {
+                        ctaButton.classList.remove('ctaActivated');
+                        void ctaButton.offsetWidth; // Force reflow to restart animation
+                        ctaButton.classList.add('ctaActivated');
+                      }
+                    }
                   });
                 }
               }}
