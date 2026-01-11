@@ -105,7 +105,7 @@
   gap: var(--space-md);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 767px) {
   .container {
     justify-content: center;
   }
