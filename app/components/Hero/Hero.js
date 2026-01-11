@@ -89,7 +89,7 @@ export default function Hero() {
       <div className={styles.content} ref={contentRef}>
         <Image
           ref={logoRef}
-          src="/logo-new.png"
+          src="/logo-white.png"
           alt="Friesian Ranchwear"
           width={150}
           height={150}

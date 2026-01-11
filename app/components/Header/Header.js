@@ -22,7 +22,7 @@ export default function Header() {
         {/* Brand Logo + Name */}
         <a href="#" className={styles.brand}>
           <Image
-            src="/logo-new.png"
+            src="/logo-white.png"
             alt="Friesian Ranchwear"
             width={52}
             height={52}
