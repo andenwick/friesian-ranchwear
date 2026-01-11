@@ -47,10 +47,10 @@ export default function ShopCta() {
     <section className={`${styles.shopCta} canvas-texture`} id="tiktok-shop" ref={sectionRef}>
       <div className={styles.content}>
         <h2 className={styles.heading} ref={headingRef}>
-          Shop the Collection
+          Built for this.
         </h2>
         <p className={styles.text} ref={textRef}>
-          Quality pieces. Real craftsmanship. See what we have been working on.
+          Limited runs. No restocks.
         </p>
         <a
           href="https://tiktok.com/@friesianranchwear"

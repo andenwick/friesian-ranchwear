@@ -135,7 +135,7 @@ export default function ProductShowcase() {
       <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
-            The Collection
+            The Line
           </h2>
           <div className={styles.grid}>
             {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
@@ -159,7 +159,7 @@ export default function ProductShowcase() {
       <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
-            The Collection
+            The Line
           </h2>
           <div className={styles.emptyState}>
             <p className={styles.emptyMessage}>{error}</p>
@@ -175,7 +175,7 @@ export default function ProductShowcase() {
       <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
-            The Collection
+            The Line
           </h2>
           <div className={styles.emptyState}>
             <p className={styles.emptyMessage}>No products available yet</p>
@@ -190,7 +190,7 @@ export default function ProductShowcase() {
     <section className={`${styles.showcase} halftone-texture`} ref={sectionRef}>
       <div className={styles.container}>
         <h2 className={styles.heading} ref={headingRef}>
-          The Collection
+          The Line
         </h2>
         <div className={styles.grid}>
           {products.map((product, index) => (

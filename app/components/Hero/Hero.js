@@ -103,7 +103,7 @@ export default function Hero() {
           </h1>
         </div>
         <p className={styles.subtitle} ref={subtitleRef}>
-          Nothing you wear is an accident.
+          For the ones who remember.
         </p>
 
         <a href="#tiktok-shop" className={styles.cta} ref={ctaRef} onClick={(e) => {
@@ -115,7 +115,7 @@ export default function Hero() {
             window.scrollTo({ top, behavior: 'smooth' });
           }
         }}>
-          <span>See the Drop</span>
+          <span>See the Line</span>
           <svg
             className={styles.ctaArrow}
             width="20"

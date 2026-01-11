@@ -98,10 +98,10 @@ export default function EmailSignup() {
     <section className={`${styles.emailSignup} canvas-texture`} ref={sectionRef}>
       <div className={styles.content}>
         <h2 className={styles.heading} ref={headingRef}>
-          Get Updates
+          First to know.
         </h2>
         <p className={styles.text} ref={textRef}>
-          New drops and behind-the-scenes. No spam.
+          New releases before anyone else.
         </p>
 
         <div ref={formRef}>

@@ -49,7 +49,7 @@ export default function BrandStory() {
               You do not have to choose between country and city. Friesian
               bridges both worlds so you can show up as your full self.
             </p>
-            <p className={styles.signoff}>This is your style. Own it.</p>
+            <p className={styles.signoff}>You already know.</p>
           </div>
         </div>
       </div>
