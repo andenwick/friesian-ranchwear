@@ -55,8 +55,8 @@ export default function Hero() {
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 80%",
-          end: "center top",
+          start: "top top",
+          end: "bottom top",
           scrub: 1,
         },
       });
