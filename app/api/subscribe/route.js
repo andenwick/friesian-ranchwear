@@ -4,7 +4,7 @@ import { appendToSheet } from '@/lib/sheets';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, name } = body;
+    const { email } = body;
 
     if (!email) {
       return NextResponse.json(
@@ -22,7 +22,7 @@ export async function POST(request) {
     }
 
     const timestamp = new Date().toISOString();
-    await appendToSheet([email, name || '', timestamp]);
+    await appendToSheet([email, timestamp]);
 
     return NextResponse.json(
       { success: true, message: 'Successfully subscribed' },
