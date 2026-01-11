@@ -126,7 +126,7 @@ export default function Hero() {
             });
           }
         }}>
-          <span>See the Line</span>
+          <span>See TikTok Shop</span>
           <svg
             className={styles.ctaArrow}
             width="20"
