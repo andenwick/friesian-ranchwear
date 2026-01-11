@@ -117,9 +117,10 @@ export default function Hero() {
               onComplete: () => {
                 const ctaButton = document.getElementById('shop-cta-button');
                 if (ctaButton) {
-                  ctaButton.classList.remove('ctaActivated');
-                  void ctaButton.offsetWidth; // Force reflow to restart animation
                   ctaButton.classList.add('ctaActivated');
+                  setTimeout(() => {
+                    ctaButton.classList.remove('ctaActivated');
+                  }, 2000);
                 }
               }
             });

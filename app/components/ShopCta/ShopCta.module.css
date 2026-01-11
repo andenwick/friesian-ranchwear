@@ -74,26 +74,12 @@
 }
 
 /* ============================================
-   Activated State - Quick Gold Flash
-   Triggered when user scrolls to CTA
+   Activated State - Hover effect on scroll
    ============================================ */
 .cta:global(.ctaActivated) {
-  animation: ctaFlash 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-@keyframes ctaFlash {
-  0% {
-    box-shadow: var(--shadow-md);
-    transform: scale(1);
-  }
-  40% {
-    box-shadow: 0 0 24px rgba(196, 163, 90, 0.7);
-    transform: scale(1.02);
-  }
-  100% {
-    box-shadow: var(--shadow-md);
-    transform: scale(1);
-  }
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(196, 163, 90, 0.35);
 }
 
 /* ============================================
