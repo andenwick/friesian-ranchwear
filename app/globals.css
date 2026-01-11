@@ -143,9 +143,11 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.035;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px);
-  background-size: 6px 6px;
+  opacity: 0.06;
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,0.5) 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+  background-size: 12px 12px;
   /* Fade edges to blend into adjacent sections */
   mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
