@@ -103,7 +103,7 @@ export default function Hero() {
           </h1>
         </div>
         <p className={styles.subtitle} ref={subtitleRef}>
-          For the ones who remember.
+          Nothing you wear is an accident.
         </p>
 
         <a href="#tiktok-shop" className={styles.cta} ref={ctaRef} onClick={(e) => {
