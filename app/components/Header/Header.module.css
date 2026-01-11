@@ -111,11 +111,11 @@
   }
 
   .socialLinks {
-    display: none;
+    display: none !important;
   }
 
   .nav {
-    display: none;
+    display: none !important;
   }
 }
 
