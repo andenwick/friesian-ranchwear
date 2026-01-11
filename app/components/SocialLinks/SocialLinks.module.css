@@ -5,7 +5,7 @@
 .socialLinks {
   width: 100%;
   background-color: var(--background);
-  padding: var(--space-3xl) var(--space-lg);
+  padding: var(--space-2xl) var(--space-lg);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 

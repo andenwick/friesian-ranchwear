@@ -6,7 +6,7 @@
 .shopCta {
   width: 100%;
   background-color: var(--background);
-  padding: var(--space-4xl) var(--space-lg);
+  padding: var(--space-3xl) var(--space-lg);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
