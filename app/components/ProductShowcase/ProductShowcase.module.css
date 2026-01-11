@@ -5,17 +5,9 @@
 
 .showcase {
   padding: var(--space-3xl) var(--space-lg);
-  background-color: var(--background-elevated);
+  background-color: var(--background);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
-}
-
-.showcase::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
-  pointer-events: none;
 }
 
 .container {
