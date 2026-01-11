@@ -132,7 +132,7 @@ export default function ProductShowcase() {
   // Render loading skeleton
   if (loading) {
     return (
-      <section className={`${styles.showcase}`} ref={sectionRef}>
+      <section className={`${styles.showcase} canvas-texture-light`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
             The Line
@@ -156,7 +156,7 @@ export default function ProductShowcase() {
   // Render error state
   if (error) {
     return (
-      <section className={`${styles.showcase}`} ref={sectionRef}>
+      <section className={`${styles.showcase} canvas-texture-light`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
             The Line
@@ -172,7 +172,7 @@ export default function ProductShowcase() {
   // Render empty state
   if (products.length === 0) {
     return (
-      <section className={`${styles.showcase}`} ref={sectionRef}>
+      <section className={`${styles.showcase} canvas-texture-light`} ref={sectionRef}>
         <div className={styles.container}>
           <h2 className={styles.heading} ref={headingRef}>
             The Line
@@ -187,7 +187,7 @@ export default function ProductShowcase() {
 
   // Render products
   return (
-    <section className={`${styles.showcase}`} ref={sectionRef}>
+    <section className={`${styles.showcase} canvas-texture-light`} ref={sectionRef}>
       <div className={styles.container}>
         <h2 className={styles.heading} ref={headingRef}>
           The Line
