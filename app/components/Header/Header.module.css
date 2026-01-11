@@ -105,6 +105,12 @@
   gap: var(--space-md);
 }
 
+@media (max-width: 640px) {
+  .socialLinks {
+    display: none;
+  }
+}
+
 .socialLink {
   display: flex;
   align-items: center;
