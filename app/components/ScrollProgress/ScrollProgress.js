@@ -15,9 +15,9 @@ export default function ScrollProgress() {
       const stopPoint = footerTop - window.innerHeight;
       const progress = stopPoint > 0 ? Math.min(scrollTop / stopPoint, 1) : 0;
 
-      // Fade in after scrolling 100px
+      // Fade in after scrolling 200px
       if (containerRef.current) {
-        const opacity = Math.min(scrollTop / 100, 1);
+        const opacity = Math.min(scrollTop / 200, 1);
         containerRef.current.style.opacity = opacity;
       }
 

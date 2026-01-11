@@ -7,7 +7,6 @@
   width: 100%;
   background-color: var(--background);
   padding: var(--space-4xl) var(--space-lg);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
