@@ -64,16 +64,16 @@
   color: transparent;
   -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
 
-  /* Metallic shimmer gradient */
+  /* Gold shimmer gradient - matches CTA buttons */
   background: linear-gradient(
     120deg,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.7) 46%,
-    rgba(196, 163, 90, 0.4) 48%,
-    rgba(255, 255, 255, 0.9) 50%,
-    rgba(196, 163, 90, 0.4) 52%,
-    rgba(255, 255, 255, 0.7) 54%,
-    rgba(255, 255, 255, 0.7) 100%
+    rgba(196, 163, 90, 0.7) 0%,
+    rgba(196, 163, 90, 0.7) 46%,
+    rgba(255, 255, 255, 0.9) 48%,
+    rgba(196, 163, 90, 1) 50%,
+    rgba(255, 255, 255, 0.9) 52%,
+    rgba(196, 163, 90, 0.7) 54%,
+    rgba(196, 163, 90, 0.7) 100%
   );
   background-size: 300% 100%;
   background-position: 150% 50%;
