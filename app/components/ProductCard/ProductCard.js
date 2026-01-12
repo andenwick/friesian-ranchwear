@@ -68,23 +68,24 @@ export default function ProductCard({ product, showLink = true }) {
           <h3 className={styles.name}>{product.name}</h3>
           <p className={styles.price}>{product.price}</p>
         </div>
-
-        <button
-          className={styles.addButton}
-          onClick={handleAddToCart}
-          aria-label={`Add ${product.name} to cart`}
-        >
-          <span className={styles.buttonText}>Add to Cart</span>
-          <svg
-            className={styles.buttonIcon}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        <div className={styles.buttonWrapper}>
+          <button
+            className={styles.addButton}
+            onClick={handleAddToCart}
+            aria-label={`Add ${product.name} to cart`}
           >
-            <path d="M12 5v14M5 12h14" />
-          </svg>
-        </button>
+            <span className={styles.buttonText}>Add to Cart</span>
+            <svg
+              className={styles.buttonIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </div>
       </div>
     </>
   );

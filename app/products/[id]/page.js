@@ -41,6 +41,7 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Fetch product
   useEffect(() => {
@@ -169,7 +170,13 @@ export default function ProductDetailPage() {
             {/* Image Section */}
             <div className={styles.imageSection}>
               <div className={styles.imageWrapper}>
-                {product.imageUrl ? (
+                {product.imageUrls && product.imageUrls.length > 0 ? (
+                  <img
+                    src={convertDriveUrl(product.imageUrls[selectedImageIndex])}
+                    alt={`${product.name} - Image ${selectedImageIndex + 1}`}
+                    className={styles.productImage}
+                  />
+                ) : product.imageUrl ? (
                   <img
                     src={convertDriveUrl(product.imageUrl)}
                     alt={product.name}
@@ -181,6 +188,25 @@ export default function ProductDetailPage() {
                   </div>
                 )}
               </div>
+
+              {/* Thumbnail Navigation */}
+              {product.imageUrls && product.imageUrls.length > 1 && (
+                <div className={styles.thumbnailNav}>
+                  {product.imageUrls.map((url, index) => (
+                    <button
+                      key={index}
+                      className={`${styles.thumbnail} ${selectedImageIndex === index ? styles.thumbnailActive : ''}`}
+                      onClick={() => setSelectedImageIndex(index)}
+                      aria-label={`View image ${index + 1}`}
+                    >
+                      <img
+                        src={convertDriveUrl(url)}
+                        alt={`${product.name} thumbnail ${index + 1}`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Details Section */}
