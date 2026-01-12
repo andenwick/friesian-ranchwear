@@ -173,12 +173,12 @@ export default function ProductFilters({
           )}
         </div>
 
-        {/* Size Pills */}
-        <div className={styles.filterGroup}>
-          <span className={styles.filterLabel}>Size</span>
-          <div className={styles.sizeRow}>
-            {sortedSizes.length > 0 ? (
-              sortedSizes.map(size => (
+        {/* Size Pills - Only show if sizes exist */}
+        {sortedSizes.length > 0 && (
+          <div className={styles.filterGroup}>
+            <span className={styles.filterLabel}>Size</span>
+            <div className={styles.sizeRow}>
+              {sortedSizes.map(size => (
                 <button
                   key={size}
                   className={`${styles.sizePill} ${
@@ -189,12 +189,10 @@ export default function ProductFilters({
                 >
                   {size}
                 </button>
-              ))
-            ) : (
-              <span className={styles.noOptions}>No sizes available</span>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Price Range */}
         <div className={styles.filterGroup}>
