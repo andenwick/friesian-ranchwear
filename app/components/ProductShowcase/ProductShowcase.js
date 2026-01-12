@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useScrollToSection } from "@/lib/hooks/useScrollToSection";
+import { useCart } from "@/lib/cart-context";
 import styles from "./ProductShowcase.module.css";
 
 // Number of skeleton cards to show during loading
@@ -53,6 +54,23 @@ export default function ProductShowcase() {
   const headingRef = useRef(null);
   const cardsRef = useRef([]);
   const scrollToShop = useScrollToSection({ activateCta: true });
+  const { addItem } = useCart();
+
+  // Handle adding item to cart
+  const handleAddToCart = (e, product) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Parse price from string like "$49.99" to number
+    const priceNum = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
+
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: priceNum,
+      image: convertDriveUrl(product.imageUrl),
+    });
+  };
 
   // State for dynamic product fetching
   const [products, setProducts] = useState([]);
@@ -196,15 +214,10 @@ export default function ProductShowcase() {
         </h2>
         <div className={styles.grid}>
           {products.map((product, index) => (
-            <a
+            <div
               key={product.id}
-              href="#tiktok-shop"
               className={styles.card}
               ref={(el) => (cardsRef.current[index] = el)}
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToShop('tiktok-shop');
-              }}
             >
               <div className={styles.imageWrapper}>
                 {product.imageUrl ? (
@@ -216,13 +229,18 @@ export default function ProductShowcase() {
                 ) : (
                   <div className={styles.imagePlaceholder} />
                 )}
-                <span className={styles.comingSoonBadge}>Coming Soon</span>
               </div>
               <div className={styles.cardContent}>
                 <h3 className={styles.productName}>{product.name}</h3>
                 <p className={styles.productPrice}>{product.price}</p>
+                <button
+                  className={styles.addToCartButton}
+                  onClick={(e) => handleAddToCart(e, product)}
+                >
+                  Add to Cart
+                </button>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </div>

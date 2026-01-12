@@ -96,6 +96,37 @@
 }
 
 /* ============================================
+   Add to Cart Button
+   ============================================ */
+
+.addToCartButton {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-black);
+  background: var(--color-accent);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addToCartButton:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+.addToCartButton:active {
+  transform: translateY(0);
+}
+
+/* ============================================
    Coming Soon Badge
    ============================================ */
 
