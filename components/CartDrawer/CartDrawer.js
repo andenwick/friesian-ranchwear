@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import styles from './CartDrawer.module.css';
 
@@ -14,7 +15,6 @@ export default function CartDrawer() {
     closeCart,
     removeItem,
     updateQuantity,
-    clearCart,
   } = useCart();
 
   // Lock body scroll when drawer is open
@@ -56,17 +56,24 @@ export default function CartDrawer() {
         aria-label="Shopping cart"
         aria-modal="true"
       >
+        {/* Gold accent line */}
+        <div className={styles.accentLine} aria-hidden="true" />
+
         {/* Header */}
         <div className={styles.header}>
-          <h2 className={styles.title}>YOUR CART</h2>
+          <div className={styles.headerLeft}>
+            <h2 className={styles.title}>Your Cart</h2>
+            {itemCount > 0 && (
+              <span className={styles.itemBadge}>{itemCount}</span>
+            )}
+          </div>
           <button
             onClick={closeCart}
             className={styles.closeButton}
             aria-label="Close cart"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -75,51 +82,110 @@ export default function CartDrawer() {
         <div className={styles.content}>
           {items.length === 0 ? (
             <div className={styles.emptyState}>
-              <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-              <p className={styles.emptyText}>Your cart is empty</p>
-              <button onClick={closeCart} className={styles.continueButton}>
-                Continue Shopping
-              </button>
+              {/* Elegant empty cart illustration */}
+              <div className={styles.emptyIllustration}>
+                <svg viewBox="0 0 120 120" fill="none">
+                  <circle cx="60" cy="60" r="58" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
+                  <circle cx="60" cy="60" r="40" stroke="currentColor" strokeWidth="0.5" opacity="0.15" />
+                  <path
+                    d="M40 45h40l-5 30H45l-5-30z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    fill="none"
+                    opacity="0.6"
+                  />
+                  <circle cx="48" cy="82" r="3" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+                  <circle cx="72" cy="82" r="3" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
+                  <path
+                    d="M40 45l-5-10h-8"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    opacity="0.6"
+                  />
+                  <path
+                    d="M55 55v10M65 55v10"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    opacity="0.3"
+                    strokeDasharray="2 2"
+                  />
+                </svg>
+              </div>
+
+              <h3 className={styles.emptyTitle}>Your cart is empty</h3>
+              <p className={styles.emptyText}>
+                Discover our premium western ranchwear collection
+              </p>
+
+              <Link
+                href="/products"
+                className={styles.browseButton}
+                onClick={closeCart}
+              >
+                <span>Browse Collection</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
           ) : (
             <ul className={styles.itemList}>
-              {items.map((item) => (
-                <li key={item.key} className={styles.item}>
+              {items.map((item, index) => (
+                <li
+                  key={item.key}
+                  className={styles.item}
+                  style={{ '--item-index': index }}
+                >
                   <div className={styles.itemImage}>
                     {item.image ? (
                       <Image
                         src={item.image}
                         alt={item.name}
-                        width={80}
-                        height={80}
+                        width={100}
+                        height={120}
                         className={styles.image}
                       />
                     ) : (
-                      <div className={styles.imagePlaceholder} />
+                      <div className={styles.imagePlaceholder}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <path d="M21 15l-5-5L5 21" />
+                        </svg>
+                      </div>
                     )}
                   </div>
 
                   <div className={styles.itemDetails}>
-                    <h3 className={styles.itemName}>{item.name}</h3>
+                    <div className={styles.itemHeader}>
+                      <h3 className={styles.itemName}>{item.name}</h3>
+                      <button
+                        onClick={() => removeItem(item.key)}
+                        className={styles.removeButton}
+                        aria-label="Remove item"
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+
                     {(item.size || item.color) && (
                       <p className={styles.itemVariant}>
                         {[item.size, item.color].filter(Boolean).join(' / ')}
                       </p>
                     )}
-                    <p className={styles.itemPrice}>${item.price.toFixed(2)}</p>
 
-                    <div className={styles.itemActions}>
+                    <div className={styles.itemFooter}>
                       <div className={styles.quantityControl}>
                         <button
                           onClick={() => updateQuantity(item.key, item.quantity - 1)}
                           className={styles.quantityButton}
                           aria-label="Decrease quantity"
                         >
-                          -
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M5 12h14" />
+                          </svg>
                         </button>
                         <span className={styles.quantityValue}>{item.quantity}</span>
                         <button
@@ -127,17 +193,15 @@ export default function CartDrawer() {
                           className={styles.quantityButton}
                           aria-label="Increase quantity"
                         >
-                          +
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M12 5v14M5 12h14" />
+                          </svg>
                         </button>
                       </div>
 
-                      <button
-                        onClick={() => removeItem(item.key)}
-                        className={styles.removeButton}
-                        aria-label="Remove item"
-                      >
-                        Remove
-                      </button>
+                      <p className={styles.itemPrice}>
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </p>
                     </div>
                   </div>
                 </li>
@@ -149,19 +213,34 @@ export default function CartDrawer() {
         {/* Footer */}
         {items.length > 0 && (
           <div className={styles.footer}>
-            <div className={styles.subtotal}>
-              <span>Subtotal</span>
-              <span className={styles.subtotalValue}>${subtotal.toFixed(2)}</span>
+            <div className={styles.summary}>
+              <div className={styles.summaryRow}>
+                <span className={styles.summaryLabel}>Subtotal</span>
+                <span className={styles.summaryValue}>${subtotal.toFixed(2)}</span>
+              </div>
+              <p className={styles.shippingNote}>
+                Shipping & taxes calculated at checkout
+              </p>
             </div>
-            <p className={styles.shippingNote}>Shipping calculated at checkout</p>
 
             <button className={styles.checkoutButton}>
-              Checkout
+              <span className={styles.checkoutText}>Proceed to Checkout</span>
+              <span className={styles.checkoutIcon}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
             </button>
 
-            <button onClick={closeCart} className={styles.continueLink}>
-              Continue Shopping
-            </button>
+            <div className={styles.footerLinks}>
+              <Link
+                href="/products"
+                className={styles.continueLink}
+                onClick={closeCart}
+              >
+                Continue Shopping
+              </Link>
+            </div>
           </div>
         )}
       </div>

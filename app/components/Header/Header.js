@@ -4,14 +4,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { useScrollToSection } from "@/lib/hooks/useScrollToSection";
 import { useCart } from "@/lib/cart-context";
 import styles from "./Header.module.css";
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(false);
   const { data: session, status } = useSession();
-  const scrollToShop = useScrollToSection();
   const { itemCount, openCart } = useCart();
 
   useEffect(() => {
@@ -113,12 +111,9 @@ export default function Header() {
               <span className={styles.cartCount}>{itemCount}</span>
             )}
           </button>
-          <a href="#tiktok-shop" className={styles.shopLink} onClick={(e) => {
-            e.preventDefault();
-            scrollToShop('tiktok-shop');
-          }}>
+          <Link href="/products" className={styles.shopLink}>
             Shop Now
-          </a>
+          </Link>
         </nav>
       </div>
       <div className={styles.goldLine} aria-hidden="true" />
