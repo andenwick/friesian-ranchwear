@@ -11,7 +11,7 @@
 
 .page {
   flex: 1;
-  background: var(--color-black);
+  background: var(--background);
   padding: calc(80px + var(--space-2xl)) var(--space-lg) var(--space-4xl);
   position: relative;
   overflow: hidden;
@@ -90,28 +90,7 @@
   margin: 0 0 var(--space-md);
   line-height: 0.85;
   position: relative;
-
-  /* Outline text with gold shimmer - like homepage */
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.8) 45%,
-    rgba(196, 163, 90, 1) 50%,
-    rgba(255, 255, 255, 0.8) 55%,
-    rgba(255, 255, 255, 0.8) 100%
-  );
-  background-size: 200% 100%;
-  background-position: 100% 50%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shimmer 8s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { background-position: 100% 50%; }
-  50% { background-position: 0% 50%; }
+  color: var(--color-white);
 }
 
 .subtitle {

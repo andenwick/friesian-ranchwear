@@ -12,7 +12,7 @@
 .page {
   flex: 1;
   min-height: 100vh;
-  background: var(--color-black);
+  background: var(--background);
   padding: calc(80px + var(--space-xl)) var(--space-lg) var(--space-4xl);
   position: relative;
 }

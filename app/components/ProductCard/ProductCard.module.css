@@ -109,6 +109,7 @@
 .content {
   position: relative;
   padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + 40px);
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
@@ -157,11 +158,14 @@
    ============================================ */
 
 .addButton {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+  right: var(--space-md);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-  width: 100%;
   padding: var(--space-sm) var(--space-md);
   background: transparent;
   border: 1px solid rgba(196, 163, 90, 0.4);
@@ -174,25 +178,15 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  position: relative;
-  margin-top: var(--space-xs);
 
-  /* Hidden by default, slides up on hover */
+  /* Hidden by default, fades in on hover */
   opacity: 0;
-  transform: translateY(10px);
-  max-height: 0;
-  padding: 0;
-  margin: 0;
-  border-width: 0;
+  transform: translateY(8px);
 }
 
 .card:hover .addButton {
   opacity: 1;
   transform: translateY(0);
-  max-height: 50px;
-  padding: var(--space-sm) var(--space-md);
-  margin-top: var(--space-sm);
-  border-width: 1px;
 }
 
 .addButton::before {
@@ -240,6 +234,12 @@
 @media (min-width: 768px) {
   .content {
     padding: var(--space-md) var(--space-lg);
+    padding-bottom: calc(var(--space-md) + 40px);
+  }
+
+  .addButton {
+    left: var(--space-lg);
+    right: var(--space-lg);
   }
 
   .category {
@@ -266,6 +266,7 @@
 @media (min-width: 1280px) {
   .content {
     padding: var(--space-md) var(--space-lg);
+    padding-bottom: calc(var(--space-md) + 40px);
   }
 
   .category {
@@ -282,10 +283,7 @@
   }
 
   .addButton {
-    font-size: 10px;
-  }
-
-  .card:hover .addButton {
-    padding: var(--space-sm) var(--space-lg);
+    left: var(--space-lg);
+    right: var(--space-lg);
   }
 }

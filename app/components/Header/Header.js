@@ -34,7 +34,7 @@ export default function Header({ alwaysVisible = false }) {
     <header className={`${styles.header} ${isVisible ? styles.visible : ""}`}>
       <div className={styles.container}>
         {/* Brand Logo + Name */}
-        <a href="#" className={styles.brand}>
+        <a href="/" className={styles.brand}>
           <Image
             src="/logo-white.png"
             alt="Friesian Ranchwear"

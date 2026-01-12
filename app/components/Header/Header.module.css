@@ -157,58 +157,58 @@
   animation: fadeSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s forwards;
 }
 
+/* Primary CTA - Gold outline, fills on hover */
 .shopLink {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-body);
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
-  padding: 12px 28px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  padding: 10px 20px;
   background: transparent;
-  box-shadow: var(--shadow-xs);
-  transition:
-    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--color-accent);
+  transition: all 0.25s ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .shopLink:hover {
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--color-charcoal);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-1px);
+    background: var(--color-accent);
+    color: var(--color-black);
   }
 }
 
 /* ============================================
-   Auth Links
+   Auth Links - Minimal, understated
    ============================================ */
 
 .authMenu {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
 }
 
 .authLink {
   font-family: var(--font-body);
-  font-size: var(--text-sm);
+  font-size: 11px;
+  font-weight: 500;
   color: var(--foreground-muted);
   text-decoration: none;
-  padding: var(--space-xs) var(--space-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 8px 12px;
   border: none;
   background: none;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s ease;
 }
 
 .authLink:hover:not(:disabled) {
-  color: var(--foreground);
+  color: var(--color-accent);
 }
 
 .authLink:disabled {
@@ -217,25 +217,26 @@
 }
 
 .adminLink {
-  font-family: var(--font-display);
-  font-size: var(--text-xs);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-accent);
   text-decoration: none;
-  padding: var(--space-xs) var(--space-sm);
-  border: 1px solid var(--color-accent);
-  border-radius: 2px;
-  transition: all 0.2s;
+  padding: 6px 10px;
+  border: 1px solid rgba(196, 163, 90, 0.5);
+  transition: all 0.2s ease;
 }
 
 .adminLink:hover {
   background: var(--color-accent);
-  color: var(--background);
+  color: var(--color-black);
+  border-color: var(--color-accent);
 }
 
 /* ============================================
-   Cart Button
+   Cart Button - Matches social icon style
    ============================================ */
 
 .cartButton {
@@ -243,11 +244,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--foreground);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -259,25 +259,25 @@
 }
 
 .cartIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .cartCount {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
   background: var(--color-accent);
   color: var(--color-black);
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  line-height: 18px;
+  line-height: 16px;
   text-align: center;
-  border-radius: 9px;
+  border-radius: 8px;
 }
 
 /* ============================================
