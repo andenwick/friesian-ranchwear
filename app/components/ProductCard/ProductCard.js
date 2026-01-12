@@ -57,6 +57,7 @@ export default function ProductCard({ product, showLink = true }) {
           </div>
         )}
         <div className={styles.overlay} />
+        <div className={styles.shine} />
       </div>
 
       <div className={styles.content}>

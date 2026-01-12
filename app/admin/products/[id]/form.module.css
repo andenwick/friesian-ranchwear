@@ -247,6 +247,129 @@
   margin-bottom: var(--space-lg);
 }
 
+/* Select Dropdown */
+.select {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+  background: var(--color-black-soft);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: var(--space-md);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.select option {
+  background: var(--color-charcoal);
+  color: var(--foreground);
+}
+
+/* Toggle Switch */
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding-top: var(--space-xs);
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 26px;
+  transition: all 0.3s ease;
+}
+
+.toggleSlider::before {
+  content: '';
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--foreground-muted);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.toggle input:checked + .toggleSlider {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.toggle input:checked + .toggleSlider::before {
+  transform: translateX(22px);
+  background: var(--color-black);
+}
+
+.toggleLabel {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--foreground-muted);
+}
+
+/* Section Hint */
+.sectionHint {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  color: var(--foreground-muted);
+  margin: calc(-1 * var(--space-md)) 0 var(--space-lg);
+}
+
+/* Feature Row */
+.featureRow {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.featureRow:last-child {
+  margin-bottom: 0;
+}
+
+.featureRow .input {
+  flex: 1;
+}
+
+.featureRow .removeButton {
+  margin-top: 0;
+}
+
+.bulletIcon {
+  font-size: 24px;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
 /* Form Actions */
 .actions {
   display: flex;

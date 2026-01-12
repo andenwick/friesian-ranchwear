@@ -69,12 +69,12 @@ function SignInForm() {
         <Image
           src="/logo-new.png"
           alt="Friesian Ranchwear"
-          width={60}
-          height={60}
+          width={100}
+          height={100}
           className={styles.logo}
         />
 
-        <h1 className={styles.title}>SIGN IN</h1>
+        <h1 className={styles.title}>Sign In</h1>
         <p className={styles.subtitle}>Welcome back</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>

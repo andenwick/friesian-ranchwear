@@ -3,7 +3,14 @@
    Premium product showcase with editorial feel
    ============================================ */
 
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .page {
+  flex: 1;
   min-height: 100vh;
   background: var(--color-black);
   padding: calc(80px + var(--space-xl)) var(--space-lg) var(--space-4xl);
@@ -139,8 +146,38 @@
   font-size: var(--font-size-base);
   color: var(--foreground-muted);
   line-height: 1.7;
-  margin: 0 0 var(--space-2xl);
+  margin: 0 0 var(--space-xl);
   max-width: 500px;
+}
+
+/* ============================================
+   Features List
+   ============================================ */
+
+.featuresList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--foreground-muted);
+  line-height: 1.5;
+}
+
+.featureBullet {
+  color: var(--color-accent);
+  font-size: 18px;
+  line-height: 1.2;
+  flex-shrink: 0;
 }
 
 /* ============================================
@@ -193,6 +230,97 @@
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: var(--color-black);
+}
+
+/* Size Required Indicator */
+.required {
+  color: #ef4444;
+  font-weight: 400;
+}
+
+/* Size Error State */
+.sizeSection.sizeError .sizeButton {
+  border-color: #ef4444;
+  animation: shake 0.4s ease;
+}
+
+.sizeErrorMessage {
+  display: block;
+  margin-top: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: #ef4444;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ============================================
+   Quantity Selector
+   ============================================ */
+
+.quantitySection {
+  margin-bottom: var(--space-xl);
+}
+
+.quantityLabel {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: var(--space-sm);
+}
+
+.quantityControl {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quantityButton {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantityButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-accent);
+}
+
+.quantityButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.quantityValue {
+  min-width: 48px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--foreground);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0 var(--space-sm);
+  line-height: 48px;
 }
 
 /* ============================================

@@ -53,11 +53,16 @@ export async function PUT(request, { params }) {
   try {
     const { id } = await params;
     const data = await request.json();
-    const { name, description, basePrice, tikTokUrl, variants, images } = data;
+    const { name, description, basePrice, category, features, active, variants, images } = data;
 
     if (!name || basePrice === undefined) {
       return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
     }
+
+    // Convert features array to JSON string for storage
+    const featuresJson = features && features.length > 0
+      ? JSON.stringify(features.filter(f => f.trim()))
+      : null;
 
     // Update product in a transaction
     const product = await prisma.$transaction(async (tx) => {
@@ -68,7 +73,9 @@ export async function PUT(request, { params }) {
           name,
           description: description || '',
           basePrice: parseFloat(basePrice),
-          tikTokUrl: tikTokUrl || null,
+          category: category || null,
+          features: featuresJson,
+          active: active !== false,
         },
       });
 

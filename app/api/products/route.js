@@ -87,28 +87,42 @@ async function getProductsFromDatabase() {
   });
 
   // Transform to match the current API response format
-  return products.map((product) => ({
-    id: product.id,
-    name: product.name,
-    description: product.description,
-    price: `$${product.basePrice}`,
-    imageUrl: product.images[0]?.url || null,
-    images: product.images.map((img) => ({ url: img.url, alt: img.alt })),
-    // Category for filtering
-    category: product.category || null,
-    // Aggregate sizes from variants for filtering
-    sizes: [...new Set(product.variants.map((v) => v.size).filter(Boolean))],
-    // Display setting (default to Both for database products)
-    display: 'Both',
-    variants: product.variants.map((v) => ({
-      id: v.id,
-      size: v.size,
-      color: v.color,
-      stock: v.stock,
-      price: v.price ? `$${v.price}` : null,
-      sku: v.sku,
-    })),
-    hasVariants: product.variants.length > 0,
-    inStock: product.variants.some((v) => v.stock > 0),
-  }));
+  return products.map((product) => {
+    // Parse features from JSON string
+    let features = [];
+    if (product.features) {
+      try {
+        features = JSON.parse(product.features);
+      } catch {
+        features = [];
+      }
+    }
+
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: `$${product.basePrice}`,
+      imageUrl: product.images[0]?.url || null,
+      images: product.images.map((img) => ({ url: img.url, alt: img.alt })),
+      // Category for filtering
+      category: product.category || null,
+      // Features / bullet points
+      features,
+      // Aggregate sizes from variants for filtering
+      sizes: [...new Set(product.variants.map((v) => v.size).filter(Boolean))],
+      // Display setting (default to Both for database products)
+      display: 'Both',
+      variants: product.variants.map((v) => ({
+        id: v.id,
+        size: v.size,
+        color: v.color,
+        stock: v.stock,
+        price: v.price ? `$${v.price}` : null,
+        sku: v.sku,
+      })),
+      hasVariants: product.variants.length > 0,
+      inStock: product.variants.some((v) => v.stock > 0),
+    };
+  });
 }

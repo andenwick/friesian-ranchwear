@@ -15,11 +15,16 @@ export default function ProductForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
+  // Predefined categories for western ranchwear
+  const CATEGORIES = ['Hats', 'Shirts', 'Jeans', 'Boots', 'Accessories', 'Outerwear'];
+
   const [product, setProduct] = useState({
     name: '',
     description: '',
     basePrice: '',
-    tikTokUrl: '',
+    category: '',
+    features: [''],
+    active: true,
     variants: [{ size: '', color: '', price: '', stock: '', sku: '' }],
     images: [{ url: '', alt: '' }],
   });
@@ -35,11 +40,23 @@ export default function ProductForm() {
       const res = await fetch(`/api/admin/products/${params.id}`);
       if (res.ok) {
         const data = await res.json();
+        // Parse features from JSON string
+        let parsedFeatures = [''];
+        if (data.features) {
+          try {
+            const parsed = JSON.parse(data.features);
+            parsedFeatures = parsed.length > 0 ? parsed : [''];
+          } catch {
+            parsedFeatures = [''];
+          }
+        }
         setProduct({
           name: data.name || '',
           description: data.description || '',
           basePrice: data.basePrice?.toString() || '',
-          tikTokUrl: data.tikTokUrl || '',
+          category: data.category || '',
+          features: parsedFeatures,
+          active: data.active !== false,
           variants: data.variants?.length > 0
             ? data.variants.map(v => ({
                 id: v.id,
@@ -74,7 +91,9 @@ export default function ProductForm() {
         name: product.name,
         description: product.description,
         basePrice: parseFloat(product.basePrice) || 0,
-        tikTokUrl: product.tikTokUrl,
+        category: product.category,
+        features: product.features.filter(f => f.trim()),
+        active: product.active,
         variants: product.variants
           .filter(v => v.size || v.color)
           .map(v => ({
@@ -152,6 +171,24 @@ export default function ProductForm() {
     setProduct({ ...product, images: newImages });
   };
 
+  // Feature helpers
+  const addFeature = () => {
+    setProduct({ ...product, features: [...product.features, ''] });
+  };
+
+  const removeFeature = (index) => {
+    setProduct({
+      ...product,
+      features: product.features.filter((_, i) => i !== index),
+    });
+  };
+
+  const updateFeature = (index, value) => {
+    const newFeatures = [...product.features];
+    newFeatures[index] = value;
+    setProduct({ ...product, features: newFeatures });
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer} style={{ minHeight: '50vh', background: 'transparent' }}>
@@ -223,16 +260,78 @@ export default function ProductForm() {
             />
           </div>
 
-          <div className={formStyles.field}>
-            <label className={formStyles.label}>TikTok Shop URL</label>
-            <input
-              type="url"
-              value={product.tikTokUrl}
-              onChange={(e) => setProduct({ ...product, tikTokUrl: e.target.value })}
-              className={formStyles.input}
-              placeholder="https://www.tiktok.com/..."
-            />
+          <div className={formStyles.grid}>
+            <div className={formStyles.field}>
+              <label className={formStyles.label}>Category</label>
+              <select
+                value={product.category}
+                onChange={(e) => setProduct({ ...product, category: e.target.value })}
+                className={formStyles.select}
+              >
+                <option value="">Select a category...</option>
+                {CATEGORIES.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            <div className={formStyles.field}>
+              <label className={formStyles.label}>Status</label>
+              <div className={formStyles.toggleContainer}>
+                <label className={formStyles.toggle}>
+                  <input
+                    type="checkbox"
+                    checked={product.active}
+                    onChange={(e) => setProduct({ ...product, active: e.target.checked })}
+                  />
+                  <span className={formStyles.toggleSlider}></span>
+                </label>
+                <span className={formStyles.toggleLabel}>
+                  {product.active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Features / Bullet Points */}
+        <div className={formStyles.section}>
+          <div className={formStyles.sectionHeader}>
+            <h2 className={formStyles.sectionTitle}>Features & Highlights</h2>
+            <button type="button" onClick={addFeature} className={styles.secondaryButton}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Add Feature
+            </button>
+          </div>
+          <p className={formStyles.sectionHint}>Add bullet points that highlight key product features</p>
+
+          {product.features.map((feature, index) => (
+            <div key={index} className={formStyles.featureRow}>
+              <span className={formStyles.bulletIcon}>•</span>
+              <input
+                type="text"
+                value={feature}
+                onChange={(e) => updateFeature(index, e.target.value)}
+                className={formStyles.input}
+                placeholder="e.g., 100% Premium Cotton"
+              />
+              {product.features.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeFeature(index)}
+                  className={formStyles.removeButton}
+                  title="Remove feature"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Variants */}

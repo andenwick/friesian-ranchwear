@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import styles from './CartDrawer.module.css';
@@ -138,11 +137,9 @@ export default function CartDrawer() {
                 >
                   <div className={styles.itemImage}>
                     {item.image ? (
-                      <Image
+                      <img
                         src={item.image}
                         alt={item.name}
-                        width={100}
-                        height={120}
                         className={styles.image}
                       />
                     ) : (

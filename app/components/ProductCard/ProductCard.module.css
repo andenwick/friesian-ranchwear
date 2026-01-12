@@ -1,31 +1,33 @@
 /* ============================================
    ProductCard - Premium E-Commerce Card
    Dark luxury aesthetic with western edge
+   Content below image, button reveals on hover
    ============================================ */
 
 .card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   position: relative;
   background: var(--color-charcoal);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   overflow: hidden;
   text-decoration: none;
   transition:
-    border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
   border-color: rgba(196, 163, 90, 0.4);
-  transform: translateY(-4px);
+  transform: translateY(-6px);
   box-shadow:
-    0 20px 40px -15px rgba(0, 0, 0, 0.5),
+    0 25px 50px -15px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(196, 163, 90, 0.2);
 }
 
 /* ============================================
-   Image Container
+   Image Container - Full display, no obstruction
    ============================================ */
 
 .imageContainer {
@@ -39,7 +41,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover .image {
@@ -67,96 +69,130 @@
   letter-spacing: 0.15em;
 }
 
-/* Subtle gradient overlay for depth */
+/* Subtle vignette overlay - doesn't obstruct product */
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0) 40%
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.15) 100%
   );
-  opacity: 0.8;
-  transition: opacity 0.4s ease;
+  pointer-events: none;
 }
 
-.card:hover .overlay {
-  opacity: 0.6;
+/* Shine/glare effect on hover */
+.shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.card:hover .shine {
+  transform: translateX(100%);
 }
 
 /* ============================================
-   Content Area
+   Content Area - Below image, clean layout
    ============================================ */
 
 .content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: var(--space-lg);
+  position: relative;
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  background: var(--color-charcoal);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .details {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 2px;
 }
 
 .category {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 500;
-  color: var(--color-accent);
+  color: rgba(196, 163, 90, 0.7);
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  opacity: 0.9;
+  letter-spacing: 0.25em;
 }
 
 .name {
-  font-family: var(--font-display);
-  font-size: var(--font-size-lg);
-  font-weight: 400;
-  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
+  letter-spacing: 0.15em;
+  line-height: 1.4;
   margin: 0;
 }
 
 .price {
   font-family: var(--font-body);
-  font-size: var(--font-size-md);
+  font-size: 12px;
   font-weight: 600;
-  color: var(--foreground);
+  color: var(--color-white);
   margin: 0;
+  margin-top: 2px;
+  letter-spacing: 0.03em;
 }
 
 /* ============================================
-   Add to Cart Button
+   Add to Cart Button - Slides up on hover
    ============================================ */
 
 .addButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   width: 100%;
   padding: var(--space-sm) var(--space-md);
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--foreground);
+  border: 1px solid rgba(196, 163, 90, 0.4);
+  color: var(--color-accent);
   font-family: var(--font-body);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   position: relative;
+  margin-top: var(--space-xs);
+
+  /* Hidden by default, slides up on hover */
+  opacity: 0;
+  transform: translateY(10px);
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+  border-width: 0;
+}
+
+.card:hover .addButton {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 50px;
+  padding: var(--space-sm) var(--space-md);
+  margin-top: var(--space-sm);
+  border-width: 1px;
 }
 
 .addButton::before {
@@ -164,17 +200,17 @@
   position: absolute;
   inset: 0;
   background: var(--color-accent);
-  transform: translateY(100%);
+  transform: scaleX(0);
+  transform-origin: left;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .addButton:hover {
-  border-color: var(--color-accent);
   color: var(--color-black);
 }
 
 .addButton:hover::before {
-  transform: translateY(0);
+  transform: scaleX(1);
 }
 
 .buttonText,
@@ -184,8 +220,8 @@
 }
 
 .buttonIcon {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   transition: transform 0.3s ease;
 }
 
@@ -203,16 +239,23 @@
 
 @media (min-width: 768px) {
   .content {
-    padding: var(--space-xl);
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .category {
+    font-size: 9px;
   }
 
   .name {
-    font-size: var(--font-size-xl);
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 13px;
   }
 
   .addButton {
-    padding: var(--space-md) var(--space-lg);
-    font-size: var(--font-size-sm);
+    font-size: 10px;
   }
 }
 
@@ -222,10 +265,27 @@
 
 @media (min-width: 1280px) {
   .content {
-    padding: var(--space-2xl);
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .category {
+    font-size: 9px;
   }
 
   .name {
-    font-size: 1.5rem;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+  }
+
+  .price {
+    font-size: 14px;
+  }
+
+  .addButton {
+    font-size: 10px;
+  }
+
+  .card:hover .addButton {
+    padding: var(--space-sm) var(--space-lg);
   }
 }

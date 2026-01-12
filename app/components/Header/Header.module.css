@@ -207,8 +207,13 @@
   transition: color 0.2s;
 }
 
-.authLink:hover {
+.authLink:hover:not(:disabled) {
   color: var(--foreground);
+}
+
+.authLink:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .adminLink {

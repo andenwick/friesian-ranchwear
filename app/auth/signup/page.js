@@ -82,12 +82,12 @@ export default function SignUpPage() {
         <Image
           src="/logo-new.png"
           alt="Friesian Ranchwear"
-          width={60}
-          height={60}
+          width={100}
+          height={100}
           className={styles.logo}
         />
 
-        <h1 className={styles.title}>CREATE ACCOUNT</h1>
+        <h1 className={styles.title}>Create Account</h1>
         <p className={styles.subtitle}>Join Friesian Ranchwear</p>
 
         <form onSubmit={handleSubmit} className={styles.form}>

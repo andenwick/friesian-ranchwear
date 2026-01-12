@@ -9,8 +9,15 @@ import styles from "./Header.module.css";
 
 export default function Header({ alwaysVisible = false }) {
   const [isVisible, setIsVisible] = useState(alwaysVisible);
+  const [signingOut, setSigningOut] = useState(false);
   const { data: session, status } = useSession();
   const { itemCount, openCart } = useCart();
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    await signOut({ redirect: false });
+    window.location.href = '/';
+  };
 
   useEffect(() => {
     if (alwaysVisible) return;
@@ -76,10 +83,11 @@ export default function Header({ alwaysVisible = false }) {
           {status === 'loading' ? null : session ? (
             <div className={styles.authMenu}>
               <button
-                onClick={() => signOut({ callbackUrl: '/' })}
+                onClick={handleSignOut}
                 className={styles.authLink}
+                disabled={signingOut}
               >
-                Sign Out
+                {signingOut ? 'Signing out...' : 'Sign Out'}
               </button>
               {session.user.isAdmin && (
                 <Link href="/admin" className={styles.adminLink}>
