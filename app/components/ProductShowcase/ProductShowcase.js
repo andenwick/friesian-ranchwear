@@ -77,11 +77,11 @@ export default function ProductShowcase() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch products from API on mount
+  // Fetch homepage products from API on mount
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch("/api/products");
+        const response = await fetch("/api/products?display=homepage");
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }

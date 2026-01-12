@@ -1,0 +1,438 @@
+/* ============================================
+   Product Detail Page
+   Premium product showcase with editorial feel
+   ============================================ */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-black);
+  padding: calc(80px + var(--space-xl)) var(--space-lg) var(--space-4xl);
+  position: relative;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   Back Link
+   ============================================ */
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-sm) 0;
+  color: var(--foreground-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.2s ease;
+}
+
+.backLink svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--color-accent);
+}
+
+.backLink:hover svg {
+  transform: translateX(-4px);
+}
+
+/* ============================================
+   Layout
+   ============================================ */
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xl);
+}
+
+/* ============================================
+   Image Section
+   ============================================ */
+
+.imageSection {
+  position: relative;
+}
+
+.imageWrapper {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--color-charcoal);
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--color-gray-dark) 0%,
+    var(--color-charcoal) 100%
+  );
+  color: var(--foreground-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+}
+
+/* ============================================
+   Details Section
+   ============================================ */
+
+.detailsSection {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg) 0;
+}
+
+.category {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: var(--space-sm);
+}
+
+.productName {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin: 0 0 var(--space-md);
+}
+
+.productPrice {
+  font-family: var(--font-body);
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 var(--space-xl);
+}
+
+.productDescription {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--foreground-muted);
+  line-height: 1.7;
+  margin: 0 0 var(--space-2xl);
+  max-width: 500px;
+}
+
+/* ============================================
+   Size Selector
+   ============================================ */
+
+.sizeSection {
+  margin-bottom: var(--space-2xl);
+}
+
+.sizeLabel {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: var(--space-sm);
+}
+
+.sizeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.sizeButton {
+  min-width: 48px;
+  height: 48px;
+  padding: 0 var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sizeButton:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.sizeButton.selected {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-black);
+}
+
+/* ============================================
+   Add to Cart Button
+   ============================================ */
+
+.addToCartButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-lg) var(--space-2xl);
+  background: var(--color-accent);
+  border: none;
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: var(--space-2xl);
+}
+
+.addToCartButton:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px rgba(196, 163, 90, 0.4);
+}
+
+.addToCartButton:active {
+  transform: translateY(0);
+}
+
+.addToCartButton.adding {
+  background: #22c55e;
+}
+
+.buttonText {
+  transition: opacity 0.2s ease;
+}
+
+.buttonIcon,
+.checkIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.checkIcon {
+  animation: checkPop 0.3s ease;
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   Additional Info
+   ============================================ */
+
+.additionalInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: var(--space-xl);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--foreground-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+}
+
+.infoItem svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+/* ============================================
+   Error State
+   ============================================ */
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.errorTitle {
+  font-family: var(--font-display);
+  font-size: var(--font-size-3xl);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--space-xl);
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl);
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
+}
+
+.backButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.backButton:hover {
+  background: var(--color-accent);
+  color: var(--color-black);
+}
+
+/* ============================================
+   Skeleton Loading
+   ============================================ */
+
+.skeletonImage {
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-dark) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    var(--color-gray-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+.skeletonTitle {
+  height: 48px;
+  width: 70%;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: var(--space-md);
+}
+
+.skeletonPrice {
+  height: 32px;
+  width: 30%;
+  background: rgba(196, 163, 90, 0.2);
+  margin-bottom: var(--space-xl);
+}
+
+.skeletonDescription {
+  height: 80px;
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
+
+@media (min-width: 768px) {
+  .page {
+    padding: calc(100px + var(--space-2xl)) var(--space-xl) var(--space-4xl);
+  }
+
+  .layout {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3xl);
+    align-items: start;
+  }
+
+  .imageWrapper {
+    position: sticky;
+    top: 120px;
+  }
+
+  .detailsSection {
+    padding: var(--space-xl) 0;
+  }
+
+  .sizeButton {
+    min-width: 56px;
+    height: 56px;
+  }
+}
+
+/* ============================================
+   Responsive - Desktop
+   ============================================ */
+
+@media (min-width: 1280px) {
+  .page {
+    padding: calc(100px + var(--space-3xl)) var(--space-2xl) var(--space-4xl);
+  }
+
+  .layout {
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-4xl);
+  }
+
+  .detailsSection {
+    padding: var(--space-2xl) 0;
+  }
+
+  .addToCartButton {
+    max-width: 350px;
+  }
+}

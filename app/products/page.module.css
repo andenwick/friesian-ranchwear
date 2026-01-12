@@ -1,0 +1,274 @@
+/* ============================================
+   Products Page - Premium Collection View
+   Dark, luxurious, editorial aesthetic
+   ============================================ */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-black);
+  padding: calc(80px + var(--space-2xl)) var(--space-lg) var(--space-4xl);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle grid texture overlay */
+.page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   Page Header
+   ============================================ */
+
+.header {
+  text-align: center;
+  margin-bottom: var(--space-3xl);
+  padding-bottom: var(--space-2xl);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 400;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin: 0 0 var(--space-sm);
+  line-height: 1;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin: 0;
+}
+
+/* ============================================
+   Results Bar
+   ============================================ */
+
+.resultsBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.resultsCount {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--foreground-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* ============================================
+   Product Grid
+   ============================================ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+}
+
+/* ============================================
+   Empty State
+   ============================================ */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  padding: var(--space-3xl);
+}
+
+.emptyText {
+  font-family: var(--font-body);
+  font-size: var(--font-size-lg);
+  color: var(--foreground-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.clearFiltersButton {
+  padding: var(--space-sm) var(--space-xl);
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clearFiltersButton:hover {
+  background: var(--color-accent);
+  color: var(--color-black);
+}
+
+/* ============================================
+   Skeleton Loading
+   ============================================ */
+
+.skeletonCard {
+  background: var(--color-charcoal);
+  overflow: hidden;
+}
+
+.skeletonImage {
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(
+    90deg,
+    var(--color-gray-dark) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    var(--color-gray-dark) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite ease-in-out;
+}
+
+.skeletonContent {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.skeletonText {
+  height: 20px;
+  width: 80%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.skeletonTextShort {
+  height: 16px;
+  width: 40%;
+  background: rgba(196, 163, 90, 0.2);
+  border-radius: 2px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ============================================
+   Decorative Grid Lines
+   ============================================ */
+
+.gridLines {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1400px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gridLines::before,
+.gridLines::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(196, 163, 90, 0.1) 20%,
+    rgba(196, 163, 90, 0.1) 80%,
+    transparent 100%
+  );
+}
+
+.gridLines::before {
+  left: 0;
+}
+
+.gridLines::after {
+  right: 0;
+}
+
+/* ============================================
+   Responsive - Tablet
+   ============================================ */
+
+@media (min-width: 768px) {
+  .page {
+    padding: calc(100px + var(--space-3xl)) var(--space-xl) var(--space-4xl);
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+  }
+
+  .header {
+    margin-bottom: var(--space-4xl);
+  }
+}
+
+/* ============================================
+   Responsive - Desktop
+   ============================================ */
+
+@media (min-width: 1280px) {
+  .page {
+    padding: calc(100px + var(--space-4xl)) var(--space-2xl) var(--space-4xl);
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .title {
+    letter-spacing: 0.2em;
+  }
+}
+
+/* ============================================
+   Responsive - Large Desktop
+   ============================================ */
+
+@media (min-width: 1600px) {
+  .grid {
+    gap: 4px;
+  }
+}

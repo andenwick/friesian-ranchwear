@@ -4,24 +4,61 @@ import { getProductsFromSheet } from '@/lib/sheets';
 
 /**
  * Get products - uses database if available, falls back to Google Sheets
+ *
+ * Query params:
+ * - display: "homepage" | "products" - filter by where product should display
+ * - id: product ID - get a single product
  */
-export async function GET() {
+export async function GET(request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const displayFilter = searchParams.get('display');
+    const productId = searchParams.get('id');
+
+    let products;
+
     // Try database first if DATABASE_URL is configured
     if (process.env.DATABASE_URL) {
       try {
-        const products = await getProductsFromDatabase();
-        if (products.length > 0) {
-          return NextResponse.json(products, { status: 200 });
+        products = await getProductsFromDatabase();
+        if (products.length === 0) {
+          // If database is empty, fall through to sheets
+          products = null;
         }
-        // If database is empty, fall through to sheets
       } catch (dbError) {
         console.warn('Database fetch failed, falling back to sheets:', dbError.message);
+        products = null;
       }
     }
 
     // Fallback to Google Sheets
-    const products = await getProductsFromSheet();
+    if (!products) {
+      products = await getProductsFromSheet();
+    }
+
+    // Filter by product ID if specified
+    if (productId) {
+      const product = products.find(p => String(p.id) === productId);
+      if (!product) {
+        return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+      }
+      return NextResponse.json(product, { status: 200 });
+    }
+
+    // Filter by display location if specified
+    if (displayFilter) {
+      products = products.filter(product => {
+        const display = (product.display || 'Both').toLowerCase();
+        if (displayFilter === 'homepage') {
+          return display === 'homepage' || display === 'both';
+        }
+        if (displayFilter === 'products') {
+          return display === 'products' || display === 'both';
+        }
+        return true;
+      });
+    }
+
     return NextResponse.json(products, { status: 200 });
   } catch (error) {
     console.error('Products API error:', error);
