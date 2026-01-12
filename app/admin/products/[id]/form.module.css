@@ -1,0 +1,257 @@
+/* ============================================
+   Product Form Styles
+   ============================================ */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.section {
+  background: var(--color-charcoal);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: var(--space-xl);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: var(--foreground);
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-lg);
+}
+
+.sectionHeader .sectionTitle {
+  margin-bottom: 0;
+}
+
+/* Form Fields */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.labelSmall {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--foreground-muted);
+}
+
+.input,
+.textarea {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+  background: var(--color-black-soft);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: var(--space-md);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--foreground-muted);
+  opacity: 0.6;
+}
+
+.inputSmall {
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--foreground);
+  background: var(--color-black-soft);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: var(--space-sm) var(--space-md);
+  transition: border-color 0.2s ease;
+}
+
+.inputSmall:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.inputSmall::placeholder {
+  color: var(--foreground-muted);
+  opacity: 0.6;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.inputWithPrefix {
+  position: relative;
+}
+
+.inputWithPrefix .input {
+  padding-left: 32px;
+}
+
+.prefix {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--foreground-muted);
+}
+
+/* Variants */
+.variantRow {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: var(--space-md);
+}
+
+.variantRow:last-child {
+  margin-bottom: 0;
+}
+
+.variantGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-md);
+}
+
+@media (max-width: 1024px) {
+  .variantGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .variantGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Images */
+.imageRow {
+  display: flex;
+  gap: var(--space-md);
+  align-items: flex-start;
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: var(--space-md);
+}
+
+.imageRow:last-child {
+  margin-bottom: 0;
+}
+
+.imagePreview {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  background: var(--color-gray-dark);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePreview svg {
+  color: var(--foreground-muted);
+}
+
+.imageFields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Remove Button */
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 24px;
+}
+
+.removeButton:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* Error Banner */
+.errorBanner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: var(--space-md) var(--space-lg);
+  color: #ef4444;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-lg);
+}
+
+/* Form Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}

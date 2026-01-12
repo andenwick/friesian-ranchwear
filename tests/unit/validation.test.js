@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { isValidEmail, EMAIL_REGEX } from '@/lib/validation';
 
 describe('Email validation', () => {
   it('accepts valid email addresses', () => {
@@ -11,7 +10,7 @@ describe('Email validation', () => {
     ];
 
     validEmails.forEach(email => {
-      expect(emailRegex.test(email)).toBe(true);
+      expect(isValidEmail(email)).toBe(true);
     });
   });
 
@@ -25,7 +24,16 @@ describe('Email validation', () => {
     ];
 
     invalidEmails.forEach(email => {
-      expect(emailRegex.test(email)).toBe(false);
+      expect(isValidEmail(email)).toBe(false);
     });
+  });
+
+  it('handles null and undefined', () => {
+    expect(isValidEmail(null)).toBe(false);
+    expect(isValidEmail(undefined)).toBe(false);
+  });
+
+  it('exports EMAIL_REGEX for direct use', () => {
+    expect(EMAIL_REGEX).toBeInstanceOf(RegExp);
   });
 });

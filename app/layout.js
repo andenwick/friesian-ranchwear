@@ -2,6 +2,8 @@ import { Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
+import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
+import Providers from "@/components/Providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,9 +26,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.variable} ${bebasNeue.variable}`}>
-        <GoogleAnalytics />
-        {children}
-        <CookieConsent />
+        <Providers>
+          <GoogleAnalytics />
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+          <CookieConsent />
+        </Providers>
       </body>
     </html>
   );

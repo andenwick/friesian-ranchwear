@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { isValidEmail } from "@/lib/validation";
 import styles from "./EmailSignup.module.css";
 
 export default function EmailSignup() {
@@ -48,11 +49,6 @@ export default function EmailSignup() {
     { scope: sectionRef }
   );
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -63,7 +59,7 @@ export default function EmailSignup() {
       return;
     }
 
-    if (!validateEmail(email)) {
+    if (!isValidEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }

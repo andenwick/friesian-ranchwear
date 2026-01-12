@@ -4,9 +4,12 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
+import { useScrollToSection } from "@/lib/hooks/useScrollToSection";
+import { SCROLL } from "@/lib/animation-constants";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
+  const scrollToShop = useScrollToSection({ activateCta: true });
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const logoRef = useRef(null);
@@ -70,9 +73,9 @@ export default function Hero() {
       if (!contentRef.current) return;
 
       const scrollY = window.scrollY;
-      const opacity = Math.max(0, 1 - scrollY / 600);
-      const translateY = scrollY * 0.4;
-      const scale = Math.max(0.9, 1 - scrollY / 3000);
+      const opacity = Math.max(0, 1 - scrollY / SCROLL.HERO_FADE_DISTANCE);
+      const translateY = scrollY * SCROLL.HERO_TRANSLATE_MULTIPLIER;
+      const scale = Math.max(SCROLL.HERO_MIN_SCALE, 1 - scrollY / SCROLL.HERO_SCALE_DISTANCE);
 
       contentRef.current.style.transform = `translateY(${translateY}px) scale(${scale})`;
       contentRef.current.style.opacity = opacity;
@@ -108,23 +111,7 @@ export default function Hero() {
 
         <a href="#tiktok-shop" className={styles.cta} ref={ctaRef} onClick={(e) => {
           e.preventDefault();
-          const target = document.getElementById('tiktok-shop');
-          if (target) {
-            gsap.to(window, {
-              duration: 1.5,
-              scrollTo: { y: target, offsetY: 120 },
-              ease: "power2.inOut",
-              onComplete: () => {
-                const ctaButton = document.getElementById('shop-cta-button');
-                if (ctaButton) {
-                  ctaButton.classList.add('ctaActivated');
-                  setTimeout(() => {
-                    ctaButton.classList.remove('ctaActivated');
-                  }, 2000);
-                }
-              }
-            });
-          }
+          scrollToShop('tiktok-shop');
         }}>
           <span>See TikTok Shop</span>
           <svg

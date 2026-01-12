@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { useScrollToSection } from "@/lib/hooks/useScrollToSection";
 import styles from "./Header.module.css";
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(false);
+  const { data: session, status } = useSession();
+  const scrollToShop = useScrollToSection();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,14 +70,29 @@ export default function Header() {
               </svg>
             </a>
           </div>
+          {/* Auth Links */}
+          {status === 'loading' ? null : session ? (
+            <div className={styles.authMenu}>
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className={styles.authLink}
+              >
+                Sign Out
+              </button>
+              {session.user.isAdmin && (
+                <Link href="/admin" className={styles.adminLink}>
+                  Admin
+                </Link>
+              )}
+            </div>
+          ) : (
+            <Link href="/auth/signin" className={styles.authLink}>
+              Sign In
+            </Link>
+          )}
           <a href="#tiktok-shop" className={styles.shopLink} onClick={(e) => {
             e.preventDefault();
-            const target = document.getElementById('tiktok-shop');
-            if (target) {
-              const offset = 120;
-              const top = target.getBoundingClientRect().top + window.scrollY - offset;
-              window.scrollTo({ top, behavior: 'smooth' });
-            }
+            scrollToShop('tiktok-shop');
           }}>
             Shop Now
           </a>

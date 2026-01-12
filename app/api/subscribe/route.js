@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { appendToSheet } from '@/lib/sheets';
+import { isValidEmail } from '@/lib/validation';
 
 export async function POST(request) {
   try {
@@ -13,8 +14,7 @@ export async function POST(request) {
       );
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidEmail(email)) {
       return NextResponse.json(
         { error: 'Invalid email format' },
         { status: 400 }

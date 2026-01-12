@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useScrollToSection } from "@/lib/hooks/useScrollToSection";
 import styles from "./ProductShowcase.module.css";
 
 // Number of skeleton cards to show during loading
@@ -51,6 +52,7 @@ export default function ProductShowcase() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const cardsRef = useRef([]);
+  const scrollToShop = useScrollToSection({ activateCta: true });
 
   // State for dynamic product fetching
   const [products, setProducts] = useState([]);
@@ -201,23 +203,7 @@ export default function ProductShowcase() {
               ref={(el) => (cardsRef.current[index] = el)}
               onClick={(e) => {
                 e.preventDefault();
-                const target = document.getElementById('tiktok-shop');
-                if (target) {
-                  gsap.to(window, {
-                    duration: 1.5,
-                    scrollTo: { y: target, offsetY: 120 },
-                    ease: "power2.inOut",
-                    onComplete: () => {
-                      const ctaButton = document.getElementById('shop-cta-button');
-                      if (ctaButton) {
-                        ctaButton.classList.add('ctaActivated');
-                        setTimeout(() => {
-                          ctaButton.classList.remove('ctaActivated');
-                        }, 2000);
-                      }
-                    }
-                  });
-                }
+                scrollToShop('tiktok-shop');
               }}
             >
               <div className={styles.imageWrapper}>
