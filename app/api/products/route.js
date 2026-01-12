@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getProductsFromSheet } from '@/lib/sheets';
 
 /**
- * Get products - uses database if available, falls back to Google Sheets
+ * Get products from database
  *
  * Query params:
  * - display: "homepage" | "products" - filter by where product should display
@@ -15,26 +14,7 @@ export async function GET(request) {
     const displayFilter = searchParams.get('display');
     const productId = searchParams.get('id');
 
-    let products;
-
-    // Try database first if DATABASE_URL is configured
-    if (process.env.DATABASE_URL) {
-      try {
-        products = await getProductsFromDatabase();
-        if (products.length === 0) {
-          // If database is empty, fall through to sheets
-          products = null;
-        }
-      } catch (dbError) {
-        console.warn('Database fetch failed, falling back to sheets:', dbError.message);
-        products = null;
-      }
-    }
-
-    // Fallback to Google Sheets
-    if (!products) {
-      products = await getProductsFromSheet();
-    }
+    let products = await getProductsFromDatabase();
 
     // Filter by product ID if specified
     if (productId) {

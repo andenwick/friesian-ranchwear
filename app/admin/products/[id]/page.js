@@ -14,6 +14,8 @@ export default function ProductForm() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
 
   // Predefined categories for western ranchwear
   const CATEGORIES = ['Hats', 'Shirts', 'Jeans', 'Boots', 'Accessories', 'Outerwear'];
@@ -151,26 +153,6 @@ export default function ProductForm() {
     setProduct({ ...product, variants: newVariants });
   };
 
-  const addImage = () => {
-    setProduct({
-      ...product,
-      images: [...product.images, { url: '', alt: '' }],
-    });
-  };
-
-  const removeImage = (index) => {
-    setProduct({
-      ...product,
-      images: product.images.filter((_, i) => i !== index),
-    });
-  };
-
-  const updateImage = (index, field, value) => {
-    const newImages = [...product.images];
-    newImages[index] = { ...newImages[index], [field]: value };
-    setProduct({ ...product, images: newImages });
-  };
-
   // Feature helpers
   const addFeature = () => {
     setProduct({ ...product, features: [...product.features, ''] });
@@ -187,6 +169,110 @@ export default function ProductForm() {
     const newFeatures = [...product.features];
     newFeatures[index] = value;
     setProduct({ ...product, features: newFeatures });
+  };
+
+  // Image upload handlers
+  const handleFileUpload = async (files) => {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    setError('');
+
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload only image files');
+        continue;
+      }
+
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Image must be less than 10MB');
+        continue;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          // Add the uploaded image
+          setProduct(prev => ({
+            ...prev,
+            images: [
+              ...prev.images.filter(img => img.url), // Remove empty slots
+              { url: data.url, alt: product.name || 'Product image', publicId: data.publicId },
+            ],
+          }));
+        } else {
+          const data = await res.json();
+          setError(data.error || 'Failed to upload image');
+        }
+      } catch (err) {
+        console.error('Upload error:', err);
+        setError('Failed to upload image');
+      }
+    }
+
+    setUploading(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const files = Array.from(e.dataTransfer.files);
+    handleFileUpload(files);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    handleFileUpload(files);
+    e.target.value = ''; // Reset input
+  };
+
+  const deleteImage = async (index) => {
+    const image = product.images[index];
+
+    // If it has a publicId, delete from Cloudinary
+    if (image.publicId) {
+      try {
+        await fetch('/api/admin/upload', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ publicId: image.publicId }),
+        });
+      } catch (err) {
+        console.error('Failed to delete from Cloudinary:', err);
+      }
+    }
+
+    // Remove from state
+    setProduct({
+      ...product,
+      images: product.images.filter((_, i) => i !== index),
+    });
+  };
+
+  const moveImage = (fromIndex, toIndex) => {
+    if (toIndex < 0 || toIndex >= product.images.length) return;
+    const newImages = [...product.images];
+    const [moved] = newImages.splice(fromIndex, 1);
+    newImages.splice(toIndex, 0, moved);
+    setProduct({ ...product, images: newImages });
   };
 
   if (loading) {
@@ -317,19 +403,17 @@ export default function ProductForm() {
                 className={formStyles.input}
                 placeholder="e.g., 100% Premium Cotton"
               />
-              {product.features.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeFeature(index)}
-                  className={formStyles.removeButton}
-                  title="Remove feature"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => removeFeature(index)}
+                className={formStyles.removeButton}
+                title="Remove feature"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
           ))}
         </div>
@@ -350,7 +434,7 @@ export default function ProductForm() {
           {product.variants.map((variant, index) => (
             <div key={index} className={formStyles.variantRow}>
               <div className={formStyles.variantGrid}>
-                <div className={formStyles.field}>
+                <div className={formStyles.variantField}>
                   <label className={formStyles.labelSmall}>Size</label>
                   <input
                     type="text"
@@ -360,7 +444,7 @@ export default function ProductForm() {
                     placeholder="S, M, L, XL..."
                   />
                 </div>
-                <div className={formStyles.field}>
+                <div className={formStyles.variantField}>
                   <label className={formStyles.labelSmall}>Color</label>
                   <input
                     type="text"
@@ -370,7 +454,7 @@ export default function ProductForm() {
                     placeholder="Black, Brown..."
                   />
                 </div>
-                <div className={formStyles.field}>
+                <div className={formStyles.variantField}>
                   <label className={formStyles.labelSmall}>Price Override</label>
                   <input
                     type="number"
@@ -381,7 +465,7 @@ export default function ProductForm() {
                     placeholder="Leave empty for base"
                   />
                 </div>
-                <div className={formStyles.field}>
+                <div className={formStyles.variantField}>
                   <label className={formStyles.labelSmall}>Stock *</label>
                   <input
                     type="number"
@@ -392,7 +476,7 @@ export default function ProductForm() {
                     required
                   />
                 </div>
-                <div className={formStyles.field}>
+                <div className={formStyles.variantField}>
                   <label className={formStyles.labelSmall}>SKU</label>
                   <input
                     type="text"
@@ -403,80 +487,113 @@ export default function ProductForm() {
                   />
                 </div>
               </div>
-              {product.variants.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeVariant(index)}
-                  className={formStyles.removeButton}
-                  title="Remove variant"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => removeVariant(index)}
+                className={formStyles.removeButton}
+                title="Remove variant"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
           ))}
         </div>
 
         {/* Images */}
         <div className={formStyles.section}>
-          <div className={formStyles.sectionHeader}>
-            <h2 className={formStyles.sectionTitle}>Images</h2>
-            <button type="button" onClick={addImage} className={styles.secondaryButton}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              Add Image
-            </button>
+          <h2 className={formStyles.sectionTitle}>Images</h2>
+
+          {/* Upload Drop Zone */}
+          <div
+            className={`${formStyles.dropZone} ${dragOver ? formStyles.dropZoneActive : ''} ${uploading ? formStyles.dropZoneUploading : ''}`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => !uploading && document.getElementById('image-upload').click()}
+          >
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+            {uploading ? (
+              <>
+                <div className={formStyles.uploadSpinner} />
+                <span className={formStyles.dropZoneText}>Uploading...</span>
+              </>
+            ) : (
+              <>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span className={formStyles.dropZoneText}>
+                  Drag & drop images here or click to browse
+                </span>
+                <span className={formStyles.dropZoneHint}>
+                  PNG, JPG up to 10MB
+                </span>
+              </>
+            )}
           </div>
 
-          {product.images.map((image, index) => (
-            <div key={index} className={formStyles.imageRow}>
-              <div className={formStyles.imagePreview}>
-                {image.url ? (
-                  <img src={image.url} alt={image.alt || 'Preview'} />
-                ) : (
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                    <circle cx="8.5" cy="8.5" r="1.5" />
-                    <polyline points="21 15 16 10 5 21" />
-                  </svg>
-                )}
-              </div>
-              <div className={formStyles.imageFields}>
-                <input
-                  type="url"
-                  value={image.url}
-                  onChange={(e) => updateImage(index, 'url', e.target.value)}
-                  className={formStyles.input}
-                  placeholder="Image URL (Cloudinary, etc.)"
-                />
-                <input
-                  type="text"
-                  value={image.alt}
-                  onChange={(e) => updateImage(index, 'alt', e.target.value)}
-                  className={formStyles.input}
-                  placeholder="Alt text (optional)"
-                />
-              </div>
-              {product.images.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className={formStyles.removeButton}
-                  title="Remove image"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
+          {/* Image Grid */}
+          {product.images.filter(img => img.url).length > 0 && (
+            <div className={formStyles.imageGrid}>
+              {product.images.filter(img => img.url).map((image, index) => (
+                <div key={index} className={formStyles.imageCard}>
+                  <div className={formStyles.imageCardPreview}>
+                    <img src={image.url} alt={image.alt || 'Preview'} />
+                    {index === 0 && (
+                      <span className={formStyles.primaryBadge}>Primary</span>
+                    )}
+                  </div>
+                  <div className={formStyles.imageCardActions}>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(index, index - 1)}
+                      className={formStyles.imageCardButton}
+                      disabled={index === 0}
+                      title="Move left"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M15 18l-6-6 6-6" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveImage(index, index + 1)}
+                      className={formStyles.imageCardButton}
+                      disabled={index === product.images.filter(img => img.url).length - 1}
+                      title="Move right"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => deleteImage(index)}
+                      className={`${formStyles.imageCardButton} ${formStyles.imageCardDelete}`}
+                      title="Delete image"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
 
         {/* Submit */}

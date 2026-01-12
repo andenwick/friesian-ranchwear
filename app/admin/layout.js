@@ -43,6 +43,7 @@ export default function AdminLayout({ children }) {
     { href: '/admin', label: 'Dashboard', icon: 'grid' },
     { href: '/admin/products', label: 'Products', icon: 'package' },
     { href: '/admin/orders', label: 'Orders', icon: 'truck' },
+    { href: '/admin/emails', label: 'Emails', icon: 'mail' },
   ];
 
   return (
@@ -85,6 +86,12 @@ export default function AdminLayout({ children }) {
                     <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
                     <circle cx="5.5" cy="18.5" r="2.5" />
                     <circle cx="18.5" cy="18.5" r="2.5" />
+                  </svg>
+                )}
+                {item.icon === 'mail' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                    <polyline points="22,6 12,13 2,6" />
                   </svg>
                 )}
               </span>

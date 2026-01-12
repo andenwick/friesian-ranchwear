@@ -9,22 +9,22 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const res = await fetch('/api/products');
-        if (res.ok) {
-          const data = await res.json();
-          setProducts(data.products || []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch products:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
     fetchProducts();
   }, []);
+
+  async function fetchProducts() {
+    try {
+      const res = await fetch('/api/admin/products');
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data.products || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleDelete = async (productId) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
@@ -91,15 +91,70 @@ export default function ProductsPage() {
                   <tr key={product.id}>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-                        {product.images?.[0]?.url ? (
-                          <img
-                            src={product.images[0].url}
-                            alt={product.name}
-                            className={styles.productThumb}
-                          />
-                        ) : (
-                          <div className={styles.productThumb} />
-                        )}
+                        {(() => {
+                          let imgUrl = product.images?.[0]?.url || product.imageUrl;
+                          // Convert Google Drive sharing links to thumbnail URLs (more reliable)
+                          if (imgUrl && imgUrl.includes('drive.google.com')) {
+                            let fileId = null;
+                            // Handle /file/d/ID/view format
+                            if (imgUrl.includes('/file/d/')) {
+                              fileId = imgUrl.match(/\/d\/([^/]+)/)?.[1];
+                            }
+                            // Handle ?id=ID format
+                            else if (imgUrl.includes('id=')) {
+                              fileId = imgUrl.match(/id=([^&]+)/)?.[1];
+                            }
+                            if (fileId) {
+                              imgUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w200`;
+                            }
+                          }
+                          const isValidUrl = imgUrl && (imgUrl.startsWith('http') || imgUrl.startsWith('/'));
+
+                          if (isValidUrl) {
+                            return (
+                              <div style={{ position: 'relative' }}>
+                                <img
+                                  src={imgUrl}
+                                  alt={product.name}
+                                  className={styles.productThumb}
+                                  referrerPolicy="no-referrer"
+                                  onError={(e) => {
+                                    e.target.style.display = 'none';
+                                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                                  }}
+                                />
+                                <div className={styles.productThumb} style={{
+                                  display: 'none',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '10px',
+                                  color: 'var(--foreground-muted)',
+                                  textAlign: 'center',
+                                  padding: '4px',
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0
+                                }}>
+                                  No image
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div className={styles.productThumb} style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '10px',
+                              color: 'var(--foreground-muted)',
+                              textAlign: 'center',
+                              padding: '4px'
+                            }}>
+                              No image
+                            </div>
+                          );
+                        })()}
                         <div>
                           <div style={{ fontWeight: 500 }}>{product.name}</div>
                           <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--foreground-muted)' }}>
@@ -108,7 +163,7 @@ export default function ProductsPage() {
                         </div>
                       </div>
                     </td>
-                    <td>${product.basePrice?.toFixed(2) || product.price?.toFixed(2) || '0.00'}</td>
+                    <td>${Number(product.basePrice || 0).toFixed(2)}</td>
                     <td>{product.variants?.length || 0}</td>
                     <td>
                       <span style={{ color: isLowStock ? '#ef4444' : 'inherit' }}>
@@ -163,7 +218,7 @@ export default function ProductsPage() {
               <line x1="12" y1="22.08" x2="12" y2="12" />
             </svg>
             <h3 className={styles.emptyTitle}>No products yet</h3>
-            <p className={styles.emptyText}>Start building your catalog by adding your first product</p>
+            <p className={styles.emptyText}>Add your first product to get started</p>
             <Link href="/admin/products/new" className={styles.primaryButton}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <line x1="12" y1="5" x2="12" y2="19" />

@@ -243,6 +243,14 @@
   border-color: rgba(196, 163, 90, 0.2);
 }
 
+a.statCard {
+  cursor: pointer;
+}
+
+a.statCard:hover .statIcon {
+  color: var(--color-accent);
+}
+
 .statLabel {
   font-family: var(--font-body);
   font-size: var(--font-size-xs);
@@ -260,6 +268,24 @@
 
 .statAccent {
   color: var(--color-accent);
+}
+
+.statIcon {
+  color: var(--foreground-muted);
+  margin-bottom: var(--space-md);
+}
+
+.statIcon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.statNote {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  color: var(--foreground-muted);
+  opacity: 0.6;
+  margin-top: var(--space-xs);
 }
 
 /* Primary Button */
