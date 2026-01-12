@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Header from '@/app/components/Header/Header';
+import Footer from '@/app/components/Footer/Footer';
 import ProductCard from '@/app/components/ProductCard/ProductCard';
 import ProductFilters from '@/app/components/ProductFilters/ProductFilters';
 import styles from './page.module.css';
@@ -68,94 +70,100 @@ export default function ProductsPage() {
   // Loading state
   if (loading) {
     return (
-      <main className={styles.page}>
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <h1 className={styles.title}>The Collection</h1>
-            <p className={styles.subtitle}>Premium Western Ranchwear</p>
-          </header>
-          <div className={styles.grid}>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className={styles.skeletonCard}>
-                <div className={styles.skeletonImage} />
-                <div className={styles.skeletonContent}>
-                  <div className={styles.skeletonText} />
-                  <div className={styles.skeletonTextShort} />
+      <div className={styles.pageWrapper}>
+        <Header alwaysVisible={true} />
+        <main className={styles.page}>
+          <div className={styles.container}>
+            <header className={styles.header}>
+              <h1 className={styles.title}>Shop</h1>
+              <p className={styles.subtitle}>Friesian Ranchwear Collection</p>
+            </header>
+            <div className={styles.grid}>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className={styles.skeletonCard}>
+                  <div className={styles.skeletonImage} />
+                  <div className={styles.skeletonContent}>
+                    <div className={styles.skeletonText} />
+                    <div className={styles.skeletonTextShort} />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <main className={styles.page}>
-        <div className={styles.container}>
-          <header className={styles.header}>
-            <h1 className={styles.title}>The Collection</h1>
-          </header>
-          <div className={styles.emptyState}>
-            <p className={styles.emptyText}>{error}</p>
+      <div className={styles.pageWrapper}>
+        <Header alwaysVisible={true} />
+        <main className={styles.page}>
+          <div className={styles.container}>
+            <header className={styles.header}>
+              <h1 className={styles.title}>Shop</h1>
+            </header>
+            <div className={styles.emptyState}>
+              <p className={styles.emptyText}>{error}</p>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
   return (
-    <main className={styles.page}>
-      <div className={styles.container}>
-        {/* Page Header */}
-        <header className={styles.header}>
-          <h1 className={styles.title}>The Collection</h1>
-          <p className={styles.subtitle}>Premium Western Ranchwear</p>
-        </header>
+    <div className={styles.pageWrapper}>
+      <Header alwaysVisible={true} />
+      <main className={styles.page}>
+        <div className={styles.container}>
+          {/* Page Header */}
+          <header className={styles.header}>
+            <h1 className={styles.title}>Shop</h1>
+            <p className={styles.subtitle}>Friesian Ranchwear Collection</p>
+          </header>
 
-        {/* Filters */}
-        <ProductFilters
-          products={products}
-          onFilterChange={handleFilterChange}
-          activeFilters={filters}
-        />
+          {/* Filters */}
+          <ProductFilters
+            products={products}
+            onFilterChange={handleFilterChange}
+            activeFilters={filters}
+            resultCount={filteredProducts.length}
+          />
 
-        {/* Results Count */}
-        <div className={styles.resultsBar}>
-          <span className={styles.resultsCount}>
-            {filteredProducts.length} {filteredProducts.length === 1 ? 'Product' : 'Products'}
-          </span>
+          {/* Product Grid */}
+          {filteredProducts.length === 0 ? (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyText}>No products match your filters</p>
+              <button
+                className={styles.clearFiltersButton}
+                onClick={() => setFilters({
+                  category: null,
+                  sizes: [],
+                  minPrice: null,
+                  maxPrice: null,
+                })}
+              >
+                Clear Filters
+              </button>
+            </div>
+          ) : (
+            <div className={styles.grid}>
+              {filteredProducts.map(product => (
+                <ProductCard key={product.id} product={product} showLink={true} />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Product Grid */}
-        {filteredProducts.length === 0 ? (
-          <div className={styles.emptyState}>
-            <p className={styles.emptyText}>No products match your filters</p>
-            <button
-              className={styles.clearFiltersButton}
-              onClick={() => setFilters({
-                category: null,
-                sizes: [],
-                minPrice: null,
-                maxPrice: null,
-              })}
-            >
-              Clear Filters
-            </button>
-          </div>
-        ) : (
-          <div className={styles.grid}>
-            {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} showLink={true} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Decorative elements */}
-      <div className={styles.gridLines} aria-hidden="true" />
-    </main>
+        {/* Decorative elements */}
+        <div className={styles.gridLines} aria-hidden="true" />
+      </main>
+      <Footer />
+    </div>
   );
 }

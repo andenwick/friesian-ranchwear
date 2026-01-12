@@ -7,19 +7,21 @@ import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/lib/cart-context";
 import styles from "./Header.module.css";
 
-export default function Header() {
-  const [isVisible, setIsVisible] = useState(false);
+export default function Header({ alwaysVisible = false }) {
+  const [isVisible, setIsVisible] = useState(alwaysVisible);
   const { data: session, status } = useSession();
   const { itemCount, openCart } = useCart();
 
   useEffect(() => {
+    if (alwaysVisible) return;
+
     const handleScroll = () => {
       setIsVisible(window.scrollY > 100);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [alwaysVisible]);
 
   return (
     <header className={`${styles.header} ${isVisible ? styles.visible : ""}`}>

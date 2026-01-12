@@ -59,6 +59,7 @@ model Product {
   name        String
   description String?
   basePrice   Decimal  @db.Decimal(10, 2)
+  category    String?  // e.g., "Hats", "Shirts", "Accessories"
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

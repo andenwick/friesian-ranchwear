@@ -94,6 +94,12 @@ async function getProductsFromDatabase() {
     price: `$${product.basePrice}`,
     imageUrl: product.images[0]?.url || null,
     images: product.images.map((img) => ({ url: img.url, alt: img.alt })),
+    // Category for filtering
+    category: product.category || null,
+    // Aggregate sizes from variants for filtering
+    sizes: [...new Set(product.variants.map((v) => v.size).filter(Boolean))],
+    // Display setting (default to Both for database products)
+    display: 'Both',
     variants: product.variants.map((v) => ({
       id: v.id,
       size: v.size,

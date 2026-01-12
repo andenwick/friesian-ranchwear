@@ -1,10 +1,16 @@
 /* ============================================
    Products Page - Premium Collection View
-   Dark, luxurious, editorial aesthetic
+   Dark luxury aesthetic with western edge
    ============================================ */
 
-.page {
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+.page {
+  flex: 1;
   background: var(--color-black);
   padding: calc(80px + var(--space-2xl)) var(--space-lg) var(--space-4xl);
   position: relative;
@@ -17,11 +23,10 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 80px 80px;
   pointer-events: none;
-  opacity: 0.5;
 }
 
 .container {
@@ -32,57 +37,52 @@
 }
 
 /* ============================================
-   Page Header
+   Page Header - Premium Hero Style
    ============================================ */
 
 .header {
   text-align: center;
   margin-bottom: var(--space-3xl);
-  padding-bottom: var(--space-2xl);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: var(--space-3xl) 0;
+  position: relative;
+}
+
+/* Decorative line above title */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-accent) 50%,
+    transparent 100%
+  );
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-size: clamp(2.5rem, 10vw, 6rem);
   font-weight: 400;
   color: var(--foreground);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  margin: 0 0 var(--space-sm);
-  line-height: 1;
+  letter-spacing: 0.2em;
+  margin: 0 0 var(--space-md);
+  line-height: 0.9;
 }
 
 .subtitle {
   font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
-  color: var(--foreground-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.3em;
-  margin: 0;
-}
-
-/* ============================================
-   Results Bar
-   ============================================ */
-
-.resultsBar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.resultsCount {
-  font-family: var(--font-body);
   font-size: var(--font-size-xs);
   font-weight: 500;
-  color: var(--foreground-muted);
+  color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.4em;
+  margin: 0;
 }
 
 /* ============================================
@@ -106,33 +106,57 @@
   justify-content: center;
   min-height: 400px;
   text-align: center;
-  padding: var(--space-3xl);
+  padding: var(--space-4xl) var(--space-lg);
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .emptyText {
-  font-family: var(--font-body);
-  font-size: var(--font-size-lg);
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: 400;
   color: var(--foreground-muted);
-  margin-bottom: var(--space-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-xl);
 }
 
 .clearFiltersButton {
-  padding: var(--space-sm) var(--space-xl);
+  padding: var(--space-md) var(--space-2xl);
   background: transparent;
   border: 1px solid var(--color-accent);
   color: var(--color-accent);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.clearFiltersButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clearFiltersButton span {
+  position: relative;
+  z-index: 1;
 }
 
 .clearFiltersButton:hover {
-  background: var(--color-accent);
   color: var(--color-black);
+}
+
+.clearFiltersButton:hover::before {
+  transform: translateX(0);
 }
 
 /* ============================================
@@ -149,11 +173,11 @@
   background: linear-gradient(
     90deg,
     var(--color-gray-dark) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.06) 50%,
     var(--color-gray-dark) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite ease-in-out;
+  animation: shimmer 1.8s infinite ease-in-out;
 }
 
 .skeletonContent {
@@ -164,17 +188,15 @@
 }
 
 .skeletonText {
-  height: 20px;
-  width: 80%;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
+  height: 18px;
+  width: 75%;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .skeletonTextShort {
-  height: 16px;
-  width: 40%;
-  background: rgba(196, 163, 90, 0.2);
-  border-radius: 2px;
+  height: 14px;
+  width: 35%;
+  background: rgba(196, 163, 90, 0.15);
 }
 
 @keyframes shimmer {
@@ -212,8 +234,8 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(196, 163, 90, 0.1) 20%,
-    rgba(196, 163, 90, 0.1) 80%,
+    rgba(196, 163, 90, 0.08) 15%,
+    rgba(196, 163, 90, 0.08) 85%,
     transparent 100%
   );
 }
@@ -235,13 +257,18 @@
     padding: calc(100px + var(--space-3xl)) var(--space-xl) var(--space-4xl);
   }
 
+  .header {
+    padding: var(--space-4xl) 0;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .header::before {
+    width: 80px;
+  }
+
   .grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 3px;
-  }
-
-  .header {
-    margin-bottom: var(--space-4xl);
   }
 }
 
@@ -254,12 +281,20 @@
     padding: calc(100px + var(--space-4xl)) var(--space-2xl) var(--space-4xl);
   }
 
-  .grid {
-    grid-template-columns: repeat(4, 1fr);
+  .header {
+    padding: var(--space-4xl) 0 var(--space-3xl);
+  }
+
+  .header::before {
+    width: 100px;
   }
 
   .title {
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
+  }
+
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -270,5 +305,9 @@
 @media (min-width: 1600px) {
   .grid {
     gap: 4px;
+  }
+
+  .title {
+    font-size: 7rem;
   }
 }

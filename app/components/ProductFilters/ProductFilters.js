@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './ProductFilters.module.css';
 
 export default function ProductFilters({
   products,
   onFilterChange,
   activeFilters,
+  resultCount,
 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const categoryRef = useRef(null);
 
   // Extract unique categories and sizes from products
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))];
@@ -25,11 +28,23 @@ export default function ProductFilters({
     return aIndex - bIndex;
   });
 
+  // Close category dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
+        setCategoryOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleCategoryChange = (category) => {
     onFilterChange({
       ...activeFilters,
       category: activeFilters.category === category ? null : category,
     });
+    setCategoryOpen(false);
   };
 
   const handleSizeToggle = (size) => {
@@ -58,6 +73,7 @@ export default function ProductFilters({
       minPrice: null,
       maxPrice: null,
     });
+    setMobileOpen(false);
   };
 
   const hasActiveFilters =
@@ -66,110 +82,169 @@ export default function ProductFilters({
     activeFilters.minPrice ||
     activeFilters.maxPrice;
 
+  const activeFilterCount = [
+    activeFilters.category ? 1 : 0,
+    activeFilters.sizes?.length || 0,
+    activeFilters.minPrice || activeFilters.maxPrice ? 1 : 0,
+  ].reduce((a, b) => a + b, 0);
+
   return (
-    <div className={styles.filters}>
-      {/* Mobile Toggle */}
+    <div className={styles.filterBar}>
+      {/* Mobile Filter Toggle */}
       <button
         className={styles.mobileToggle}
-        onClick={() => setIsExpanded(!isExpanded)}
-        aria-expanded={isExpanded}
+        onClick={() => setMobileOpen(true)}
+        aria-expanded={mobileOpen}
       >
-        <span className={styles.toggleText}>
-          Filters
-          {hasActiveFilters && (
-            <span className={styles.activeCount}>
-              {[
-                activeFilters.category ? 1 : 0,
-                activeFilters.sizes?.length || 0,
-                activeFilters.minPrice || activeFilters.maxPrice ? 1 : 0,
-              ].reduce((a, b) => a + b, 0)}
-            </span>
-          )}
-        </span>
-        <svg
-          className={`${styles.toggleIcon} ${isExpanded ? styles.expanded : ''}`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M6 9l6 6 6-6" />
+        <svg className={styles.filterIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <path d="M3 6h18M6 12h12M9 18h6" />
         </svg>
+        <span>Filters</span>
+        {activeFilterCount > 0 && (
+          <span className={styles.badge}>{activeFilterCount}</span>
+        )}
       </button>
 
-      {/* Filter Content */}
-      <div className={`${styles.filterContent} ${isExpanded ? styles.show : ''}`}>
-        {/* Categories */}
-        {categories.length > 0 && (
-          <div className={styles.filterGroup}>
-            <span className={styles.filterLabel}>Category</span>
-            <div className={styles.pillGroup}>
+      {/* Results Count - Mobile */}
+      <span className={styles.mobileResults}>
+        {resultCount} {resultCount === 1 ? 'Product' : 'Products'}
+      </span>
+
+      {/* Mobile Drawer Backdrop */}
+      <div
+        className={`${styles.backdrop} ${mobileOpen ? styles.backdropVisible : ''}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      {/* Filter Content (Desktop inline / Mobile drawer) */}
+      <div className={`${styles.filterContent} ${mobileOpen ? styles.drawerOpen : ''}`}>
+        {/* Mobile Drawer Header */}
+        <div className={styles.drawerHeader}>
+          <h3 className={styles.drawerTitle}>Filters</h3>
+          <button
+            className={styles.drawerClose}
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close filters"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Category Dropdown */}
+        <div className={styles.filterGroup} ref={categoryRef}>
+          <span className={styles.filterLabel}>Category</span>
+          <button
+            className={`${styles.dropdown} ${activeFilters.category ? styles.active : ''} ${categories.length === 0 ? styles.disabled : ''}`}
+            onClick={() => categories.length > 0 && setCategoryOpen(!categoryOpen)}
+            aria-expanded={categoryOpen}
+            disabled={categories.length === 0}
+          >
+            <span>{activeFilters.category || (categories.length === 0 ? 'No categories' : 'All Categories')}</span>
+            <svg
+              className={`${styles.dropdownIcon} ${categoryOpen ? styles.open : ''}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          {categoryOpen && categories.length > 0 && (
+            <div className={styles.dropdownMenu}>
+              <button
+                className={`${styles.dropdownItem} ${!activeFilters.category ? styles.selected : ''}`}
+                onClick={() => handleCategoryChange(null)}
+              >
+                All Categories
+              </button>
               {categories.map(category => (
                 <button
                   key={category}
-                  className={`${styles.pill} ${
-                    activeFilters.category === category ? styles.active : ''
-                  }`}
+                  className={`${styles.dropdownItem} ${activeFilters.category === category ? styles.selected : ''}`}
                   onClick={() => handleCategoryChange(category)}
                 >
                   {category}
                 </button>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* Sizes */}
-        {sortedSizes.length > 0 && (
-          <div className={styles.filterGroup}>
-            <span className={styles.filterLabel}>Size</span>
-            <div className={styles.pillGroup}>
-              {sortedSizes.map(size => (
+        {/* Size Pills */}
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>Size</span>
+          <div className={styles.sizeRow}>
+            {sortedSizes.length > 0 ? (
+              sortedSizes.map(size => (
                 <button
                   key={size}
                   className={`${styles.sizePill} ${
                     activeFilters.sizes?.includes(size) ? styles.active : ''
                   }`}
                   onClick={() => handleSizeToggle(size)}
+                  aria-pressed={activeFilters.sizes?.includes(size)}
                 >
                   {size}
                 </button>
-              ))}
-            </div>
+              ))
+            ) : (
+              <span className={styles.noOptions}>No sizes available</span>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Price Range */}
         <div className={styles.filterGroup}>
           <span className={styles.filterLabel}>Price</span>
-          <div className={styles.priceInputs}>
-            <div className={styles.priceField}>
-              <span className={styles.priceCurrency}>$</span>
+          <div className={styles.priceRange}>
+            <div className={styles.priceInput}>
+              <span className={styles.currency}>$</span>
               <input
                 type="number"
                 placeholder="Min"
                 value={activeFilters.minPrice || ''}
                 onChange={(e) => handlePriceChange('minPrice', e.target.value)}
-                className={styles.priceInput}
                 min="0"
               />
             </div>
-            <span className={styles.priceDivider}>—</span>
-            <div className={styles.priceField}>
-              <span className={styles.priceCurrency}>$</span>
+            <span className={styles.priceDash}></span>
+            <div className={styles.priceInput}>
+              <span className={styles.currency}>$</span>
               <input
                 type="number"
                 placeholder="Max"
                 value={activeFilters.maxPrice || ''}
                 onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
-                className={styles.priceInput}
                 min="0"
               />
             </div>
           </div>
         </div>
 
-        {/* Clear All */}
+        {/* Clear All - Mobile */}
+        {hasActiveFilters && (
+          <button className={styles.clearMobile} onClick={clearAllFilters}>
+            Clear All Filters
+          </button>
+        )}
+
+        {/* Mobile Apply Button */}
+        <button
+          className={styles.applyButton}
+          onClick={() => setMobileOpen(false)}
+        >
+          View {resultCount} {resultCount === 1 ? 'Product' : 'Products'}
+        </button>
+      </div>
+
+      {/* Desktop Results & Clear */}
+      <div className={styles.desktopMeta}>
+        <span className={styles.results}>
+          {resultCount} {resultCount === 1 ? 'Product' : 'Products'}
+        </span>
         {hasActiveFilters && (
           <button className={styles.clearButton} onClick={clearAllFilters}>
             Clear All
