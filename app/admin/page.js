@@ -17,10 +17,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        // Fetch products and emails in parallel
-        const [productsRes, emailsRes] = await Promise.all([
+        // Fetch products, emails, and orders in parallel
+        const [productsRes, emailsRes, ordersRes] = await Promise.all([
           fetch('/api/admin/products'),
-          fetch('/api/admin/emails')
+          fetch('/api/admin/emails'),
+          fetch('/api/admin/orders')
         ]);
 
         let products = [];
@@ -35,14 +36,25 @@ export default function AdminDashboard() {
           emailCount = emailData.total || emailData.emails?.length || 0;
         }
 
+        let orders = [];
+        let totalRevenue = 0;
+        if (ordersRes.ok) {
+          const ordersData = await ordersRes.json();
+          orders = ordersData.orders || [];
+          // Calculate total revenue from delivered/shipped orders
+          totalRevenue = orders
+            .filter(o => ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status))
+            .reduce((sum, o) => sum + o.total, 0);
+        }
+
         setStats({
-          orders: 0, // Will come from orders API later
-          revenue: 0, // Will come from Stripe later
+          orders: orders.length,
+          revenue: totalRevenue,
           emailSubscribers: emailCount,
           products: products.length,
         });
 
-        setRecentOrders([]); // Will come from orders API later
+        setRecentOrders(orders.slice(0, 5));
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
       } finally {
@@ -151,8 +163,8 @@ export default function AdminDashboard() {
                   <td>${order.total?.toFixed(2) || '0.00'}</td>
                   <td>
                     <span className={`${styles.badge} ${
-                      order.status === 'completed' ? styles.badgeActive :
-                      order.status === 'pending' ? styles.badgeDraft :
+                      ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status) ? styles.badgeActive :
+                      order.status === 'PENDING' ? styles.badgeDraft :
                       styles.badgeOutOfStock
                     }`}>
                       {order.status}

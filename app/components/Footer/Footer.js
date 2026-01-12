@@ -42,6 +42,8 @@ export default function Footer() {
         </div>
         <div className={styles.right}>
           <div className={styles.links}>
+            <a href="/track-order" className={styles.link}>Track Order</a>
+            <span className={styles.divider}>·</span>
             <a href="/privacy" className={styles.link}>Privacy</a>
             <span className={styles.divider}>·</span>
             <a href="/terms" className={styles.link}>Terms</a>
