@@ -20,6 +20,9 @@ const bebasNeue = Bebas_Neue({
 export const metadata = {
   title: "Friesian Ranchwear",
   description: "Western meets streetwear. Rugged but modern, country but cool.",
+  icons: {
+    icon: '/logo-white.png',
+  },
 };
 
 export default function RootLayout({ children }) {
