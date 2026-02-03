@@ -44,7 +44,7 @@ export default function ShopCta() {
   );
 
   return (
-    <section className={`${styles.shopCta} canvas-texture`} id="tiktok-shop" ref={sectionRef}>
+    <section className={`${styles.shopCta} canvas-texture`} id="shop" ref={sectionRef}>
       <div className={styles.content}>
         <h2 className={styles.heading} ref={headingRef}>
           Built for this.
@@ -54,13 +54,11 @@ export default function ShopCta() {
         </p>
         <a
           id="shop-cta-button"
-          href="https://tiktok.com/@friesianranchwear"
+          href="/products"
           className={styles.cta}
-          target="_blank"
-          rel="noopener noreferrer"
           ref={ctaRef}
         >
-          Shop on TikTok
+          Shop Collection
         </a>
       </div>
     </section>

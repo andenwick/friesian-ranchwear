@@ -4,12 +4,10 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import { useScrollToSection } from "@/lib/hooks/useScrollToSection";
 import { SCROLL } from "@/lib/animation-constants";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
-  const scrollToShop = useScrollToSection({ activateCta: true });
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const logoRef = useRef(null);
@@ -109,11 +107,8 @@ export default function Hero() {
           Nothing you wear is an accident.
         </p>
 
-        <a href="#tiktok-shop" className={styles.cta} ref={ctaRef} onClick={(e) => {
-          e.preventDefault();
-          scrollToShop('tiktok-shop');
-        }}>
-          <span>See TikTok Shop</span>
+        <a href="/products" className={styles.cta} ref={ctaRef}>
+          <span>Shop Collection</span>
           <svg
             className={styles.ctaArrow}
             width="20"
