@@ -1,11 +1,34 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import styles from './CartDrawer.module.css';
 
+/**
+ * Converts Google Drive share links to proxied image URLs.
+ */
+function convertDriveUrl(url) {
+  if (!url) return url;
+  if (url.startsWith('/api/image')) return url;
+  if (url.startsWith('/')) return url;
+
+  let fileId = null;
+  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch) fileId = fileMatch[1];
+
+  if (!fileId) {
+    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idMatch) fileId = idMatch[1];
+  }
+
+  if (fileId) return `/api/image?id=${fileId}`;
+  return url;
+}
+
 export default function CartDrawer() {
+  const router = useRouter();
   const {
     items,
     itemCount,
@@ -15,6 +38,11 @@ export default function CartDrawer() {
     removeItem,
     updateQuantity,
   } = useCart();
+
+  const handleCheckout = () => {
+    closeCart();
+    router.push('/checkout');
+  };
 
   // Lock body scroll when drawer is open
   useEffect(() => {
@@ -138,7 +166,7 @@ export default function CartDrawer() {
                   <div className={styles.itemImage}>
                     {item.image ? (
                       <img
-                        src={item.image}
+                        src={convertDriveUrl(item.image)}
                         alt={item.name}
                         className={styles.image}
                       />
@@ -220,7 +248,7 @@ export default function CartDrawer() {
               </p>
             </div>
 
-            <button className={styles.checkoutButton}>
+            <button className={styles.checkoutButton} onClick={handleCheckout}>
               <span className={styles.checkoutText}>Proceed to Checkout</span>
               <span className={styles.checkoutIcon}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

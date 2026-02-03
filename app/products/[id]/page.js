@@ -3,8 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 import Header from '@/app/components/Header/Header';
 import Footer from '@/app/components/Footer/Footer';
+import ColorSwatch from '@/app/components/ColorSwatch/ColorSwatch';
+import StarRating from '@/app/components/StarRating/StarRating';
+import ReviewCard from '@/app/components/ReviewCard/ReviewCard';
+import ReviewForm from '@/app/components/ReviewForm/ReviewForm';
 import { useCart } from '@/lib/cart-context';
 import styles from './page.module.css';
 
@@ -33,15 +38,24 @@ export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addItem } = useCart();
+  const { data: session } = useSession();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+  const [colorError, setColorError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [canReview, setCanReview] = useState(false);
 
   // Fetch product
   useEffect(() => {
@@ -71,6 +85,63 @@ export default function ProductDetailPage() {
     }
   }, [params.id]);
 
+  // Fetch reviews
+  useEffect(() => {
+    async function fetchReviews() {
+      if (!params.id) return;
+      try {
+        const res = await fetch(`/api/products/${params.id}/reviews`);
+        if (res.ok) {
+          const data = await res.json();
+          setReviews(data.reviews || []);
+          setAverageRating(data.averageRating || 0);
+          setReviewCount(data.reviewCount || 0);
+        }
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+      }
+    }
+
+    fetchReviews();
+  }, [params.id]);
+
+  // Check if user can submit a review (logged in and has purchased)
+  useEffect(() => {
+    async function checkCanReview() {
+      if (!session?.user || !params.id) {
+        setCanReview(false);
+        return;
+      }
+      // User is logged in, they can try to submit (API will verify purchase)
+      setCanReview(true);
+    }
+
+    checkCanReview();
+  }, [session, params.id]);
+
+  // Extract unique colors from variants
+  const colors = product?.variants
+    ? [...new Set(product.variants.map(v => v.color).filter(Boolean))]
+    : [];
+
+  // Get available colors for selected size (in stock)
+  const getAvailableColors = () => {
+    if (!product?.variants || !selectedSize) return colors;
+    return product.variants
+      .filter(v => v.size === selectedSize && v.stock > 0)
+      .map(v => v.color)
+      .filter(Boolean);
+  };
+
+  // Get available sizes for selected color (in stock)
+  const getAvailableSizes = () => {
+    if (!product?.variants || !selectedColor) return product?.sizes || [];
+    return product.variants
+      .filter(v => v.color === selectedColor && v.stock > 0)
+      .map(v => v.size)
+      .filter(Boolean);
+  };
+
   const handleAddToCart = () => {
     if (!product) return;
 
@@ -80,17 +151,20 @@ export default function ProductDetailPage() {
       return;
     }
 
+    // Validate color selection if product has colors
+    if (colors.length > 0 && !selectedColor) {
+      setColorError(true);
+      return;
+    }
+
     setIsAdding(true);
 
-    const priceNum = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
+    // Find the matching variant based on selected size and color
+    const selectedVariant = product.variants?.find(
+      v => v.size === selectedSize && v.color === selectedColor
+    );
 
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: priceNum,
-      image: convertDriveUrl(product.imageUrl),
-      size: selectedSize,
-    }, null, quantity);
+    addItem(product, selectedVariant, quantity);
 
     // Brief visual feedback
     setTimeout(() => {
@@ -102,6 +176,12 @@ export default function ProductDetailPage() {
   const handleSizeSelect = (size) => {
     setSelectedSize(size);
     setSizeError(false);
+  };
+
+  // Clear color error when color is selected
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    setColorError(false);
   };
 
   // Loading state
@@ -242,20 +322,40 @@ export default function ProductDetailPage() {
                     Size <span className={styles.required}>*</span>
                   </span>
                   <div className={styles.sizeOptions}>
-                    {product.sizes.map(size => (
-                      <button
-                        key={size}
-                        className={`${styles.sizeButton} ${
-                          selectedSize === size ? styles.selected : ''
-                        }`}
-                        onClick={() => handleSizeSelect(size)}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                    {product.sizes.map(size => {
+                      const availableSizes = getAvailableSizes();
+                      const isAvailable = !selectedColor || availableSizes.includes(size);
+                      return (
+                        <button
+                          key={size}
+                          className={`${styles.sizeButton} ${
+                            selectedSize === size ? styles.selected : ''
+                          } ${!isAvailable ? styles.unavailable : ''}`}
+                          onClick={() => isAvailable && handleSizeSelect(size)}
+                          disabled={!isAvailable}
+                        >
+                          {size}
+                        </button>
+                      );
+                    })}
                   </div>
                   {sizeError && (
                     <span className={styles.sizeErrorMessage}>Please select a size</span>
+                  )}
+                </div>
+              )}
+
+              {/* Color Selector */}
+              {colors.length > 0 && (
+                <div className={`${styles.colorSection} ${colorError ? styles.colorError : ''}`}>
+                  <ColorSwatch
+                    colors={colors}
+                    selectedColor={selectedColor}
+                    onSelect={handleColorSelect}
+                    availableColors={getAvailableColors()}
+                  />
+                  {colorError && (
+                    <span className={styles.colorErrorMessage}>Please select a color</span>
                   )}
                 </div>
               )}
@@ -333,6 +433,50 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Reviews Section */}
+          <div className={styles.reviewsSection}>
+            <div className={styles.reviewsHeader}>
+              <h2 className={styles.reviewsTitle}>Customer Reviews</h2>
+              {reviewCount > 0 && (
+                <div className={styles.reviewsSummary}>
+                  <StarRating rating={averageRating} readonly size="medium" />
+                  <span className={styles.reviewsAverage}>{averageRating.toFixed(1)}</span>
+                  <span className={styles.reviewsCount}>({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})</span>
+                </div>
+              )}
+            </div>
+
+            {/* Review Form - only for eligible users */}
+            {canReview && (
+              <div className={styles.reviewFormWrapper}>
+                <ReviewForm
+                  productId={params.id}
+                  onSubmit={() => {
+                    // Refresh reviews after submission
+                    fetch(`/api/products/${params.id}/reviews`)
+                      .then(res => res.json())
+                      .then(data => {
+                        setReviews(data.reviews || []);
+                        setAverageRating(data.averageRating || 0);
+                        setReviewCount(data.reviewCount || 0);
+                      });
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Reviews List */}
+            {reviews.length > 0 ? (
+              <div className={styles.reviewsList}>
+                {reviews.map(review => (
+                  <ReviewCard key={review.id} review={review} />
+                ))}
+              </div>
+            ) : (
+              <p className={styles.noReviews}>No reviews yet. Be the first to share your experience!</p>
+            )}
           </div>
         </div>
       </main>

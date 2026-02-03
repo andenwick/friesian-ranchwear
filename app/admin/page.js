@@ -10,6 +10,7 @@ export default function AdminDashboard() {
     revenue: 0,
     emailSubscribers: 0,
     products: 0,
+    pendingReviews: 0,
   });
   const [recentOrders, setRecentOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,11 +18,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        // Fetch products, emails, and orders in parallel
-        const [productsRes, emailsRes, ordersRes] = await Promise.all([
+        // Fetch products, emails, orders, and reviews in parallel
+        const [productsRes, emailsRes, ordersRes, reviewsRes] = await Promise.all([
           fetch('/api/admin/products'),
           fetch('/api/admin/emails'),
-          fetch('/api/admin/orders')
+          fetch('/api/admin/orders'),
+          fetch('/api/admin/reviews?status=pending')
         ]);
 
         let products = [];
@@ -47,11 +49,18 @@ export default function AdminDashboard() {
             .reduce((sum, o) => sum + o.total, 0);
         }
 
+        let pendingReviews = 0;
+        if (reviewsRes.ok) {
+          const reviewsData = await reviewsRes.json();
+          pendingReviews = reviewsData.reviews?.length || 0;
+        }
+
         setStats({
           orders: orders.length,
           revenue: totalRevenue,
           emailSubscribers: emailCount,
           products: products.length,
+          pendingReviews,
         });
 
         setRecentOrders(orders.slice(0, 5));
@@ -126,6 +135,15 @@ export default function AdminDashboard() {
           </div>
           <div className={styles.statLabel}>Products</div>
           <div className={styles.statValue}>{stats.products}</div>
+        </Link>
+        <Link href="/admin/reviews" className={styles.statCard} style={{ textDecoration: 'none' }}>
+          <div className={styles.statIcon}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <div className={styles.statLabel}>Pending Reviews</div>
+          <div className={`${styles.statValue} ${stats.pendingReviews > 0 ? styles.statAccent : ''}`}>{stats.pendingReviews}</div>
         </Link>
       </div>
 

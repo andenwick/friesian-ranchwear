@@ -1,0 +1,51 @@
+.container {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+  color: rgba(0, 0, 0, 0.2);
+}
+
+.star.small {
+  width: 16px;
+  height: 16px;
+}
+
+.star.medium {
+  width: 24px;
+  height: 24px;
+}
+
+.star.large {
+  width: 32px;
+  height: 32px;
+}
+
+.star.interactive {
+  cursor: pointer;
+}
+
+.star.readonly {
+  cursor: default;
+}
+
+.starEmpty {
+  width: 100%;
+  height: 100%;
+}
+
+.starFilled {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #C4A35A;
+}
+
+.starFilled.half {
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
