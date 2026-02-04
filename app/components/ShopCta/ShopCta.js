@@ -61,6 +61,7 @@ export default function ShopCta() {
           Shop Collection
         </a>
       </div>
+
     </section>
   );
 }

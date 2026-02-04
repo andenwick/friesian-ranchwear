@@ -86,6 +86,7 @@ export default function Hero() {
   return (
     <section className={`${styles.hero} canvas-texture`} ref={sectionRef}>
       <div className={styles.backgroundGlow} aria-hidden="true" />
+      <div className={styles.vignette} aria-hidden="true" />
 
       <div className={styles.content} ref={contentRef}>
         <Image

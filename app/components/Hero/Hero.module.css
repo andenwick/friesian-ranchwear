@@ -8,22 +8,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--background);
+  background: #0a0a0a;
   padding: var(--space-lg);
   position: relative;
   overflow: hidden;
 }
 
-/* Subtle radial glow for depth */
-.backgroundGlow {
+.vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-    ellipse 80% 50% at 50% 50%,
-    rgba(196, 163, 90, 0.03) 0%,
-    transparent 70%
-  );
   pointer-events: none;
+  background: radial-gradient(
+    ellipse 90% 95% at 50% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
 }
 
 .content {
@@ -38,8 +37,8 @@
 
 /* Logo */
 .logo {
-  width: 140px;
-  height: 140px;
+  width: 145px;
+  height: 145px;
   object-fit: contain;
   margin-bottom: var(--space-lg);
 }
@@ -51,7 +50,7 @@
 
 /* THE STAR - Massive brand name */
 .brandName {
-  font-family: var(--font-display);
+  font-family: var(--font-eagle-lake), 'Eagle Lake', serif;
   font-size: var(--font-size-hero);
   font-weight: 400;
   line-height: var(--leading-none);
@@ -88,7 +87,7 @@
   top: 0;
   left: 0;
   z-index: -1;
-  font-family: var(--font-display);
+  font-family: var(--font-eagle-lake), 'Eagle Lake', serif;
   font-size: var(--font-size-hero);
   font-weight: 400;
   line-height: var(--leading-none);
@@ -104,7 +103,7 @@
 }
 
 .trademark {
-  font-family: var(--font-body);
+  font-family: var(--font-tinos), 'Tinos', serif;
   font-size: 12px;
   font-weight: 400;
   color: var(--foreground-muted);
@@ -115,7 +114,7 @@
 
 /* Subtitle - Refined, understated */
 .subtitle {
-  font-family: var(--font-body);
+  font-family: var(--font-roboto-slab), 'Roboto Slab', serif;
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--foreground-muted);
@@ -134,7 +133,7 @@
   padding: var(--space-md) var(--space-xl);
   background: transparent;
   color: var(--color-accent);
-  font-family: var(--font-body);
+  font-family: var(--font-tinos), 'Tinos', serif;
   font-size: var(--font-size-xs);
   font-weight: 500;
   letter-spacing: var(--tracking-widest);
