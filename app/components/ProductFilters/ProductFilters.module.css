@@ -123,6 +123,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: var(--space-lg) var(--space-xl);
+  padding-bottom: var(--space-xl);
   -webkit-overflow-scrolling: touch;
 }
 
