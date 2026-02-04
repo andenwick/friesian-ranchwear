@@ -89,6 +89,19 @@ export default function Header({ alwaysVisible = false }) {
               >
                 {signingOut ? 'Signing out...' : 'Sign Out'}
               </button>
+              {/* Mobile Sign Out Icon */}
+              <button
+                onClick={handleSignOut}
+                className={styles.authIconButton}
+                disabled={signingOut}
+                aria-label="Sign out"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </button>
               {session.user.isAdmin && (
                 <Link href="/admin" className={styles.adminLink}>
                   Admin
@@ -96,9 +109,19 @@ export default function Header({ alwaysVisible = false }) {
               )}
             </div>
           ) : (
-            <Link href="/auth/signin" className={styles.authLink}>
-              Sign In
-            </Link>
+            <>
+              <Link href="/auth/signin" className={styles.authLink}>
+                Sign In
+              </Link>
+              {/* Mobile Sign In Icon */}
+              <Link href="/auth/signin" className={styles.authIconButton} aria-label="Sign in">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+              </Link>
+            </>
           )}
           {/* Cart Button */}
           <button

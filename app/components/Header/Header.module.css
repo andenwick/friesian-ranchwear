@@ -105,6 +105,11 @@
   gap: var(--space-md);
 }
 
+/* Mobile Auth Icon Button - hidden by default, shown on mobile */
+.authIconButton {
+  display: none;
+}
+
 @media (max-width: 767px) {
   .container {
     justify-content: space-between;
@@ -119,12 +124,36 @@
   }
 
   .nav {
-    gap: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
   }
 
   .authLink {
-    font-size: 10px;
-    padding: 6px 8px;
+    display: none !important;
+  }
+
+  .authIconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .authIconButton:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .authIconButton svg {
+    width: 18px;
+    height: 18px;
   }
 
   .adminLink {
