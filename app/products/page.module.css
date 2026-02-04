@@ -257,7 +257,7 @@
 
 @media (min-width: 768px) {
   .page {
-    padding: 100px var(--space-xl) var(--space-4xl);
+    padding: 100px var(--space-lg) var(--space-2xl);
   }
 
   .header {
@@ -278,7 +278,7 @@
 
 @media (min-width: 1280px) {
   .page {
-    padding: 100px var(--space-2xl) var(--space-4xl);
+    padding: 100px var(--space-xl) var(--space-2xl);
   }
 
   .header {
