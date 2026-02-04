@@ -224,17 +224,23 @@
 }
 
 .backLink {
+  position: fixed;
+  top: var(--space-lg);
+  left: var(--space-lg);
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
   color: var(--foreground-muted);
   text-decoration: none;
   font-size: var(--font-size-xs);
-  font-family: var(--font-body);
+  font-family: var(--font-inter), 'Inter', sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-bottom: var(--space-xl);
-  transition: color 0.2s;
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s;
+  z-index: 10;
 }
 
 .backLink svg {
@@ -243,6 +249,7 @@
 
 .backLink:hover {
   color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .backLink:hover svg {
