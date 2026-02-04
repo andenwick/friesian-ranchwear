@@ -76,7 +76,7 @@
 }
 
 .trademark {
-  font-family: var(--font-body);
+  font-family: var(--font-inter), 'Inter', sans-serif;
   font-size: 8px;
   font-weight: 400;
   color: var(--foreground-muted);
@@ -181,7 +181,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-body);
+  font-family: var(--font-inter), 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 600;
   color: var(--color-accent);
@@ -212,7 +212,7 @@
 }
 
 .authLink {
-  font-family: var(--font-body);
+  font-family: var(--font-inter), 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: var(--foreground-muted);
@@ -236,7 +236,7 @@
 }
 
 .adminLink {
-  font-family: var(--font-body);
+  font-family: var(--font-inter), 'Inter', sans-serif;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -291,7 +291,7 @@
   padding: 0 4px;
   background: var(--color-accent);
   color: var(--color-black);
-  font-family: var(--font-body);
+  font-family: var(--font-inter), 'Inter', sans-serif;
   font-size: 10px;
   font-weight: 700;
   line-height: 16px;

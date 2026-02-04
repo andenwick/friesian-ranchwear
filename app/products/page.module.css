@@ -12,7 +12,7 @@
 .page {
   flex: 1;
   background: var(--background);
-  padding: 80px var(--space-lg) var(--space-4xl);
+  padding: calc(80px + var(--space-xl)) var(--space-lg) var(--space-4xl);
   position: relative;
   overflow: hidden;
   box-shadow:
