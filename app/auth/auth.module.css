@@ -224,7 +224,7 @@
 }
 
 .backLink {
-  position: fixed;
+  position: absolute;
   top: var(--space-lg);
   left: var(--space-lg);
   display: inline-flex;
