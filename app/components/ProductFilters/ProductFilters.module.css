@@ -78,7 +78,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.95);
-  z-index: 100;
+  z-index: 9998;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -104,7 +104,7 @@
   background: var(--color-charcoal);
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  z-index: 101;
+  z-index: 9999;
   flex-direction: column;
   overflow: hidden;
   transform: translateY(100%);
