@@ -449,6 +449,12 @@ function CheckoutContent() {
                 {(totals?.shipping ?? shippingCost) === 0 ? 'FREE' : `$${(totals?.shipping ?? shippingCost).toFixed(2)}`}
               </span>
             </div>
+            {(totals?.tax ?? 0) > 0 && (
+              <div className={styles.totalRow}>
+                <span>Tax</span>
+                <span>${(totals?.tax ?? 0).toFixed(2)}</span>
+              </div>
+            )}
             {subtotal < FREE_SHIPPING_THRESHOLD && (
               <div className={styles.totalRow}>
                 <span style={{ fontSize: '12px', color: 'var(--color-accent)' }}>

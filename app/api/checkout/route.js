@@ -108,8 +108,49 @@ export async function POST(request) {
     // Calculate shipping
     const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
 
-    // For now, tax is 0 - Stripe Tax can be added later
-    const tax = 0;
+    // Calculate tax using Stripe Tax
+    let tax = 0;
+    try {
+      const taxLineItems = orderItems.map(item => ({
+        amount: Math.round(item.unitPrice * item.quantity * 100),
+        reference: item.variantId,
+        tax_behavior: 'exclusive',
+        tax_code: 'txcd_99999999', // general physical goods
+      }));
+
+      if (shippingCost > 0) {
+        taxLineItems.push({
+          amount: Math.round(shippingCost * 100),
+          reference: 'shipping',
+          tax_behavior: 'exclusive',
+          tax_code: 'txcd_92010001', // shipping
+        });
+      }
+
+      const taxCalculation = await stripe.tax.calculations.create({
+        currency: 'usd',
+        line_items: taxLineItems,
+        customer_details: {
+          address: {
+            line1: shipping.street,
+            line2: shipping.street2 || undefined,
+            city: shipping.city,
+            state: stateUpper,
+            postal_code: shipping.zip,
+            country: 'US',
+          },
+          address_source: 'shipping',
+        },
+      });
+
+      tax = taxCalculation.tax_amount_exclusive / 100;
+    } catch (taxError) {
+      console.error('Stripe Tax calculation failed:', taxError.message);
+      return NextResponse.json(
+        { error: 'Unable to calculate tax. Please try again or contact support.' },
+        { status: 500 }
+      );
+    }
 
     // Calculate total
     const total = subtotal + shippingCost + tax;
