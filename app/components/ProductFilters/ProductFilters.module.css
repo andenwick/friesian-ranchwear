@@ -526,7 +526,7 @@
     display: flex;
     position: static;
     flex-direction: row;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 0;
     max-height: none;
     background: transparent;
@@ -552,6 +552,7 @@
 
   .filterGroup {
     flex-direction: column;
+    gap: var(--space-xs);
     margin-bottom: 0;
     padding-bottom: 0;
     padding-right: var(--space-xl);
