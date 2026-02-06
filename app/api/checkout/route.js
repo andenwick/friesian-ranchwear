@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe';
 import { isValidEmail } from '@/lib/validation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 // Shipping constants
 const FREE_SHIPPING_THRESHOLD = 50;
@@ -19,6 +20,14 @@ const US_STATES = [
 ];
 
 export async function POST(request) {
+  // Rate limit checkout attempts
+  const ip = getClientIP(request);
+  const limiter = rateLimit(`checkout:${ip}`, 10, 60000);
+  if (!limiter.success) {
+    return NextResponse.json({ error: 'Too many checkout attempts. Please try again later.' }, { status: 429 });
+  }
+
+  let paymentIntent;
   try {
     const body = await request.json();
     const { items, customer, shipping } = body;
@@ -71,6 +80,10 @@ export async function POST(request) {
     let subtotal = 0;
 
     for (const item of items) {
+      if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 99) {
+        return NextResponse.json({ error: 'Invalid quantity' }, { status: 400 });
+      }
+
       if (!item.variantId) {
         return NextResponse.json({ error: 'Invalid cart item: missing variant' }, { status: 400 });
       }
@@ -156,7 +169,7 @@ export async function POST(request) {
     const total = subtotal + shippingCost + tax;
 
     // Create Stripe PaymentIntent
-    const paymentIntent = await stripe.paymentIntents.create({
+    paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(total * 100), // Convert to cents
       currency: 'usd',
       automatic_payment_methods: { enabled: true },
@@ -216,6 +229,13 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Checkout error:', error);
+    if (paymentIntent?.id) {
+      try {
+        await stripe.paymentIntents.cancel(paymentIntent.id);
+      } catch (cancelError) {
+        console.error('Failed to cancel PaymentIntent:', cancelError.message);
+      }
+    }
     return NextResponse.json(
       { error: 'Failed to process checkout. Please try again.' },
       { status: 500 }

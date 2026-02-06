@@ -22,7 +22,7 @@ test.describe('Page Integration and Verification', () => {
       await expect(page.getByRole('heading', { name: 'Our Collection' })).toBeVisible();
 
       // Shop CTA section
-      await expect(page.getByRole('heading', { name: 'Shop the Collection' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Built for this.' })).toBeVisible();
       await expect(page.getByRole('link', { name: 'Shop Collection' })).toBeVisible();
 
       // Email Signup section
@@ -69,7 +69,7 @@ test.describe('Page Integration and Verification', () => {
         // Verify main sections are present and styled appropriately
         await expect(page.getByRole('heading', { name: 'Our Story' })).toBeVisible();
         await expect(page.getByRole('heading', { name: 'Our Collection' })).toBeVisible();
-        await expect(page.getByRole('heading', { name: 'Shop the Collection' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Built for this.' })).toBeVisible();
         await expect(page.getByRole('heading', { name: 'Stay Connected' })).toBeVisible();
         await expect(page.getByRole('heading', { name: 'Follow Us' })).toBeVisible();
       });

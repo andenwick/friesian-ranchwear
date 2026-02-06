@@ -34,8 +34,10 @@ export default function AccountOrdersPage() {
   }, [status, router]);
 
   useEffect(() => {
-    fetchOrders();
-  }, [statusFilter]);
+    if (status === 'authenticated') {
+      fetchOrders();
+    }
+  }, [statusFilter, status]);
 
   async function fetchOrders() {
     setLoading(true);
@@ -59,6 +61,23 @@ export default function AccountOrdersPage() {
   const filteredOrders = orders.filter(order =>
     !searchQuery || order.orderNumber.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Show loading while auth state resolves (prevents content flash before redirect)
+  if (status === 'loading' || status === 'unauthenticated') {
+    return (
+      <div className={styles.page}>
+        <Header alwaysVisible={true} />
+        <main className={styles.main}>
+          <div className={styles.container}>
+            <div className={styles.loading}>
+              <span>Loading...</span>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.page}>

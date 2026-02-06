@@ -27,6 +27,8 @@ function SuccessContent() {
       return;
     }
 
+    let pollInterval;
+
     fetch('/api/orders/verify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -36,10 +38,33 @@ function SuccessContent() {
       .then(data => {
         if (data.valid) {
           setOrderData(data);
+
+          // If still pending, poll up to 5 times
+          if (data.status === 'PENDING') {
+            let retries = 0;
+            pollInterval = setInterval(async () => {
+              retries++;
+              try {
+                const res = await fetch('/api/orders/verify', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ orderId }),
+                });
+                const d = await res.json();
+                if (d.valid && d.status !== 'PENDING') {
+                  setOrderData(d);
+                  clearInterval(pollInterval);
+                }
+              } catch {}
+              if (retries >= 5) clearInterval(pollInterval);
+            }, 3000);
+          }
         }
       })
       .catch(() => {})
       .finally(() => setVerifying(false));
+
+    return () => { if (pollInterval) clearInterval(pollInterval); };
   }, [orderId]);
 
   if (verifying) {
@@ -83,8 +108,14 @@ function SuccessContent() {
           </svg>
         </div>
 
-        <h1 className={styles.title}>Order Confirmed</h1>
-        <p className={styles.subtitle}>Thank you for your purchase!</p>
+        <h1 className={styles.title}>
+          {orderData.status === 'PENDING' ? 'Payment Processing...' : 'Order Confirmed'}
+        </h1>
+        <p className={styles.subtitle}>
+          {orderData.status === 'PENDING'
+            ? 'Your payment is being processed. This page will update automatically.'
+            : 'Thank you for your purchase!'}
+        </p>
 
         <div className={styles.orderId}>
           <p className={styles.orderLabel}>Order Number</p>

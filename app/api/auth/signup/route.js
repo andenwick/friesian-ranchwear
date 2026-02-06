@@ -2,9 +2,16 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { hashPassword } from '@/lib/auth';
 import { isValidEmail } from '@/lib/validation';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 export async function POST(request) {
   try {
+    const ip = getClientIP(request);
+    const limiter = rateLimit(`signup:${ip}`, 5, 300000); // 5 signups per IP per 5 min
+    if (!limiter.success) {
+      return NextResponse.json({ error: 'Too many signup attempts. Please try again later.' }, { status: 429 });
+    }
+
     const body = await request.json();
     const { email, password, name } = body;
 
@@ -31,7 +38,7 @@ export async function POST(request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Email already registered' },
+        { error: 'Unable to create account. Please try a different email or sign in.' },
         { status: 409 }
       );
     }
