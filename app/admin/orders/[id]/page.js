@@ -3,24 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { convertImageUrl } from '@/lib/image-utils';
 import styles from '../../admin.module.css';
-
-// Convert Google Drive URLs to thumbnail format
-function convertImageUrl(url) {
-  if (!url) return null;
-  if (url.includes('drive.google.com')) {
-    let fileId = null;
-    if (url.includes('/file/d/')) {
-      fileId = url.match(/\/d\/([^/]+)/)?.[1];
-    } else if (url.includes('id=')) {
-      fileId = url.match(/id=([^&]+)/)?.[1];
-    }
-    if (fileId) {
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w200`;
-    }
-  }
-  return url;
-}
 
 const STATUS_OPTIONS = [
   { value: 'PENDING', label: 'Pending', color: '#f59e0b' },

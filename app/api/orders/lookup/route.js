@@ -1,26 +1,19 @@
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
-
-// Convert Google Drive URLs to thumbnail format
-function convertImageUrl(url) {
-  if (!url) return null;
-  if (url.includes('drive.google.com')) {
-    let fileId = null;
-    if (url.includes('/file/d/')) {
-      fileId = url.match(/\/d\/([^/]+)/)?.[1];
-    } else if (url.includes('id=')) {
-      fileId = url.match(/id=([^&]+)/)?.[1];
-    }
-    if (fileId) {
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w200`;
-    }
-  }
-  return url;
-}
+import { convertImageUrl } from '@/lib/image-utils';
+import { rateLimit, getClientIP } from '@/lib/rate-limit';
 
 // POST /api/orders/lookup - Look up orders by email
 export async function POST(request) {
   try {
+    const ip = getClientIP(request);
+    const limiter = rateLimit(`order-lookup:${ip}`, 10, 60000);
+    if (!limiter.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      );
+    }
     const { email } = await request.json();
 
     if (!email || typeof email !== 'string') {

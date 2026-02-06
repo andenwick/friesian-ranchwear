@@ -10,45 +10,6 @@ import styles from "./ProductShowcase.module.css";
 // Number of skeleton cards to show during loading
 const SKELETON_COUNT = 6;
 
-/**
- * Converts Google Drive share links to proxied image URLs.
- * Uses our API proxy to avoid CORS and redirect issues.
- */
-function convertDriveUrl(url) {
-  if (!url) return url;
-
-  // Already using our proxy
-  if (url.startsWith('/api/image')) return url;
-
-  // Local images - return as-is
-  if (url.startsWith('/')) return url;
-
-  // Extract file ID from various Google Drive URL formats
-  let fileId = null;
-
-  // Match /file/d/FILE_ID/ pattern
-  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileMatch) {
-    fileId = fileMatch[1];
-  }
-
-  // Match open?id=FILE_ID or uc?id=FILE_ID pattern
-  if (!fileId) {
-    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch) {
-      fileId = idMatch[1];
-    }
-  }
-
-  // If we found a file ID, use our proxy
-  if (fileId) {
-    return `/api/image?id=${fileId}`;
-  }
-
-  // Not a Drive link, return as-is
-  return url;
-}
-
 export default function ProductShowcase() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);

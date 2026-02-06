@@ -166,42 +166,45 @@ export async function POST(request) {
       },
     });
 
-    // Create Order in database with PENDING status
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        status: 'PENDING',
-        subtotal,
-        shipping: shippingCost,
-        tax,
-        total,
-        stripePaymentId: paymentIntent.id,
-        // Guest info
-        guestEmail: userId ? null : customer.email,
-        guestName: userId ? null : (customer.name || shipping.name),
-        guestPhone: userId ? null : (customer.phone || null),
-        // Shipping snapshot
-        shippingName: shipping.name,
-        shippingStreet: shipping.street,
-        shippingStreet2: shipping.street2 || null,
-        shippingCity: shipping.city,
-        shippingState: stateUpper,
-        shippingZip: shipping.zip,
-        shippingCountry: 'US',
-        // Order items
-        items: {
-          create: orderItems,
-        },
-      },
-    });
+    // Atomically decrement stock and create order in a single transaction
+    const order = await prisma.$transaction(async (tx) => {
+      // Decrement stock first — fails if insufficient
+      for (const item of orderItems) {
+        const updated = await tx.productVariant.updateMany({
+          where: { id: item.variantId, stock: { gte: item.quantity } },
+          data: { stock: { decrement: item.quantity } },
+        });
+        if (updated.count === 0) {
+          throw new Error(`Insufficient stock for ${item.productName}`);
+        }
+      }
 
-    // Decrement stock for each ordered variant
-    for (const item of orderItems) {
-      await prisma.productVariant.update({
-        where: { id: item.variantId },
-        data: { stock: { decrement: item.quantity } },
+      // Create order inside the same transaction
+      return tx.order.create({
+        data: {
+          userId,
+          status: 'PENDING',
+          subtotal,
+          shipping: shippingCost,
+          tax,
+          total,
+          stripePaymentId: paymentIntent.id,
+          guestEmail: userId ? null : customer.email,
+          guestName: userId ? null : (customer.name || shipping.name),
+          guestPhone: userId ? null : (customer.phone || null),
+          shippingName: shipping.name,
+          shippingStreet: shipping.street,
+          shippingStreet2: shipping.street2 || null,
+          shippingCity: shipping.city,
+          shippingState: stateUpper,
+          shippingZip: shipping.zip,
+          shippingCountry: 'US',
+          items: {
+            create: orderItems,
+          },
+        },
       });
-    }
+    });
 
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,

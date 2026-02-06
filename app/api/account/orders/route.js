@@ -2,23 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
-
-// Convert Google Drive URLs to thumbnail format
-function convertImageUrl(url) {
-  if (!url) return null;
-  if (url.includes('drive.google.com')) {
-    let fileId = null;
-    if (url.includes('/file/d/')) {
-      fileId = url.match(/\/d\/([^/]+)/)?.[1];
-    } else if (url.includes('id=')) {
-      fileId = url.match(/id=([^&]+)/)?.[1];
-    }
-    if (fileId) {
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w200`;
-    }
-  }
-  return url;
-}
+import { convertImageUrl } from '@/lib/image-utils';
 
 // GET /api/account/orders - Get orders for authenticated user
 export async function GET(request) {

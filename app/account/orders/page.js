@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import OrderCard from '../../components/OrderCard/OrderCard';
@@ -15,14 +16,22 @@ const STATUS_OPTIONS = [
   { value: 'SHIPPED', label: 'Shipped' },
   { value: 'DELIVERED', label: 'Delivered' },
   { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'REFUNDED', label: 'Refunded' },
 ];
 
 export default function AccountOrdersPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin?callbackUrl=/account/orders');
+    }
+  }, [status, router]);
 
   useEffect(() => {
     fetchOrders();

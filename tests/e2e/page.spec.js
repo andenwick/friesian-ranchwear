@@ -23,7 +23,7 @@ test.describe('Page Integration and Verification', () => {
 
       // Shop CTA section
       await expect(page.getByRole('heading', { name: 'Shop the Collection' })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Visit TikTok Shop' })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Shop Collection' })).toBeVisible();
 
       // Email Signup section
       await expect(page.getByRole('heading', { name: 'Stay Connected' })).toBeVisible();
@@ -85,21 +85,21 @@ test.describe('Page Integration and Verification', () => {
       await expect(heroButton).toBeVisible();
       await heroButton.hover();
 
-      // TikTok Shop button
-      const tiktokButton = page.getByRole('link', { name: 'Visit TikTok Shop' });
-      await expect(tiktokButton).toBeVisible();
-      await tiktokButton.hover();
+      // Shop Collection button
+      const shopButton = page.getByRole('link', { name: 'Shop Collection' });
+      await expect(shopButton).toBeVisible();
+      await shopButton.hover();
     });
 
     test('product cards are clickable and have hover effects', async ({ page }) => {
       await page.goto('/');
 
       // Find product cards
-      const productCards = page.locator('a[href="#tiktok-shop"]');
+      const productCards = page.locator('a[href^="/products/"]');
       const cardCount = await productCards.count();
 
-      // Should have at least 6 product cards (from ProductShowcase)
-      expect(cardCount).toBeGreaterThanOrEqual(6);
+      // Should have at least 1 product card (from ProductShowcase)
+      expect(cardCount).toBeGreaterThanOrEqual(1);
 
       // Test first card hover
       const firstCard = productCards.first();

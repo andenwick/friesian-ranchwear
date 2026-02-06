@@ -11,28 +11,8 @@ import StarRating from '@/app/components/StarRating/StarRating';
 import ReviewCard from '@/app/components/ReviewCard/ReviewCard';
 import ReviewForm from '@/app/components/ReviewForm/ReviewForm';
 import { useCart } from '@/lib/cart-context';
+import { convertDriveUrl } from '@/lib/image-utils';
 import styles from './page.module.css';
-
-/**
- * Converts Google Drive share links to proxied image URLs.
- */
-function convertDriveUrl(url) {
-  if (!url) return url;
-  if (url.startsWith('/api/image')) return url;
-  if (url.startsWith('/')) return url;
-
-  let fileId = null;
-  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileMatch) fileId = fileMatch[1];
-
-  if (!fileId) {
-    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch) fileId = idMatch[1];
-  }
-
-  if (fileId) return `/api/image?id=${fileId}`;
-  return url;
-}
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -422,7 +402,7 @@ export default function ProductDetailPage() {
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
-                  <span>Free shipping on orders over $100</span>
+                  <span>Free shipping on orders over $50</span>
                 </div>
                 <div className={styles.infoItem}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

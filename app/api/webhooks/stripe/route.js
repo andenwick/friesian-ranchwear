@@ -52,12 +52,29 @@ export async function POST(request) {
       const paymentIntent = event.data.object;
       console.log('Payment failed:', paymentIntent.id);
 
-      // Update order status to CANCELLED
+      // Cancel order and restore stock
       try {
         await prisma.order.updateMany({
           where: { stripePaymentId: paymentIntent.id },
           data: { status: 'CANCELLED' },
         });
+
+        // Restore stock for the cancelled order
+        const cancelledOrder = await prisma.order.findFirst({
+          where: { stripePaymentId: paymentIntent.id },
+          include: { items: true },
+        });
+
+        if (cancelledOrder) {
+          for (const item of cancelledOrder.items) {
+            await prisma.productVariant.update({
+              where: { id: item.variantId },
+              data: { stock: { increment: item.quantity } },
+            });
+          }
+          console.log('Stock restored for cancelled order:', cancelledOrder.id);
+        }
+
         console.log('Order marked as CANCELLED for payment:', paymentIntent.id);
       } catch (dbError) {
         console.error('Failed to update order status:', dbError);

@@ -4,28 +4,8 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
+import { convertDriveUrl } from '@/lib/image-utils';
 import styles from './CartDrawer.module.css';
-
-/**
- * Converts Google Drive share links to proxied image URLs.
- */
-function convertDriveUrl(url) {
-  if (!url) return url;
-  if (url.startsWith('/api/image')) return url;
-  if (url.startsWith('/')) return url;
-
-  let fileId = null;
-  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileMatch) fileId = fileMatch[1];
-
-  if (!fileId) {
-    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch) fileId = idMatch[1];
-  }
-
-  if (fileId) return `/api/image?id=${fileId}`;
-  return url;
-}
 
 export default function CartDrawer() {
   const router = useRouter();

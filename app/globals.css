@@ -34,8 +34,8 @@
   /* Typography - Display (Eagle Lake for main titles) */
   --font-display: var(--font-eagle-lake), 'Eagle Lake', serif;
 
-  /* Typography - Body (Roboto Slab) */
-  --font-body: var(--font-roboto-slab), 'Roboto Slab', serif;
+  /* Typography - Body (Tinos) */
+  --font-body: var(--font-tinos), 'Tinos', serif;
 
   /* Display Font Sizes - Fluid scaling */
   --font-size-hero: clamp(64px, 15vw, 160px);
@@ -109,7 +109,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-tinos), 'Tinos', serif;
+  font-family: var(--font-body);
   font-size: var(--font-size-base);
   line-height: var(--leading-normal);
   letter-spacing: var(--tracking-normal);
