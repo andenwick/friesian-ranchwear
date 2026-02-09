@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { cleanupExpiredPendingOrders } from '@/lib/order-reservations';
 
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
@@ -19,10 +20,20 @@ export async function GET(request) {
   }
 
   try {
+    try {
+      await cleanupExpiredPendingOrders({ limit: 50 });
+    } catch (cleanupError) {
+      console.error('Failed to cleanup stale pending orders:', cleanupError);
+    }
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
-    const where = status && status !== 'all' ? { status } : {};
+    // Default view excludes pre-payment checkout attempts (PENDING).
+    // Admin can still explicitly request "all" or "PENDING".
+    const where = status
+      ? (status === 'all' ? {} : { status })
+      : { status: { not: 'PENDING' } };
 
     const orders = await prisma.order.findMany({
       where,

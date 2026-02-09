@@ -5,6 +5,7 @@ import { isValidEmail } from '@/lib/validation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { rateLimit, getClientIP } from '@/lib/rate-limit';
+import { cleanupExpiredPendingOrders } from '@/lib/order-reservations';
 
 // Shipping constants
 const FREE_SHIPPING_THRESHOLD = 50;
@@ -60,6 +61,13 @@ export async function POST(request) {
     // Get current user session (if logged in)
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id || null;
+
+    // Release stale unpaid reservations before checking fresh stock.
+    try {
+      await cleanupExpiredPendingOrders({ limit: 25 });
+    } catch (cleanupError) {
+      console.error('Failed to cleanup stale pending orders:', cleanupError);
+    }
 
     // Validate cart items against database
     const variantIds = items.map(item => item.variantId).filter(Boolean);

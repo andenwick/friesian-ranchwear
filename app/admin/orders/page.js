@@ -5,7 +5,8 @@ import Link from 'next/link';
 import styles from '../admin.module.css';
 
 const STATUS_OPTIONS = [
-  { value: 'all', label: 'All Orders' },
+  { value: 'live', label: 'Live Orders' },
+  { value: 'all', label: 'All Orders (Incl. Pending)' },
   { value: 'PENDING', label: 'Pending' },
   { value: 'PAID', label: 'Paid' },
   { value: 'PROCESSING', label: 'Processing' },
@@ -28,7 +29,7 @@ const STATUS_COLORS = {
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('live');
 
   useEffect(() => {
     fetchOrders();
@@ -37,7 +38,7 @@ export default function OrdersPage() {
   async function fetchOrders() {
     setLoading(true);
     try {
-      const url = statusFilter === 'all'
+      const url = statusFilter === 'live'
         ? '/api/admin/orders'
         : `/api/admin/orders?status=${statusFilter}`;
       const res = await fetch(url);

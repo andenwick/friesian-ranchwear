@@ -2,6 +2,39 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
 
+async function cancelPendingOrderAndRestoreStock(paymentIntentId) {
+  return prisma.$transaction(async (tx) => {
+    // Only cancel pending orders to avoid regressing paid/shipped states.
+    const updated = await tx.order.updateMany({
+      where: { stripePaymentId: paymentIntentId, status: 'PENDING' },
+      data: { status: 'CANCELLED' },
+    });
+
+    if (updated.count === 0) {
+      return false;
+    }
+
+    const cancelledOrder = await tx.order.findFirst({
+      where: { stripePaymentId: paymentIntentId },
+      include: { items: true },
+    });
+
+    if (!cancelledOrder) {
+      return true;
+    }
+
+    for (const item of cancelledOrder.items) {
+      await tx.productVariant.update({
+        where: { id: item.variantId },
+        data: { stock: { increment: item.quantity } },
+      });
+    }
+
+    console.log('Stock restored for cancelled order:', cancelledOrder.id);
+    return true;
+  });
+}
+
 export async function POST(request) {
   const body = await request.text();
   const signature = request.headers.get('stripe-signature');
@@ -48,39 +81,18 @@ export async function POST(request) {
       break;
     }
 
-    case 'payment_intent.payment_failed': {
+    case 'payment_intent.payment_failed':
+    case 'payment_intent.canceled': {
       const paymentIntent = event.data.object;
-      console.log('Payment failed:', paymentIntent.id);
+      console.log('Payment not completed:', paymentIntent.id, event.type);
 
       try {
-        // Use transaction to atomically cancel and restore stock
-        await prisma.$transaction(async (tx) => {
-          // Only cancel if not already cancelled (prevents double stock restore)
-          const updated = await tx.order.updateMany({
-            where: { stripePaymentId: paymentIntent.id, status: { not: 'CANCELLED' } },
-            data: { status: 'CANCELLED' },
-          });
-
-          // Only restore stock if we actually changed the status
-          if (updated.count > 0) {
-            const cancelledOrder = await tx.order.findFirst({
-              where: { stripePaymentId: paymentIntent.id },
-              include: { items: true },
-            });
-
-            if (cancelledOrder) {
-              for (const item of cancelledOrder.items) {
-                await tx.productVariant.update({
-                  where: { id: item.variantId },
-                  data: { stock: { increment: item.quantity } },
-                });
-              }
-              console.log('Stock restored for cancelled order:', cancelledOrder.id);
-            }
-          }
-        });
-
-        console.log('Order marked as CANCELLED for payment:', paymentIntent.id);
+        const cancelled = await cancelPendingOrderAndRestoreStock(paymentIntent.id);
+        if (cancelled) {
+          console.log('Order marked as CANCELLED for payment:', paymentIntent.id);
+        } else {
+          console.log('No pending order to cancel for payment:', paymentIntent.id);
+        }
       } catch (dbError) {
         console.error('Failed to update order status:', dbError);
       }
