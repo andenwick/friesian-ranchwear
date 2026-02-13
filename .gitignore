@@ -52,3 +52,14 @@ yarn-error.log*
 next-env.d.ts
 
 /lib/generated/prisma
+
+# AI tooling
+CLAUDE.md
+.claude/
+tasks/
+
+# Test/dev images
+logo-check.png
+logo-test.png
+screenshot*.png
+newlogo.png
