@@ -58,6 +58,9 @@ CLAUDE.md
 .claude/
 tasks/
 
+# Internal docs (client-specific)
+/docs/
+
 # Test/dev images
 logo-check.png
 logo-test.png
