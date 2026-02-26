@@ -1,17 +1,17 @@
 # Friesian Ranchwear
 
-E-commerce site for a western/streetwear apparel brand. Full checkout flow with Stripe, admin dashboard for order and product management, and a product catalog backed by Google Sheets for easy client updates.
+E-commerce site for a western/streetwear apparel brand. Full checkout flow with Stripe, admin dashboard for order and product management, and a product catalog backed by PostgreSQL.
 
 ## Features
 
-- **Product catalog** — filterable grid with color swatches, size selection, and image galleries. Products sourced from Google Sheets with 1-hour cache and manual refresh
-- **Checkout** — Stripe integration with inventory reservation, stock validation, and webhook-driven order fulfillment
-- **Admin dashboard** — order management, product CRUD with Cloudinary image uploads, email subscriber list, review moderation
-- **Auth** — NextAuth with credential-based signup/signin, admin role gating
-- **Email capture** — newsletter signup synced to Google Sheets
-- **Order tracking** — customers can track orders by email without an account
-- **Error monitoring** — Sentry integration for both client and server
-- **Analytics** — Google Analytics
+- **Product catalog** -- filterable grid with color swatches, size selection, and image galleries
+- **Checkout** -- Stripe Payment Element with inventory reservation, stock validation, tax calculation, and webhook-driven order fulfillment
+- **Admin dashboard** -- order management, product CRUD with Cloudinary image uploads, email subscriber list, review moderation
+- **Auth** -- NextAuth with credential-based signup/signin, admin role gating
+- **Reviews** -- verified-purchaser reviews with half-star ratings and admin approval workflow
+- **Order tracking** -- customers can track orders by email without an account
+- **Email capture** -- newsletter signup form
+- **Error monitoring** -- Sentry integration for both client and server
 
 ## Stack
 
@@ -20,10 +20,9 @@ E-commerce site for a western/streetwear apparel brand. Full checkout flow with 
 | Framework | Next.js (App Router) |
 | Language | JavaScript |
 | Database | PostgreSQL, Prisma ORM |
-| Payments | Stripe (Checkout Sessions + Webhooks) |
+| Payments | Stripe (Payment Intents + Webhooks + Tax) |
 | Auth | NextAuth.js |
 | Images | Cloudinary |
-| Product Source | Google Sheets API |
 | Monitoring | Sentry |
 | Hosting | Railway |
 
@@ -43,17 +42,17 @@ app/
 
 components/                # Top-level reusable components
 lib/                       # Database client, auth config, utilities
-prisma/                    # Schema + migrations
+prisma/                    # Schema
 public/                    # Static assets
-scripts/                   # Google Sheets setup utilities
 ```
 
 ## Setup
 
 ```bash
 npm install
-cp .env.example .env.local  # Configure credentials
-npx prisma migrate deploy
+cp .env.example .env.local   # Fill in credentials (see .env.example for required vars)
+npx prisma generate
+npx prisma db push           # Push schema to database
 npm run dev
 ```
 
@@ -63,4 +62,4 @@ Auto-deploys from `main` via Railway.
 
 ## License
 
-Proprietary — All rights reserved.
+Proprietary -- All rights reserved.

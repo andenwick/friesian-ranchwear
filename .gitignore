@@ -58,6 +58,9 @@ CLAUDE.md
 .claude/
 tasks/
 
+# Git mailmap (local author mapping)
+.mailmap
+
 # Internal docs (client-specific)
 /docs/
 

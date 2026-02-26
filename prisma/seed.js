@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-// Products from Google Sheets
+// Seed products
 const products = [
   {
     name: "Blue Bull FRW",
