@@ -21,7 +21,7 @@ test.describe('Subscribe API', () => {
     expect(body.error).toBe('Invalid email format');
   });
 
-  // Note: This test requires Google Sheets credentials to be configured
+  // Note: This test requires backend credentials to be configured
   // Skip in CI unless credentials are available
   test.skip('successfully subscribes with valid email', async ({ request }) => {
     const response = await request.post('/api/subscribe', {

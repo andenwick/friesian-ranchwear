@@ -142,7 +142,7 @@ test.describe('Page Integration and Verification', () => {
       await expect(emailInput).toHaveValue('test@example.com');
 
       // Click submit - this will trigger the API call
-      // Since we don't have Google Sheets configured, it will show an error,
+      // The API call may fail without backend credentials configured,
       // but this proves the form validation passed
       await submitButton.click();
 
@@ -180,7 +180,7 @@ test.describe('Page Integration and Verification', () => {
 
         // Take full page screenshot
         await page.screenshot({
-          path: `../specs/2026-01-09-002-website-foundations/verification/screenshots/${viewport.name}.png`,
+          path: `test-results/screenshots/${viewport.name}.png`,
           fullPage: true,
         });
       });
