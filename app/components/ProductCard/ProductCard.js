@@ -24,7 +24,7 @@ export default function ProductCard({ product, showLink = true }) {
 
   const cardContent = (
     <>
-      <div className={styles.imageContainer}>
+      <div className={styles.imageWrap}>
         {product.imageUrl ? (
           <img
             src={convertDriveUrl(product.imageUrl)}
@@ -32,40 +32,17 @@ export default function ProductCard({ product, showLink = true }) {
             className={styles.image}
           />
         ) : (
-          <div className={styles.imagePlaceholder}>
+          <div className={styles.placeholder}>
             <span className={styles.placeholderText}>No Image</span>
           </div>
         )}
-        <div className={styles.overlay} />
-        <div className={styles.shine} />
       </div>
-
-      <div className={styles.content}>
-        <div className={styles.details}>
-          {product.category && (
-            <span className={styles.category}>{product.category}</span>
-          )}
-          <h3 className={styles.name}>{product.name}</h3>
-          <p className={styles.price}>{product.price}</p>
-        </div>
-        <div className={styles.buttonWrapper}>
-          <button
-            className={styles.addButton}
-            onClick={handleAddToCart}
-            aria-label={`Add ${product.name} to cart`}
-          >
-            <span className={styles.buttonText}>Add to Cart</span>
-            <svg
-              className={styles.buttonIcon}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-          </button>
-        </div>
+      <div className={styles.info}>
+        {product.category && (
+          <span className={styles.category}>{product.category}</span>
+        )}
+        <h3 className={styles.name}>{product.name}</h3>
+        <p className={styles.price}>{product.price}</p>
       </div>
     </>
   );
