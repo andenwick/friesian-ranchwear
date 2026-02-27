@@ -1,73 +1,44 @@
-/* ============================================
-   EmailSignup Section - Dark Minimal Form
-   ============================================ */
-
-.emailSignup {
-  width: 100%;
-  background-color: var(--background-elevated);
-  padding: var(--space-4xl) var(--space-lg);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 8px 16px -8px rgba(0, 0, 0, 0.4);
+.section {
+  padding: var(--space-3xl) var(--space-lg);
+  background: var(--color-black);
+  text-align: center;
 }
 
 .content {
   max-width: 500px;
   margin: 0 auto;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
 }
 
 .heading {
   font-family: var(--font-display);
+  font-weight: 600;
   font-size: var(--font-size-2xl);
-  font-weight: 400;
-  color: var(--foreground);
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-  text-shadow: var(--shadow-text);
-}
-
-.text {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--foreground-muted);
-  line-height: var(--leading-relaxed);
+  color: var(--color-parchment);
+  margin-bottom: var(--space-xl);
 }
 
 .form {
-  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
-}
-
-.inputWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .input {
-  width: 100%;
-  padding: var(--space-lg);
+  flex: 1;
+  padding: var(--space-md);
+  background: var(--color-smoke);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  color: var(--color-parchment);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
-  background-color: var(--background);
-  border: 1px solid rgba(196, 163, 90, 0.3);
-  color: var(--foreground);
   outline: none;
-  box-shadow: var(--shadow-xs);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  transition: border-color var(--transition-fast);
 }
 
 .input:focus {
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--color-brass);
 }
 
 .input:disabled {
@@ -76,26 +47,25 @@
 }
 
 .input::placeholder {
-  color: var(--color-gray-mid);
+  color: var(--color-stone);
 }
 
 .button {
-  width: 100%;
-  padding: var(--space-lg);
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  background-color: var(--color-accent);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-brass);
   color: var(--color-black);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
   border: none;
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base),
-    box-shadow var(--transition-base);
+  transition: background var(--transition-fast);
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-brass-light);
 }
 
 .button:disabled {
@@ -103,73 +73,31 @@
   cursor: not-allowed;
 }
 
-/* Hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  .button:not(:disabled):hover {
-    background-color: var(--color-accent);
-  }
-}
-
-.button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
 .successMessage {
-  padding: var(--space-lg) var(--space-xl);
-  background-color: var(--color-accent);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--color-brass);
   color: var(--color-black);
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
+  font-family: var(--font-display);
   font-weight: 600;
+  font-size: var(--font-size-sm);
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
   text-align: center;
 }
 
 .errorMessage {
-  color: #FF6B6B;
+  color: var(--color-error);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  margin-top: var(--space-xs);
+  margin-top: var(--space-sm);
 }
 
-/* ============================================
-   Responsive - Tablet
-   ============================================ */
-@media (min-width: 768px) {
-  .emailSignup {
-    padding: var(--space-4xl) var(--space-xl);
-  }
-
-  .heading {
-    font-size: var(--font-size-3xl);
-  }
-
-  .text {
-    font-size: var(--font-size-md);
-  }
-
-  .inputWrapper {
-    flex-direction: row;
-    gap: 0;
-  }
-
-  .input {
-    flex: 1;
-    border-right: none;
+@media (max-width: 479px) {
+  .form {
+    flex-direction: column;
   }
 
   .button {
-    width: auto;
-    padding: var(--space-lg) var(--space-2xl);
-  }
-}
-
-/* ============================================
-   Responsive - Desktop
-   ============================================ */
-@media (min-width: 1024px) {
-  .content {
-    gap: var(--space-xl);
+    width: 100%;
   }
 }

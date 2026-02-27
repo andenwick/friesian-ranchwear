@@ -13,38 +13,26 @@ export default function EmailSignup() {
   const [error, setError] = useState("");
 
   const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const textRef = useRef(null);
-  const formRef = useRef(null);
+  const contentRef = useRef(null);
 
   useGSAP(
     () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-          toggleActions: "play none none none",
-        },
-        defaults: { immediateRender: false, ease: "power1.out" },
-      });
-
-      tl.fromTo(
-        headingRef.current,
-        { y: 25, opacity: 0, filter: "blur(6px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.4 }
-      )
-        .fromTo(
-          textRef.current,
-          { y: 20, opacity: 0, filter: "blur(4px)" },
-          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 },
-          "-=1.0"
-        )
-        .fromTo(
-          formRef.current,
-          { y: 20, opacity: 0, filter: "blur(4px)" },
-          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 },
-          "-=0.8"
-        );
+      gsap.fromTo(
+        contentRef.current,
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power1.out",
+          immediateRender: false,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
     },
     { scope: sectionRef }
   );
@@ -91,44 +79,35 @@ export default function EmailSignup() {
   };
 
   return (
-    <section className={`${styles.emailSignup} canvas-texture`} ref={sectionRef}>
-      <div className={styles.content}>
-        <h2 className={styles.heading} ref={headingRef}>
-          First to know.
-        </h2>
-        <p className={styles.text} ref={textRef}>
-          New releases before anyone else.
-        </p>
+    <section className={styles.section} ref={sectionRef}>
+      <div className={styles.content} ref={contentRef}>
+        <h2 className={styles.heading}>STAY POSTED.</h2>
 
-        <div ref={formRef}>
-          {success ? (
-            <div className={styles.successMessage}>
-              You are on the list.
-            </div>
-          ) : (
-            <form className={styles.form} onSubmit={handleSubmit}>
-              <div className={styles.inputWrapper}>
-                <input
-                  type="email"
-                  className={styles.input}
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  aria-label="Email address"
-                />
-                <button
-                  type="submit"
-                  className={styles.button}
-                  disabled={loading}
-                >
-                  {loading ? "..." : "Sign Up"}
-                </button>
-              </div>
-              {error && <p className={styles.errorMessage}>{error}</p>}
-            </form>
-          )}
-        </div>
+        {success ? (
+          <div className={styles.successMessage}>
+            You are on the list.
+          </div>
+        ) : (
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <input
+              type="email"
+              className={styles.input}
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              aria-label="Email address"
+            />
+            <button
+              type="submit"
+              className={styles.button}
+              disabled={loading}
+            >
+              {loading ? "..." : "\u2192"}
+            </button>
+          </form>
+        )}
+        {error && <p className={styles.errorMessage}>{error}</p>}
       </div>
     </section>
   );
