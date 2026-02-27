@@ -1,48 +1,30 @@
-/* ============================================
-   Checkout Page - Dark Luxury Aesthetic
-   ============================================ */
-
 .container {
   min-height: 100vh;
   padding: var(--space-lg);
-  background: var(--color-black);
-  position: relative;
-}
-
-/* Canvas texture overlay */
-.container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.06;
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='canvas'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.03' numOctaves='5' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23fff' surfaceScale='2.5'%3E%3CfeDistantLight azimuth='45' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23canvas)'/%3E%3C/svg%3E");
-  background-size: 300px 300px;
+  background: var(--color-warm-white);
 }
 
 .main {
   max-width: 1200px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 }
 
 .backLink {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  color: var(--foreground-muted);
+  color: var(--color-stone);
   text-decoration: none;
   font-size: var(--font-size-xs);
   font-family: var(--font-body);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-wider);
   margin-bottom: var(--space-xl);
   transition: color 0.2s;
 }
 
 .backLink:hover {
-  color: var(--color-accent);
+  color: var(--color-brass);
 }
 
 .backLink svg {
@@ -56,9 +38,10 @@
 .title {
   font-family: var(--font-display);
   font-size: clamp(28px, 5vw, 40px);
-  color: var(--foreground);
+  font-weight: 600;
+  color: var(--color-charcoal);
   margin-bottom: var(--space-xl);
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -75,6 +58,7 @@
 }
 
 /* Form Section */
+
 .formSection {
   display: flex;
   flex-direction: column;
@@ -82,34 +66,18 @@
 }
 
 .section {
-  background: var(--color-charcoal);
+  background: #fff;
   padding: var(--space-xl);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  position: relative;
-}
-
-.section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--color-accent) 20%,
-    var(--color-accent) 80%,
-    transparent 100%
-  );
+  border: 1px solid rgba(139, 115, 85, 0.12);
 }
 
 .sectionTitle {
   font-family: var(--font-display);
   font-size: var(--font-size-lg);
-  color: var(--foreground);
+  font-weight: 600;
+  color: var(--color-charcoal);
   margin-bottom: var(--space-lg);
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
@@ -142,50 +110,51 @@
 
 .label {
   font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--foreground);
+  font-weight: 500;
+  color: var(--color-charcoal);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-wider);
   font-family: var(--font-body);
 }
 
 .input,
 .select {
   padding: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(0, 0, 0, 0.3);
-  color: var(--foreground);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  background: var(--color-warm-white);
+  color: var(--color-charcoal);
   font-size: var(--font-size-base);
   font-family: var(--font-body);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s;
 }
 
 .input:focus,
 .select:focus {
   outline: none;
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(196, 163, 90, 0.2);
+  border-color: var(--color-brass);
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-stone);
+  opacity: 0.6;
 }
 
 .select {
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238A8A8A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238B7355' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
   padding-right: 44px;
 }
 
 .select option {
-  background: var(--color-charcoal);
-  color: var(--foreground);
+  background: #fff;
+  color: var(--color-charcoal);
 }
 
 /* Order Summary Sidebar */
+
 .summarySection {
   position: sticky;
   top: var(--space-lg);
@@ -193,20 +162,21 @@
 }
 
 .summary {
-  background: var(--color-charcoal);
+  background: #fff;
   padding: var(--space-xl);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(139, 115, 85, 0.12);
 }
 
 .summaryTitle {
   font-family: var(--font-display);
   font-size: var(--font-size-lg);
-  color: var(--foreground);
+  font-weight: 600;
+  color: var(--color-charcoal);
   margin-bottom: var(--space-lg);
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(139, 115, 85, 0.1);
 }
 
 .cartItems {
@@ -222,7 +192,7 @@
   display: flex;
   gap: var(--space-md);
   padding-bottom: var(--space-md);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(139, 115, 85, 0.08);
 }
 
 .cartItem:last-child {
@@ -234,7 +204,7 @@
   width: 60px;
   height: 60px;
   object-fit: cover;
-  background: var(--color-gray-dark);
+  background: rgba(139, 115, 85, 0.08);
   flex-shrink: 0;
 }
 
@@ -248,19 +218,19 @@
 .itemName {
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  color: var(--foreground);
+  color: var(--color-charcoal);
   font-weight: 500;
 }
 
 .itemMeta {
   font-size: var(--font-size-xs);
-  color: var(--foreground-muted);
+  color: var(--color-stone);
 }
 
 .itemPrice {
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  color: var(--foreground);
+  color: var(--color-charcoal);
   text-align: right;
   white-space: nowrap;
 }
@@ -270,7 +240,7 @@
   flex-direction: column;
   gap: var(--space-sm);
   padding-top: var(--space-md);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(139, 115, 85, 0.1);
 }
 
 .totalRow {
@@ -278,15 +248,15 @@
   justify-content: space-between;
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  color: var(--foreground-muted);
+  color: var(--color-stone);
 }
 
 .totalRow.grand {
   font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--foreground);
+  font-weight: 600;
+  color: var(--color-charcoal);
   padding-top: var(--space-sm);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(139, 115, 85, 0.1);
   margin-top: var(--space-xs);
 }
 
@@ -295,34 +265,34 @@
 }
 
 /* Payment Section */
+
 .paymentElement {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--color-warm-white);
   padding: var(--space-lg);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(139, 115, 85, 0.2);
   min-height: 200px;
 }
 
 /* Buttons */
+
 .button {
   width: 100%;
   padding: var(--space-md) var(--space-xl);
-  background: var(--color-accent);
+  background: var(--color-brass);
   color: var(--color-black);
   border: none;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--font-size-sm);
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-weight: 600;
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.2s ease;
   margin-top: var(--space-lg);
 }
 
 .button:hover:not(:disabled) {
-  background: var(--color-accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -8px rgba(196, 163, 90, 0.4);
+  background: var(--color-brass-light);
 }
 
 .button:disabled {
@@ -331,27 +301,30 @@
 }
 
 /* Messages */
+
 .error {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
   padding: var(--space-sm) var(--space-md);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   font-size: var(--font-size-sm);
   font-family: var(--font-body);
   margin-bottom: var(--space-lg);
 }
 
 /* Loading State */
+
 .loading {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  color: var(--foreground-muted);
+  color: var(--color-stone);
   font-family: var(--font-body);
 }
 
 /* Empty Cart */
+
 .empty {
   text-align: center;
   padding: var(--space-3xl);
@@ -360,14 +333,15 @@
 .emptyTitle {
   font-family: var(--font-display);
   font-size: var(--font-size-2xl);
-  color: var(--foreground);
+  font-weight: 600;
+  color: var(--color-charcoal);
   margin-bottom: var(--space-md);
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
 }
 
 .emptyText {
-  color: var(--foreground-muted);
+  color: var(--color-stone);
   font-family: var(--font-body);
   margin-bottom: var(--space-xl);
 }
@@ -375,17 +349,17 @@
 .emptyLink {
   display: inline-block;
   padding: var(--space-md) var(--space-xl);
-  background: var(--color-accent);
+  background: var(--color-brass);
   color: var(--color-black);
   text-decoration: none;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--font-size-sm);
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-weight: 600;
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  transition: all 0.3s;
+  transition: background 0.2s ease;
 }
 
 .emptyLink:hover {
-  background: var(--color-accent-hover);
+  background: var(--color-brass-light);
 }
