@@ -239,13 +239,13 @@ function CheckoutContent() {
               options={{
                 clientSecret,
                 appearance: {
-                  theme: 'night',
+                  theme: 'stripe',
                   variables: {
-                    colorPrimary: '#C4A35A',
-                    colorBackground: '#1A1A1A',
-                    colorText: 'rgba(255, 255, 255, 0.85)',
+                    colorPrimary: '#8B7355',
+                    colorBackground: '#FAF8F5',
+                    colorText: '#1A1816',
                     colorDanger: '#ef4444',
-                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontFamily: 'Barlow, system-ui, sans-serif',
                     borderRadius: '0px',
                   },
                 },
@@ -437,7 +437,7 @@ function CheckoutContent() {
             )}
             {subtotal < FREE_SHIPPING_THRESHOLD && (
               <div className={styles.totalRow}>
-                <span style={{ fontSize: '12px', color: 'var(--color-accent)' }}>
+                <span style={{ fontSize: '12px', color: 'var(--color-brass)' }}>
                   Add ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(2)} for free shipping
                 </span>
               </div>
