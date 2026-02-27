@@ -76,7 +76,6 @@ export default function ProductsPage() {
           <div className={styles.container}>
             <header className={styles.header}>
               <h1 className={styles.title}>Shop</h1>
-              <p className={styles.subtitle}>Friesian Ranchwear Collection</p>
             </header>
             <div className={styles.grid}>
               {Array.from({ length: 8 }).map((_, i) => (
@@ -121,10 +120,8 @@ export default function ProductsPage() {
       <Header alwaysVisible={true} />
       <main className={styles.page}>
         <div className={styles.container}>
-          {/* Page Header */}
           <header className={styles.header}>
             <h1 className={styles.title}>Shop</h1>
-            <p className={styles.subtitle}>Friesian Ranchwear Collection</p>
           </header>
 
           {/* Filters */}
@@ -160,8 +157,6 @@ export default function ProductsPage() {
           )}
         </div>
 
-        {/* Decorative elements */}
-        <div className={styles.gridLines} aria-hidden="true" />
       </main>
       <Footer />
     </div>
