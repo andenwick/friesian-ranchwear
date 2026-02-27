@@ -1,62 +1,60 @@
 :root {
-  /* ============================================
-     FRIESIAN RANCHWEAR - Design System
-     Dark & Bold Streetwear Aesthetic
-     ============================================ */
+  /* Iron Horse — Color System */
+  --color-black: #0C0C0C;
+  --color-charcoal: #1A1816;
+  --color-smoke: #2A2724;
+  --color-stone: #A8998A;
+  --color-parchment: #F2EDE8;
+  --color-brass: #8B7355;
+  --color-brass-light: #A38D6D;
+  --color-warm-white: #FAF8F5;
+  --color-error: #C4523A;
 
-  /* Core Palette - Dark & Bold */
-  --color-black: #000000;
-  --color-black-soft: #0A0A0A;
-  --color-charcoal: #1A1A1A;
-  --color-gray-dark: #2A2A2A;
-  --color-gray-mid: #4A4A4A;
-  --color-gray-light: #8A8A8A;
-  --color-white: #FFFFFF;
-  --color-off-white: #F5F5F5;
+  /* Legacy aliases — map old tokens to new */
+  --color-black-soft: var(--color-black);
+  --color-gray-dark: var(--color-smoke);
+  --color-gray-mid: var(--color-stone);
+  --color-gray-light: var(--color-stone);
+  --color-white: var(--color-parchment);
+  --color-off-white: var(--color-warm-white);
+  --color-accent: var(--color-brass);
+  --color-accent-hover: var(--color-brass-light);
+  --color-brown: var(--color-brass);
+  --color-cream: var(--color-warm-white);
+  --color-saddle-brown: var(--color-brass);
+  --color-leather-tan: var(--color-brass-light);
+  --color-aged-brass: var(--color-brass);
 
-  /* Accent - Gold-brown (used sparingly) */
-  --color-accent: #C4A35A;
-  --color-accent-hover: #D4B36A;
+  /* Semantic */
+  --background: var(--color-black);
+  --background-elevated: var(--color-charcoal);
+  --foreground: var(--color-parchment);
+  --foreground-muted: var(--color-stone);
 
-  /* Legacy aliases - keeping for component compatibility */
-  --color-brown: var(--color-accent);
-  --color-cream: var(--color-off-white);
-  --color-saddle-brown: var(--color-accent);
-  --color-leather-tan: var(--color-accent-hover);
-  --color-aged-brass: var(--color-accent);
+  /* Typography — Barlow family only */
+  --font-display: var(--font-barlow-condensed), 'Barlow Condensed', sans-serif;
+  --font-body: var(--font-barlow), 'Barlow', sans-serif;
 
-  /* Semantic Colors - Dark Theme */
-  --background: var(--color-charcoal);
-  --background-elevated: var(--color-gray-dark);
-  --foreground: rgba(255, 255, 255, 0.85);
-  --foreground-muted: var(--color-gray-light);
-
-  /* Typography - Display (Eagle Lake for main titles) */
-  --font-display: var(--font-eagle-lake), 'Eagle Lake', serif;
-
-  /* Typography - Body (Tinos) */
-  --font-body: var(--font-tinos), 'Tinos', serif;
-
-  /* Display Font Sizes - Fluid scaling */
-  --font-size-hero: clamp(64px, 15vw, 160px);
-  --font-size-4xl: clamp(40px, 8vw, 72px);
-  --font-size-3xl: clamp(32px, 6vw, 56px);
-  --font-size-2xl: clamp(28px, 5vw, 44px);
-  --font-size-xl: clamp(24px, 4vw, 36px);
+  /* Display Font Sizes — Fluid */
+  --font-size-hero: clamp(64px, 12vw, 160px);
+  --font-size-4xl: clamp(36px, 6vw, 64px);
+  --font-size-3xl: clamp(28px, 5vw, 48px);
+  --font-size-2xl: clamp(24px, 4vw, 36px);
+  --font-size-xl: clamp(20px, 3vw, 28px);
 
   /* Body Font Sizes */
-  --font-size-lg: 20px;
-  --font-size-md: 18px;
-  --font-size-base: 16px;
-  --font-size-sm: 14px;
+  --font-size-lg: 18px;
+  --font-size-md: 16px;
+  --font-size-base: 15px;
+  --font-size-sm: 13px;
   --font-size-xs: 12px;
 
   /* Letter Spacing */
-  --tracking-tight: -0.02em;
-  --tracking-normal: 0;
-  --tracking-wide: 0.05em;
-  --tracking-wider: 0.1em;
-  --tracking-widest: 0.2em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0.01em;
+  --tracking-wide: 0.08em;
+  --tracking-wider: 0.12em;
+  --tracking-widest: 0.15em;
 
   /* Line Heights */
   --leading-none: 1;
@@ -65,7 +63,7 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 
-  /* Spacing Scale - Premium generous spacing */
+  /* Spacing */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -75,19 +73,18 @@
   --space-3xl: 96px;
   --space-4xl: 128px;
 
-  /* Transitions */
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.3s ease;
-  --transition-slow: 0.5s ease;
-  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transitions — slightly faster, more confident */
+  --transition-fast: 0.12s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+  --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Shadows - Subtle depth system */
-  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
-  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.18);
-  --shadow-text: 0 2px 12px rgba(0, 0, 0, 0.12);
+  /* Shadows */
+  --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.18);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.22);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.25);
 }
 
 /* ============================================
@@ -117,72 +114,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-/* Canvas/Paper texture - use on sections with .canvas-texture class */
-.canvas-texture {
-  position: relative;
-}
-
-.canvas-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='canvas'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.03' numOctaves='5' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23fff' surfaceScale='2.5'%3E%3CfeDistantLight azimuth='45' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23canvas)'/%3E%3C/svg%3E");
-  background-size: 900px 900px;
-}
-
-/* Lighter canvas texture variant */
-.canvas-texture-light {
-  position: relative;
-}
-
-.canvas-texture-light::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='canvas'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.03' numOctaves='5' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23fff' surfaceScale='2.5'%3E%3CfeDistantLight azimuth='45' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23canvas)'/%3E%3C/svg%3E");
-  background-size: 900px 900px;
-}
-
-/* Halftone dot texture - modern streetwear aesthetic for collections */
-.halftone-texture {
-  position: relative;
-}
-
-.halftone-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.06;
-  background-image:
-    linear-gradient(45deg, rgba(255,255,255,0.5) 1px, transparent 1px),
-    linear-gradient(-45deg, rgba(255,255,255,0.5) 1px, transparent 1px);
-  background-size: 12px 12px;
-  /* Fade edges to blend into adjacent sections */
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-}
-
-/* Leather grain texture */
-.leather-texture {
-  position: relative;
-}
-
-.leather-texture::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.12;
-  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='leather'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.15' numOctaves='6' result='noise'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23000' surfaceScale='1.2' result='light'%3E%3CfeDistantLight azimuth='135' elevation='45'/%3E%3C/feDiffuseLighting%3E%3CfeComposite in='light' in2='noise' operator='in'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23leather)'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-}
-
 /* Links */
 a {
   color: inherit;
@@ -196,6 +127,14 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+}
+
+/* Section divider — brass hairline */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--color-brass);
+  opacity: 0.2;
 }
 
 /* Focus states for accessibility */
