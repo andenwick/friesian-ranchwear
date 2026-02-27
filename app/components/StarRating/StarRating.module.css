@@ -6,7 +6,7 @@
 .star {
   position: relative;
   display: inline-block;
-  color: rgba(0, 0, 0, 0.2);
+  color: rgba(139, 115, 85, 0.25);
 }
 
 .star.small {
@@ -43,7 +43,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  color: #C4A35A;
+  color: var(--color-brass);
 }
 
 .starFilled.half {

@@ -1,57 +1,60 @@
 .card {
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: var(--space-lg);
+  background: rgba(139, 115, 85, 0.05);
+  border: 1px solid rgba(139, 115, 85, 0.1);
 }
 
 .header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .verified {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
   color: #10b981;
   font-weight: 500;
 }
 
 .title {
-  font-size: 16px;
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
   font-weight: 600;
-  color: rgba(0, 0, 0, 0.85);
-  margin-bottom: 8px;
+  color: var(--color-parchment);
+  margin-bottom: var(--space-xs);
 }
 
 .body {
-  font-size: 14px;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
   line-height: 1.6;
-  color: rgba(0, 0, 0, 0.7);
-  margin-bottom: 12px;
+  color: var(--color-stone);
+  margin-bottom: var(--space-sm);
 }
 
 .footer {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: var(--space-xs);
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
 }
 
 .author {
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.7);
+  color: var(--color-stone);
 }
 
 .date {
-  color: rgba(0, 0, 0, 0.4);
+  color: rgba(168, 153, 138, 0.6);
 }
 
 .date::before {
-  content: '•';
-  margin-right: 8px;
+  content: '·';
+  margin-right: var(--space-xs);
 }
