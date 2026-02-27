@@ -5,10 +5,12 @@
 }
 
 .label {
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(0, 0, 0, 0.5);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-stone);
 }
 
 .swatches {
@@ -21,7 +23,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(139, 115, 85, 0.2);
   cursor: pointer;
   transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
   position: relative;
@@ -33,12 +35,12 @@
 
 .swatch:hover:not(:disabled) {
   transform: scale(1.1);
-  border-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(139, 115, 85, 0.5);
 }
 
 .swatch.selected {
-  border-color: #C4A35A;
-  box-shadow: 0 0 0 2px #C4A35A;
+  border-color: var(--color-brass);
+  box-shadow: 0 0 0 2px var(--color-brass);
 }
 
 .swatch.unavailable {
@@ -54,7 +56,7 @@
   left: -2px;
   right: -2px;
   height: 2px;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-stone);
   transform: rotate(-45deg);
 }
 
@@ -64,7 +66,8 @@
 }
 
 .selectedName {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.7);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--color-parchment);
   text-transform: capitalize;
 }
