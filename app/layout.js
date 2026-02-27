@@ -1,55 +1,25 @@
-import { Inter, Bebas_Neue, Ubuntu, Shadows_Into_Light, Eagle_Lake, Roboto_Slab, Tinos } from "next/font/google";
+import { Barlow, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import Providers from "@/components/Providers";
 
-const inter = Inter({
-  variable: "--font-inter",
+const barlow = Barlow({
+  variable: "--font-barlow",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500"],
 });
 
-const bebasNeue = Bebas_Neue({
-  variable: "--font-bebas-neue",
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-barlow-condensed",
   subsets: ["latin"],
-  weight: "400",
-});
-
-const ubuntu = Ubuntu({
-  variable: "--font-ubuntu",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const shadowsIntoLight = Shadows_Into_Light({
-  variable: "--font-shadows",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const eagleLake = Eagle_Lake({
-  variable: "--font-eagle-lake",
-  subsets: ["latin"],
-  weight: "400",
-});
-
-const robotoSlab = Roboto_Slab({
-  variable: "--font-roboto-slab",
-  subsets: ["latin"],
-  weight: "300",
-});
-
-const tinos = Tinos({
-  variable: "--font-tinos",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "600"],
 });
 
 export const metadata = {
   title: "Friesian Ranchwear",
-  description: "Western meets streetwear. Rugged but modern, country but cool.",
+  description: "Nothing you wear is an accident.",
   icons: {
     icon: '/logo-white.png',
   },
@@ -58,7 +28,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${bebasNeue.variable} ${ubuntu.variable} ${shadowsIntoLight.variable} ${eagleLake.variable} ${robotoSlab.variable} ${tinos.variable}`}>
+      <body className={`${barlow.variable} ${barlowCondensed.variable}`}>
         <Providers>
           <GoogleAnalytics />
           <ErrorBoundary>
