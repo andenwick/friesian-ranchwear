@@ -2,9 +2,9 @@
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: var(--tracking-wider);
 }
