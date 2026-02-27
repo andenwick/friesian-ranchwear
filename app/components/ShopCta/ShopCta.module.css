@@ -1,115 +1,21 @@
-/* ============================================
-   ShopCta Section - Bold CTA
-   High contrast with accent button
-   ============================================ */
-
-.shopCta {
-  width: 100%;
-  background-color: var(--background);
+.section {
   padding: var(--space-3xl) var(--space-lg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 8px 16px -8px rgba(0, 0, 0, 0.4);
-}
-
-.content {
-  max-width: 800px;
-  margin: 0 auto;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
+  background: var(--color-black);
 }
 
-.heading {
-  font-family: var(--font-display);
-  font-size: var(--font-size-3xl);
-  font-weight: 400;
-  color: var(--foreground);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-tight);
-  line-height: var(--leading-tight);
-  text-shadow: var(--shadow-text);
+.divider {
+  height: 1px;
+  background: var(--color-brass);
+  opacity: 0.2;
 }
 
 .text {
-  font-family: var(--font-body);
-  font-size: var(--font-size-base);
-  color: var(--foreground-muted);
-  line-height: var(--leading-relaxed);
-  max-width: 500px;
-}
-
-.cta {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
-  padding: var(--space-lg) var(--space-2xl);
-  background-color: var(--color-accent);
-  color: var(--color-black);
-  font-family: var(--font-body);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--font-size-xl);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-wider);
-  border: none;
-  box-shadow: var(--shadow-md);
-  transition:
-    background-color var(--transition-base),
-    transform var(--transition-base),
-    box-shadow var(--transition-base);
-}
-
-/* Hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  .cta:hover {
-    background-color: var(--color-accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 40px rgba(196, 163, 90, 0.35);
-  }
-}
-
-.cta:active {
-  transform: scale(0.98);
-}
-
-/* ============================================
-   Activated State - Hover effect on scroll
-   ============================================ */
-.cta:global(.ctaActivated) {
-  background-color: var(--color-accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 40px rgba(196, 163, 90, 0.35);
-}
-
-/* ============================================
-   Responsive - Tablet
-   ============================================ */
-@media (min-width: 768px) {
-  .shopCta {
-    padding: var(--space-4xl) var(--space-xl);
-  }
-
-  .heading {
-    font-size: var(--font-size-4xl);
-  }
-
-  .text {
-    font-size: var(--font-size-md);
-  }
-
-  .content {
-    gap: var(--space-xl);
-  }
-}
-
-/* ============================================
-   Responsive - Desktop
-   ============================================ */
-@media (min-width: 1024px) {
-  .cta {
-    padding: var(--space-lg) var(--space-3xl);
-    font-size: var(--font-size-base);
-  }
+  color: var(--color-stone);
+  padding: var(--space-2xl) 0;
 }

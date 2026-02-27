@@ -1,67 +1,15 @@
 "use client";
 
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
 import styles from "./ShopCta.module.css";
 
 export default function ShopCta() {
-  const sectionRef = useRef(null);
-  const headingRef = useRef(null);
-  const textRef = useRef(null);
-  const ctaRef = useRef(null);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
-          toggleActions: "play none none none",
-        },
-        defaults: { immediateRender: false, ease: "power1.out" },
-      });
-
-      tl.fromTo(
-        headingRef.current,
-        { y: 25, opacity: 0, filter: "blur(6px)" },
-        { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.4 }
-      )
-        .fromTo(
-          textRef.current,
-          { y: 20, opacity: 0, filter: "blur(4px)" },
-          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 },
-          "-=1.0"
-        )
-        .fromTo(
-          ctaRef.current,
-          { y: 15, opacity: 0, filter: "blur(4px)" },
-          { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.2 },
-          "-=0.8"
-        );
-    },
-    { scope: sectionRef }
-  );
-
   return (
-    <section className={`${styles.shopCta} canvas-texture`} id="shop" ref={sectionRef}>
-      <div className={styles.content}>
-        <h2 className={styles.heading} ref={headingRef}>
-          Built for this.
-        </h2>
-        <p className={styles.text} ref={textRef}>
-          Limited runs. No restocks.
-        </p>
-        <a
-          id="shop-cta-button"
-          href="/products"
-          className={styles.cta}
-          ref={ctaRef}
-        >
-          Shop Collection
-        </a>
-      </div>
-
+    <section className={styles.section} id="shop">
+      <div className={styles.divider} />
+      <p className={styles.text}>
+        Built for this. Limited runs. No restocks.
+      </p>
+      <div className={styles.divider} />
     </section>
   );
 }
