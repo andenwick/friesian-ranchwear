@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #0A0A0A;
+  background: var(--color-warm-white);
 }
 
 .main {
@@ -17,68 +17,71 @@
 
 .header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: var(--space-2xl);
 }
 
 .title {
-  font-family: var(--font-display, 'Bebas Neue', sans-serif);
+  font-family: var(--font-display);
   font-size: clamp(32px, 6vw, 48px);
-  letter-spacing: 2px;
-  color: #F5F5F5;
-  margin-bottom: 12px;
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-charcoal);
+  margin-bottom: var(--space-sm);
 }
 
 .subtitle {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
 }
 
 .form {
-  margin-bottom: 40px;
+  margin-bottom: var(--space-2xl);
 }
 
 .inputGroup {
   display: flex;
-  gap: 12px;
+  gap: var(--space-sm);
 }
 
 .input {
   flex: 1;
-  padding: 16px 20px;
-  background: #1A1A1A;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #F5F5F5;
-  font-size: 16px;
+  padding: var(--space-md) var(--space-lg);
+  background: #fff;
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--color-stone);
+  opacity: 0.6;
 }
 
 .input:focus {
-  border-color: #C4A35A;
+  border-color: var(--color-brass);
 }
 
 .button {
-  padding: 16px 32px;
-  background: #C4A35A;
+  padding: var(--space-md) var(--space-xl);
+  background: var(--color-brass);
   border: none;
-  border-radius: 8px;
-  color: #0A0A0A;
-  font-family: var(--font-display, 'Bebas Neue', sans-serif);
-  font-size: 16px;
-  letter-spacing: 1px;
+  color: var(--color-black);
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: background 0.2s ease;
   white-space: nowrap;
 }
 
 .button:hover:not(:disabled) {
-  background: #D4B36A;
-  transform: translateY(-1px);
+  background: var(--color-brass-light);
 }
 
 .button:disabled {
@@ -87,57 +90,60 @@
 }
 
 .error {
-  margin-top: 12px;
-  color: #ef4444;
-  font-size: 14px;
+  margin-top: var(--space-sm);
+  color: var(--color-error);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
   text-align: center;
 }
 
 .results {
-  margin-top: 40px;
+  margin-top: var(--space-2xl);
 }
 
 .resultCount {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  margin-bottom: 16px;
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-md);
 }
 
 .ordersList {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
 }
 
 .empty {
   text-align: center;
-  padding: 60px 20px;
-  background: #1A1A1A;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--space-3xl) var(--space-lg);
+  background: #fff;
+  border: 1px solid rgba(139, 115, 85, 0.12);
 }
 
 .emptyIcon {
-  color: rgba(255, 255, 255, 0.3);
-  margin-bottom: 16px;
+  color: var(--color-stone);
+  opacity: 0.4;
+  margin-bottom: var(--space-md);
 }
 
 .emptyTitle {
-  font-family: var(--font-display, 'Bebas Neue', sans-serif);
-  font-size: 24px;
-  letter-spacing: 1px;
-  color: #F5F5F5;
-  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-charcoal);
+  margin-bottom: var(--space-xs);
 }
 
 .emptyText {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
+  color: var(--color-stone);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
   max-width: 400px;
   margin: 0 auto;
 }
 
-/* Mobile responsiveness */
 @media (max-width: 640px) {
   .main {
     padding: 100px 16px 40px;
