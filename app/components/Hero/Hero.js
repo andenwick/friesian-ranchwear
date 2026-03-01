@@ -11,27 +11,45 @@ export default function Hero() {
   const subtitleRef = useRef(null);
   const ctaRef = useRef(null);
 
+  // Entrance animations with blur
   useGSAP(
     () => {
       const tl = gsap.timeline({ defaults: { ease: "power1.out" } });
 
       tl.fromTo(
         titleRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8 }
+        { opacity: 0, y: 25, filter: "blur(6px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.5 }
       )
         .fromTo(
           subtitleRef.current,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.4"
+          { opacity: 0, y: 15, filter: "blur(4px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 },
+          "-=1.0"
         )
         .fromTo(
           ctaRef.current,
-          { opacity: 0, y: 15 },
-          { opacity: 1, y: 0, duration: 0.8 },
-          "-=0.4"
+          { opacity: 0, y: 20, filter: "blur(4px)" },
+          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 },
+          "-=0.8"
         );
+    },
+    { scope: sectionRef }
+  );
+
+  // Scroll-triggered shimmer on title text
+  useGSAP(
+    () => {
+      gsap.to(titleRef.current, {
+        backgroundPosition: "-50% 50%",
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+        },
+      });
     },
     { scope: sectionRef }
   );
