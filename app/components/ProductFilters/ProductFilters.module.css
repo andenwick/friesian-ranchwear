@@ -42,7 +42,7 @@
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  padding: 0 4px;
+  padding: 0 var(--space-xs);
   background: var(--color-brass);
   color: var(--color-black);
   font-size: 10px;
@@ -118,7 +118,7 @@
 
 .drawerHandle {
   position: absolute;
-  top: 8px;
+  top: var(--space-sm);
   left: 50%;
   transform: translateX(-50%);
   width: 40px;
@@ -131,7 +131,7 @@
 .drawerTitle {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 16px;
+  font-size: var(--font-size-md);
   color: var(--color-parchment);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);
@@ -284,7 +284,7 @@
 
 .sizePill {
   min-width: 44px;
-  height: 36px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -322,7 +322,7 @@
   display: flex;
   align-items: center;
   flex: 1;
-  height: 40px;
+  height: 44px;
   background: var(--color-smoke);
   border: 1px solid rgba(139, 115, 85, 0.2);
   transition: border-color var(--transition-fast);
@@ -534,7 +534,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    margin-top: 4px;
+    margin-top: var(--space-xs);
   }
 
   .dropdownItem {

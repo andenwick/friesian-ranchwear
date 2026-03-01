@@ -1,5 +1,5 @@
 .section {
-  padding: var(--space-3xl) var(--space-lg);
+  padding: var(--space-3xl) var(--space-lg) var(--space-2xl);
   text-align: center;
   background: var(--color-black);
 }

@@ -39,7 +39,7 @@
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-sm);
   text-decoration: none;
 }
 
@@ -52,7 +52,7 @@
 .wordmark {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-parchment);
@@ -74,8 +74,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   position: relative;
   background: transparent;
   border: none;
@@ -106,7 +106,7 @@
   text-transform: uppercase;
   color: var(--color-brass);
   text-decoration: none;
-  padding: 4px 8px;
+  padding: var(--space-xs) var(--space-sm);
   border: 1px solid rgba(139, 115, 85, 0.4);
   transition: all var(--transition-fast);
 }
