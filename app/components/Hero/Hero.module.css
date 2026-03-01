@@ -22,9 +22,48 @@
   font-size: var(--font-size-hero);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  color: var(--color-parchment);
   line-height: var(--leading-none);
   margin: 0;
+  position: relative;
+
+  /* Shimmer gradient text */
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(242, 237, 232, 0.3);
+  background: linear-gradient(
+    120deg,
+    rgba(242, 237, 232, 0.7) 0%,
+    rgba(242, 237, 232, 0.7) 46%,
+    rgba(163, 141, 109, 0.9) 48%,
+    rgba(163, 141, 109, 1) 50%,
+    rgba(163, 141, 109, 0.9) 52%,
+    rgba(242, 237, 232, 0.7) 54%,
+    rgba(242, 237, 232, 0.7) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 150% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.title::before {
+  content: "FRIESIAN";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--font-size-hero);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  line-height: var(--leading-none);
+  color: rgba(0, 0, 0, 0.6);
+  -webkit-text-stroke: 0;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  background: none;
+  filter: blur(20px);
+  transform: translateY(10px);
 }
 
 .subtitle {
