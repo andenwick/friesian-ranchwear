@@ -89,33 +89,11 @@ export default function CartDrawer() {
         <div className={styles.content}>
           {items.length === 0 ? (
             <div className={styles.emptyState}>
-              {/* Elegant empty cart illustration */}
               <div className={styles.emptyIllustration}>
-                <svg viewBox="0 0 120 120" fill="none">
-                  <circle cx="60" cy="60" r="58" stroke="currentColor" strokeWidth="0.5" opacity="0.2" />
-                  <circle cx="60" cy="60" r="40" stroke="currentColor" strokeWidth="0.5" opacity="0.15" />
-                  <path
-                    d="M40 45h40l-5 30H45l-5-30z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    fill="none"
-                    opacity="0.6"
-                  />
-                  <circle cx="48" cy="82" r="3" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
-                  <circle cx="72" cy="82" r="3" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
-                  <path
-                    d="M40 45l-5-10h-8"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    opacity="0.6"
-                  />
-                  <path
-                    d="M55 55v10M65 55v10"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    opacity="0.3"
-                    strokeDasharray="2 2"
-                  />
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 01-8 0" />
                 </svg>
               </div>
 

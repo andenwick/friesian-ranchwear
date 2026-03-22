@@ -31,7 +31,7 @@ export default function Header({ alwaysVisible = false }) {
   }, [alwaysVisible]);
 
   return (
-    <header className={`${styles.header} ${isVisible ? styles.visible : ""}`}>
+    <header className={`${styles.header} ${alwaysVisible ? styles.alwaysVisible : ''} ${isVisible ? styles.visible : ""}`}>
       <div className={styles.container}>
         <a href="/" className={styles.brand}>
           <Image

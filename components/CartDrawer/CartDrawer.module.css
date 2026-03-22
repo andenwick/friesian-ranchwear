@@ -52,7 +52,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-xl);
-  border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .headerLeft {
@@ -78,7 +78,7 @@
   min-width: 26px;
   height: 26px;
   padding: 0 8px;
-  background: var(--color-brass);
+  background: var(--color-stone);
   color: var(--color-black);
   font-family: var(--font-body);
   font-size: 12px;
@@ -114,7 +114,7 @@
   overflow-y: auto;
   padding: var(--space-xl);
   scrollbar-width: thin;
-  scrollbar-color: rgba(139, 115, 85, 0.2) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .content::-webkit-scrollbar {
@@ -126,7 +126,7 @@
 }
 
 .content::-webkit-scrollbar-thumb {
-  background: rgba(139, 115, 85, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Empty State */
@@ -142,11 +142,11 @@
 }
 
 .emptyIllustration {
-  width: 140px;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   margin-bottom: var(--space-xl);
-  color: var(--color-brass);
-  opacity: 0.5;
+  color: var(--color-stone);
+  opacity: 0.35;
 }
 
 .emptyTitle {
@@ -174,8 +174,8 @@
   gap: var(--space-sm);
   padding: var(--space-md) var(--space-xl);
   background: transparent;
-  border: 1px solid var(--color-brass);
-  color: var(--color-brass);
+  border: 1px solid var(--color-stone);
+  color: var(--color-stone);
   font-family: var(--font-display);
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -196,7 +196,7 @@
 }
 
 .browseButton:hover {
-  background: var(--color-brass);
+  background: var(--color-stone);
   color: var(--color-black);
 }
 
@@ -215,8 +215,8 @@
   display: flex;
   gap: var(--space-lg);
   padding: var(--space-lg);
-  background: rgba(139, 115, 85, 0.04);
-  border: 1px solid rgba(139, 115, 85, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   opacity: 0;
   transform: translateX(20px);
   animation: slideInItem 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -336,7 +336,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  border: 1px solid rgba(139, 115, 85, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .quantityButton {
@@ -374,7 +374,7 @@
   font-family: var(--font-body);
   font-size: var(--font-size-md);
   font-weight: 500;
-  color: var(--color-brass);
+  color: var(--color-parchment);
   margin: 0;
 }
 
@@ -382,7 +382,7 @@
 
 .footer {
   padding: var(--space-xl);
-  border-top: 1px solid rgba(139, 115, 85, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--color-black);
 }
 
@@ -429,7 +429,7 @@
   gap: var(--space-sm);
   width: 100%;
   padding: var(--space-lg) var(--space-xl);
-  background: var(--color-brass);
+  background: var(--color-parchment);
   border: none;
   color: var(--color-black);
   cursor: pointer;
@@ -438,7 +438,7 @@
 }
 
 .checkoutButton:hover {
-  background: var(--color-brass-light);
+  background: var(--color-warm-white);
 }
 
 .checkoutText {

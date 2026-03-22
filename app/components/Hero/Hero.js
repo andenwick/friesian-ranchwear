@@ -8,34 +8,6 @@ import styles from "./Hero.module.css";
 export default function Hero() {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
-  const subtitleRef = useRef(null);
-  const ctaRef = useRef(null);
-
-  // Entrance animations with blur
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({ defaults: { ease: "power1.out" } });
-
-      tl.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 25, filter: "blur(6px)" },
-        { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.5 }
-      )
-        .fromTo(
-          subtitleRef.current,
-          { opacity: 0, y: 15, filter: "blur(4px)" },
-          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 },
-          "-=1.0"
-        )
-        .fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 20, filter: "blur(4px)" },
-          { opacity: 1, y: 0, filter: "blur(0px)", duration: 1.2 },
-          "-=0.8"
-        );
-    },
-    { scope: sectionRef }
-  );
 
   // Scroll-triggered shimmer on title text
   useGSAP(
@@ -60,10 +32,10 @@ export default function Hero() {
         <h1 className={styles.title} ref={titleRef}>
           FRIESIAN
         </h1>
-        <p className={styles.subtitle} ref={subtitleRef}>
+        <p className={styles.subtitle}>
           Nothing you wear is an accident.
         </p>
-        <a href="/products" className={styles.cta} ref={ctaRef}>
+        <a href="/products" className={styles.cta}>
           <span>SHOP COLLECTION</span>
           <svg
             width="20"
