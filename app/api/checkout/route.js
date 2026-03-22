@@ -142,7 +142,7 @@ export async function POST(request) {
       if (shippingCost > 0) {
         taxLineItems.push({
           amount: Math.round(shippingCost * 100),
-          reference: 'shipping',
+          reference: 'shipping_cost',
           tax_behavior: 'exclusive',
           tax_code: 'txcd_92010001', // shipping
         });
