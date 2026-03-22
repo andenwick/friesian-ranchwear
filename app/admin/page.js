@@ -76,7 +76,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer} style={{ minHeight: '50vh', background: 'transparent' }}>
+      <div className={`${styles.loadingContainer} ${styles.loadingInline}`}>
         <div className={styles.loadingSpinner} />
       </div>
     );
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className={styles.statsGrid}>
-        <Link href="/admin/orders" className={styles.statCard} style={{ textDecoration: 'none' }}>
+        <Link href="/admin/orders" className={styles.statCard}>
           <div className={styles.statIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="1" y="3" width="15" height="13" />
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
           <div className={styles.statLabel}>Revenue</div>
           <div className={styles.statValue}>${stats.revenue.toLocaleString()}</div>
         </div>
-        <Link href="/admin/emails" className={styles.statCard} style={{ textDecoration: 'none' }}>
+        <Link href="/admin/emails" className={styles.statCard}>
           <div className={styles.statIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
           <div className={styles.statLabel}>Email Subscribers</div>
           <div className={styles.statValue}>{stats.emailSubscribers}</div>
         </Link>
-        <Link href="/admin/products" className={styles.statCard} style={{ textDecoration: 'none' }}>
+        <Link href="/admin/products" className={styles.statCard}>
           <div className={styles.statIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M16.5 9.4l-9-5.19M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
           <div className={styles.statLabel}>Products</div>
           <div className={styles.statValue}>{stats.products}</div>
         </Link>
-        <Link href="/admin/reviews" className={styles.statCard} style={{ textDecoration: 'none' }}>
+        <Link href="/admin/reviews" className={styles.statCard}>
           <div className={styles.statIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -148,9 +148,9 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <div className={styles.pageHeader} style={{ marginTop: 'var(--space-xl)' }}>
+      <div className={styles.pageHeader}>
         <div>
-          <h2 className={styles.pageTitle} style={{ fontSize: 'var(--font-size-xl)' }}>RECENT ORDERS</h2>
+          <h2 className={`${styles.pageTitle} ${styles.sectionSubtitle}`}>RECENT ORDERS</h2>
         </div>
         <Link href="/admin/orders" className={styles.secondaryButton}>
           View All
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
               {recentOrders.map((order) => (
                 <tr key={order.id}>
                   <td>
-                    <span style={{ fontWeight: 500 }}>#{order.orderNumber}</span>
+                    <span className={styles.textBold}>#{order.orderNumber}</span>
                   </td>
                   <td>{order.customerName || order.email}</td>
                   <td>${order.total?.toFixed(2) || '0.00'}</td>

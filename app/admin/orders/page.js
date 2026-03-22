@@ -65,7 +65,7 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer} style={{ minHeight: '50vh', background: 'transparent' }}>
+      <div className={`${styles.loadingContainer} ${styles.loadingInline}`}>
         <div className={styles.loadingSpinner} />
       </div>
     );
@@ -78,19 +78,11 @@ export default function OrdersPage() {
           <h1 className={styles.pageTitle}>ORDERS</h1>
           <p className={styles.pageSubtitle}>{orders.length} orders</p>
         </div>
-        <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center' }}>
+        <div className={styles.filterRow}>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className={styles.select}
-            style={{
-              background: 'var(--color-charcoal)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '6px',
-              padding: '8px 12px',
-              color: 'var(--foreground)',
-              fontSize: 'var(--font-size-sm)',
-            }}
+            className={styles.filterSelect}
           >
             {STATUS_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -117,24 +109,24 @@ export default function OrdersPage() {
               {orders.map((order) => (
                 <tr key={order.id}>
                   <td>
-                    <span style={{ fontWeight: 500 }}>#{order.orderNumber}</span>
+                    <span className={styles.textBold}>#{order.orderNumber}</span>
                   </td>
                   <td>
                     <div>
-                      <div style={{ fontWeight: 500 }}>{order.customerName}</div>
-                      <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--foreground-muted)' }}>
+                      <div className={styles.textBold}>{order.customerName}</div>
+                      <div className={`${styles.textXs} ${styles.textMuted}`}>
                         {order.customerEmail}
                       </div>
                     </div>
                   </td>
                   <td>{order.itemCount} items</td>
-                  <td style={{ fontWeight: 500 }}>${order.total.toFixed(2)}</td>
+                  <td className={styles.textBold}>${order.total.toFixed(2)}</td>
                   <td>
                     <span className={`${styles.badge} ${STATUS_COLORS[order.status] || styles.badgeDraft}`}>
                       {order.status}
                     </span>
                   </td>
-                  <td style={{ fontSize: 'var(--font-size-xs)', color: 'var(--foreground-muted)' }}>
+                  <td className={`${styles.textXs} ${styles.textMuted}`}>
                     {formatDate(order.createdAt)}
                   </td>
                   <td>
