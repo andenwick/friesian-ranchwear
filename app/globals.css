@@ -9,6 +9,12 @@
   --color-brass-light: #A38D6D;
   --color-warm-white: #FAF8F5;
   --color-error: #C4523A;
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+  --color-purple: #8b5cf6;
+  --color-muted: #6b7280;
 
   /* Legacy aliases — map old tokens to new */
   --color-black-soft: var(--color-black);

@@ -93,11 +93,11 @@ export default function ReviewsPage() {
 
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
-        stars.push(<span key={i} style={{ color: '#C4A35A' }}>★</span>);
+        stars.push(<span key={i} className={styles.starFilled}>★</span>);
       } else if (i === fullStars && hasHalf) {
-        stars.push(<span key={i} style={{ color: '#C4A35A' }}>★</span>);
+        stars.push(<span key={i} className={styles.starFilled}>★</span>);
       } else {
-        stars.push(<span key={i} style={{ color: 'rgba(255,255,255,0.3)' }}>★</span>);
+        stars.push(<span key={i} className={styles.starEmpty}>★</span>);
       }
     }
     return stars;
@@ -105,7 +105,7 @@ export default function ReviewsPage() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer} style={{ minHeight: '50vh', background: 'transparent' }}>
+      <div className={`${styles.loadingContainer} ${styles.loadingInline}`}>
         <div className={styles.loadingSpinner} />
       </div>
     );
@@ -118,18 +118,11 @@ export default function ReviewsPage() {
           <h1 className={styles.pageTitle}>REVIEWS</h1>
           <p className={styles.pageSubtitle}>{reviews.length} reviews</p>
         </div>
-        <div style={{ display: 'flex', gap: 'var(--space-md)', alignItems: 'center' }}>
+        <div className={styles.filterRow}>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{
-              background: 'var(--color-charcoal)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '6px',
-              padding: '8px 12px',
-              color: 'var(--foreground)',
-              fontSize: 'var(--font-size-sm)',
-            }}
+            className={styles.filterSelect}
           >
             {STATUS_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -157,19 +150,19 @@ export default function ReviewsPage() {
                   <tr
                     key={review.id}
                     onClick={() => setExpandedReview(expandedReview === review.id ? null : review.id)}
-                    style={{ cursor: 'pointer' }}
+                    className={styles.clickableRow}
                   >
                     <td>
-                      <span style={{ fontWeight: 500 }}>{review.productName}</span>
+                      <span className={styles.textBold}>{review.productName}</span>
                     </td>
                     <td>
-                      <span style={{ fontSize: '14px' }}>{renderStars(review.rating)}</span>
-                      <span style={{ marginLeft: '8px', fontSize: '12px', color: 'var(--foreground-muted)' }}>
+                      <span>{renderStars(review.rating)}</span>
+                      <span className={`${styles.textXs} ${styles.textMuted}`} style={{ marginLeft: '8px' }}>
                         ({review.rating})
                       </span>
                     </td>
                     <td>{review.userName}</td>
-                    <td style={{ fontSize: 'var(--font-size-xs)', color: 'var(--foreground-muted)' }}>
+                    <td className={`${styles.textXs} ${styles.textMuted}`}>
                       {formatDate(review.createdAt)}
                     </td>
                     <td>
@@ -178,14 +171,13 @@ export default function ReviewsPage() {
                       </span>
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
-                      <div style={{ display: 'flex', gap: '8px' }}>
+                      <div className={styles.inlineFlexSm}>
                         {!review.approved && (
                           <button
-                            className={styles.actionButton}
+                            className={`${styles.actionButton} ${styles.actionApprove}`}
                             onClick={() => updateReviewStatus(review.id, true)}
                             disabled={updating === review.id}
                             title="Approve"
-                            style={{ color: '#10b981' }}
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M20 6L9 17l-5-5" />
@@ -194,11 +186,10 @@ export default function ReviewsPage() {
                         )}
                         {review.approved && (
                           <button
-                            className={styles.actionButton}
+                            className={`${styles.actionButton} ${styles.actionWarning}`}
                             onClick={() => updateReviewStatus(review.id, false)}
                             disabled={updating === review.id}
                             title="Unapprove"
-                            style={{ color: '#f59e0b' }}
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                               <path d="M18 6L6 18M6 6l12 12" />
@@ -206,11 +197,10 @@ export default function ReviewsPage() {
                           </button>
                         )}
                         <button
-                          className={styles.actionButton}
+                          className={`${styles.actionButton} ${styles.actionDanger}`}
                           onClick={() => deleteReview(review.id)}
                           disabled={updating === review.id}
                           title="Delete"
-                          style={{ color: '#ef4444' }}
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
@@ -221,11 +211,11 @@ export default function ReviewsPage() {
                   </tr>
                   {expandedReview === review.id && (
                     <tr key={`${review.id}-expanded`}>
-                      <td colSpan="6" style={{ background: 'rgba(255,255,255,0.02)', padding: '16px 20px' }}>
+                      <td colSpan="6" className={styles.expandedRow}>
                         {review.title && (
-                          <p style={{ fontWeight: 600, marginBottom: '8px' }}>"{review.title}"</p>
+                          <p className={styles.textBold}>"{review.title}"</p>
                         )}
-                        <p style={{ color: 'var(--foreground-muted)', lineHeight: 1.6 }}>
+                        <p className={styles.textMuted} style={{ lineHeight: 1.6 }}>
                           {review.body || 'No review text provided.'}
                         </p>
                       </td>

@@ -284,7 +284,7 @@
 }
 
 .select option {
-  background: #1a1a1a;
+  background: var(--color-charcoal);
   color: var(--foreground);
   padding: 12px;
 }

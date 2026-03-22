@@ -7,13 +7,13 @@ import { convertImageUrl } from '@/lib/image-utils';
 import styles from '../../admin.module.css';
 
 const STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending', color: '#f59e0b' },
-  { value: 'PAID', label: 'Paid', color: '#10b981' },
-  { value: 'PROCESSING', label: 'Processing', color: '#3b82f6' },
-  { value: 'SHIPPED', label: 'Shipped', color: '#8b5cf6' },
-  { value: 'DELIVERED', label: 'Delivered', color: '#10b981' },
-  { value: 'CANCELLED', label: 'Cancelled', color: '#ef4444' },
-  { value: 'REFUNDED', label: 'Refunded', color: '#6b7280' },
+  { value: 'PENDING', label: 'Pending' },
+  { value: 'PAID', label: 'Paid' },
+  { value: 'PROCESSING', label: 'Processing' },
+  { value: 'SHIPPED', label: 'Shipped' },
+  { value: 'DELIVERED', label: 'Delivered' },
+  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: 'REFUNDED', label: 'Refunded' },
 ];
 
 export default function OrderDetailPage() {
@@ -77,7 +77,7 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <div className={styles.loadingContainer} style={{ minHeight: '50vh', background: 'transparent' }}>
+      <div className={`${styles.loadingContainer} ${styles.loadingInline}`}>
         <div className={styles.loadingSpinner} />
       </div>
     );
@@ -107,7 +107,7 @@ export default function OrderDetailPage() {
     <div>
       <div className={styles.pageHeader}>
         <div>
-          <Link href="/admin/orders" style={{ color: 'var(--foreground-muted)', textDecoration: 'none', fontSize: 'var(--font-size-sm)', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
+          <Link href="/admin/orders" className={styles.backLink}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
@@ -118,12 +118,12 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 'var(--space-xl)' }}>
+      <div className={styles.detailGrid}>
         {/* Main Content */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+        <div className={styles.stack}>
           {/* Order Items */}
-          <div className={styles.tableContainer} style={{ padding: 'var(--space-lg)' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-md)' }}>ORDER ITEMS</h3>
+          <div className={`${styles.tableContainer} ${styles.sectionCard}`}>
+            <h3 className={styles.sectionTitle}>ORDER ITEMS</h3>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -138,7 +138,7 @@ export default function OrderDetailPage() {
                 {order.items.map((item) => (
                   <tr key={item.id}>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+                      <div className={styles.inlineFlex}>
                         {(() => {
                           const imgUrl = convertImageUrl(item.imageUrl);
                           return imgUrl ? (
@@ -152,13 +152,13 @@ export default function OrderDetailPage() {
                             <div className={styles.productThumb} />
                           );
                         })()}
-                        <span style={{ fontWeight: 500 }}>{item.productName}</span>
+                        <span className={styles.textBold}>{item.productName}</span>
                       </div>
                     </td>
                     <td>{item.size || '-'}</td>
                     <td>{item.quantity}</td>
                     <td>${item.unitPrice.toFixed(2)}</td>
-                    <td style={{ fontWeight: 500 }}>${item.total.toFixed(2)}</td>
+                    <td className={styles.textBold}>${item.total.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -166,41 +166,32 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Shipping Address */}
-          <div className={styles.tableContainer} style={{ padding: 'var(--space-lg)' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-md)' }}>SHIPPING ADDRESS</h3>
+          <div className={`${styles.tableContainer} ${styles.sectionCard}`}>
+            <h3 className={styles.sectionTitle}>SHIPPING ADDRESS</h3>
             {order.shippingAddress?.street ? (
-              <div style={{ lineHeight: 1.6 }}>
-                <div style={{ fontWeight: 500 }}>{order.shippingAddress.name}</div>
+              <div className={styles.addressBlock}>
+                <div className={styles.textBold}>{order.shippingAddress.name}</div>
                 <div>{order.shippingAddress.street}</div>
                 {order.shippingAddress.street2 && <div>{order.shippingAddress.street2}</div>}
                 <div>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zip}</div>
                 <div>{order.shippingAddress.country}</div>
               </div>
             ) : (
-              <p style={{ color: 'var(--foreground-muted)' }}>No shipping address</p>
+              <p className={styles.textMuted}>No shipping address</p>
             )}
           </div>
         </div>
 
         {/* Sidebar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+        <div className={styles.stack}>
           {/* Status Update */}
-          <div className={styles.tableContainer} style={{ padding: 'var(--space-lg)' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-md)' }}>STATUS</h3>
+          <div className={`${styles.tableContainer} ${styles.sectionCard}`}>
+            <h3 className={styles.sectionTitle}>STATUS</h3>
             <select
               value={order.status}
               onChange={(e) => updateStatus(e.target.value)}
               disabled={updating}
-              style={{
-                width: '100%',
-                background: 'var(--color-charcoal)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '6px',
-                padding: '12px',
-                color: 'var(--foreground)',
-                fontSize: 'var(--font-size-sm)',
-                cursor: 'pointer',
-              }}
+              className={styles.filterSelectFull}
             >
               {STATUS_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -209,43 +200,43 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Customer Info */}
-          <div className={styles.tableContainer} style={{ padding: 'var(--space-lg)' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-md)' }}>CUSTOMER</h3>
-            <div style={{ lineHeight: 1.8 }}>
-              <div style={{ fontWeight: 500 }}>{order.customerName}</div>
-              <div style={{ color: 'var(--foreground-muted)' }}>{order.customerEmail}</div>
-              {order.customerPhone && <div style={{ color: 'var(--foreground-muted)' }}>{order.customerPhone}</div>}
+          <div className={`${styles.tableContainer} ${styles.sectionCard}`}>
+            <h3 className={styles.sectionTitle}>CUSTOMER</h3>
+            <div className={styles.customerInfo}>
+              <div className={styles.textBold}>{order.customerName}</div>
+              <div className={styles.textMuted}>{order.customerEmail}</div>
+              {order.customerPhone && <div className={styles.textMuted}>{order.customerPhone}</div>}
             </div>
           </div>
 
           {/* Order Summary */}
-          <div className={styles.tableContainer} style={{ padding: 'var(--space-lg)' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-md)' }}>SUMMARY</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--foreground-muted)' }}>Subtotal</span>
+          <div className={`${styles.tableContainer} ${styles.sectionCard}`}>
+            <h3 className={styles.sectionTitle}>SUMMARY</h3>
+            <div className={styles.stack}>
+              <div className={styles.summaryRow}>
+                <span className={styles.summaryLabel}>Subtotal</span>
                 <span>${order.subtotal.toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--foreground-muted)' }}>Shipping</span>
+              <div className={styles.summaryRow}>
+                <span className={styles.summaryLabel}>Shipping</span>
                 <span>${order.shipping.toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--foreground-muted)' }}>Tax</span>
+              <div className={styles.summaryRow}>
+                <span className={styles.summaryLabel}>Tax</span>
                 <span>${order.tax.toFixed(2)}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.1)', fontWeight: 500 }}>
+              <div className={`${styles.summaryRow} ${styles.summaryDivider}`}>
                 <span>Total</span>
-                <span style={{ color: 'var(--color-accent)' }}>${order.total.toFixed(2)}</span>
+                <span className={styles.textAccent}>${order.total.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
           {/* Payment Info */}
           {order.stripePaymentId && (
-            <div className={styles.tableContainer} style={{ padding: 'var(--space-lg)' }}>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-md)' }}>PAYMENT</h3>
-              <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--foreground-muted)', wordBreak: 'break-all' }}>
+            <div className={`${styles.tableContainer} ${styles.sectionCard}`}>
+              <h3 className={styles.sectionTitle}>PAYMENT</h3>
+              <div className={styles.paymentId}>
                 {order.stripePaymentId}
               </div>
             </div>

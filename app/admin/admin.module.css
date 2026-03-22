@@ -405,17 +405,17 @@ a.statCard:hover .statIcon {
 
 .badgeActive {
   background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  color: var(--color-success);
 }
 
 .badgeDraft {
   background: rgba(234, 179, 8, 0.15);
-  color: #eab308;
+  color: var(--color-warning);
 }
 
 .badgeOutOfStock {
   background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 /* Action Buttons */
@@ -444,8 +444,8 @@ a.statCard:hover .statIcon {
 }
 
 .actionButtonDanger:hover {
-  border-color: #ef4444;
-  color: #ef4444;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 /* Empty State */
@@ -579,4 +579,213 @@ a.statCard:hover .statIcon {
   .statsGrid {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/* ============================================
+   Utility Classes — Design Token Alignment
+   ============================================ */
+
+/* Loading state override for inline content */
+.loadingInline {
+  min-height: 50vh;
+  background: transparent;
+}
+
+/* Select / filter dropdown */
+.filterSelect {
+  background: var(--color-charcoal);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: var(--space-sm) var(--space-md);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A8998A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.filterSelect option {
+  background: var(--color-charcoal);
+}
+
+.filterSelectFull {
+  composes: filterSelect;
+  width: 100%;
+  padding: var(--space-md);
+}
+
+/* Filter row container */
+.filterRow {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+/* Section card (used in order detail sidebar, etc.) */
+.sectionCard {
+  padding: var(--space-lg);
+}
+
+/* Section title inside cards */
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: var(--foreground);
+  margin-bottom: var(--space-md);
+  letter-spacing: 0.05em;
+}
+
+/* Two-column grid layout (order detail) */
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--space-xl);
+}
+
+@media (max-width: 1024px) {
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Stack layout */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Summary row (label + value) */
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryLabel {
+  color: var(--foreground-muted);
+}
+
+.summaryDivider {
+  padding-top: var(--space-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+}
+
+/* Back link */
+.backLink {
+  color: var(--foreground-muted);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+  transition: color 0.15s ease;
+}
+
+.backLink:hover {
+  color: var(--foreground);
+}
+
+/* Text helpers */
+.textBold {
+  font-weight: 500;
+}
+
+.textMuted {
+  color: var(--foreground-muted);
+}
+
+.textXs {
+  font-size: var(--font-size-xs);
+}
+
+.textAccent {
+  color: var(--color-accent);
+}
+
+/* Inline flex with gap */
+.inlineFlex {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.inlineFlexSm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Address block */
+.addressBlock {
+  line-height: 1.6;
+}
+
+/* Payment ID */
+.paymentId {
+  font-size: var(--font-size-xs);
+  color: var(--foreground-muted);
+  word-break: break-all;
+  font-family: monospace;
+}
+
+/* Star colors */
+.starFilled {
+  color: var(--color-accent);
+}
+
+.starEmpty {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Review action button colors */
+.actionApprove {
+  color: var(--color-success);
+}
+
+.actionApprove:hover {
+  border-color: var(--color-success);
+}
+
+.actionWarning {
+  color: var(--color-warning);
+}
+
+.actionWarning:hover {
+  border-color: var(--color-warning);
+}
+
+.actionDanger {
+  color: var(--color-danger);
+}
+
+.actionDanger:hover {
+  border-color: var(--color-danger);
+}
+
+/* Expanded review row */
+.expandedRow {
+  background: rgba(255, 255, 255, 0.02);
+  padding: var(--space-md) var(--space-lg);
+}
+
+/* Subtitle for section headers */
+.sectionSubtitle {
+  font-size: var(--font-size-xl);
+}
+
+/* Clickable row */
+.clickableRow {
+  cursor: pointer;
+}
+
+/* Customer info block */
+.customerInfo {
+  line-height: 1.8;
 }
