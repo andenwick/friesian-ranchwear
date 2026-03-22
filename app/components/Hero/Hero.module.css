@@ -16,6 +16,37 @@
   padding: var(--space-lg);
 }
 
+/* Entrance animation — gated behind hydration to prevent double-play */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:global([data-hydrated]) .title,
+:global([data-hydrated]) .subtitle,
+:global([data-hydrated]) .cta {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:global([data-hydrated]) .title {
+  animation-delay: 0.1s;
+}
+
+:global([data-hydrated]) .subtitle {
+  animation-delay: 0.35s;
+}
+
+:global([data-hydrated]) .cta {
+  animation-delay: 0.55s;
+}
+
+
 .title {
   font-family: var(--font-display);
   font-weight: 600;

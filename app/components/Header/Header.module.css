@@ -4,48 +4,64 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: var(--space-md) var(--space-lg);
+  padding: 0 var(--space-xl);
+  height: 64px;
   background: rgba(12, 12, 12, 0);
   backdrop-filter: blur(0px);
   -webkit-backdrop-filter: blur(0px);
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-8px);
   transition:
-    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    background 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease,
+    backdrop-filter 0.25s ease;
   pointer-events: none;
 }
 
 .header.visible {
-  background: rgba(12, 12, 12, 0.9);
+  background: rgba(12, 12, 12, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
+/* Skip transition when header is always visible (admin, products page) */
+.header.alwaysVisible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  background: rgba(12, 12, 12, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: none;
+}
+
+/* Main flex container — logo left, actions right, vertically centered */
 .container {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 100%;
 }
 
+/* Brand — logo + wordmark on same baseline */
 .brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
   text-decoration: none;
 }
 
 .logo {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
 }
 
@@ -56,26 +72,30 @@
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-parchment);
+  line-height: 1;
 }
 
+/* Right-side actions — all items share same vertical center */
 .nav {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  height: 100%;
 }
 
 .authMenu {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
 }
 
+/* Icon buttons — consistent size, flex-centered */
 .iconButton {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   position: relative;
   background: transparent;
   border: none;
@@ -94,42 +114,47 @@
 }
 
 .iconButton svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.5;
 }
 
+/* Admin link — inline-flex for proper vertical centering with icons */
 .adminLink {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-body);
-  font-size: var(--font-size-xs);
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
-  color: var(--color-brass);
+  color: var(--color-stone);
   text-decoration: none;
-  padding: var(--space-xs) var(--space-sm);
-  border: 1px solid rgba(139, 115, 85, 0.4);
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  line-height: 1;
   transition: all var(--transition-fast);
 }
 
 .adminLink:hover {
-  background: var(--color-brass);
-  color: var(--color-black);
-  border-color: var(--color-brass);
+  color: var(--color-parchment);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Cart count badge */
 .cartCount {
   position: absolute;
   top: 2px;
   right: 2px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  background: var(--color-brass);
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background: var(--color-parchment);
   color: var(--color-black);
   font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 16px;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 14px;
   text-align: center;
   border-radius: 50%;
 }
