@@ -61,8 +61,8 @@ tasks/
 # Git mailmap (local author mapping)
 .mailmap
 
-# Internal docs (client-specific)
-/docs/
+# Private client material. Engineering documentation under /docs is tracked.
+/docs/private/
 
 # Test/dev images
 logo-check.png

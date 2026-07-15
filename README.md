@@ -1,65 +1,67 @@
 # Friesian Ranchwear
 
-E-commerce site for a western/streetwear apparel brand. Full checkout flow with Stripe, admin dashboard for order and product management, and a product catalog backed by PostgreSQL.
+Production e-commerce application for Friesian Ranchwear. The repository contains the public storefront, customer accounts, Stripe checkout, order tracking, product and inventory administration, review moderation, and email capture.
 
-## Features
+Production: [friesianranchwear.com](https://friesianranchwear.com)
 
-- **Product catalog** -- filterable grid with color swatches, size selection, and image galleries
-- **Checkout** -- Stripe Payment Element with inventory reservation, stock validation, tax calculation, and webhook-driven order fulfillment
-- **Admin dashboard** -- order management, product CRUD with Cloudinary image uploads, email subscriber list, review moderation
-- **Auth** -- NextAuth with credential-based signup/signin, admin role gating
-- **Reviews** -- verified-purchaser reviews with half-star ratings and admin approval workflow
-- **Order tracking** -- customers can track orders by email without an account
-- **Email capture** -- newsletter signup form
-- **Error monitoring** -- Sentry integration for both client and server
+## Start here
+
+- [System architecture](docs/architecture.md)
+- [Domain model and invariants](docs/domain-model.md)
+- [Operations and incident runbook](docs/operations.md)
+- [Testing and release checks](docs/testing.md)
+- [Design system](docs/design-system.md)
+- [Engineering assessment and roadmap](docs/engineering-assessment.md)
+- [Contributing workflow](CONTRIBUTING.md)
 
 ## Stack
 
-| Layer | Tech |
-|-------|------|
-| Framework | Next.js (App Router) |
-| Language | JavaScript |
-| Database | PostgreSQL, Prisma ORM |
-| Payments | Stripe (Payment Intents + Webhooks + Tax) |
-| Auth | NextAuth.js |
-| Images | Cloudinary |
-| Monitoring | Sentry |
+| Concern | Implementation |
+| --- | --- |
+| Application | Next.js App Router, React, JavaScript |
+| Database | PostgreSQL through Prisma |
+| Authentication | NextAuth credentials and JWT sessions |
+| Payments and tax | Stripe Payment Intents, Stripe Tax, webhooks |
+| Product images | Cloudinary, with legacy Google Drive support |
+| Mailing list | Google Sheets |
 | Hosting | Railway |
+| Optional telemetry | Sentry and consent-gated Google Analytics |
+| Tests | Vitest and Playwright |
 
-## Project Structure
+## Local setup
 
-```
-app/
-├── page.js                # Landing page (hero, brand story, product showcase)
-├── products/              # Product catalog with filtering
-├── checkout/              # Stripe checkout + success page
-├── track-order/           # Order lookup by email
-├── account/               # Customer account + order history
-├── admin/                 # Admin dashboard (orders, products, emails, reviews)
-├── auth/                  # Sign in / sign up
-├── api/                   # API routes (checkout, webhooks, products, admin)
-└── components/            # Shared UI components
+Requirements:
 
-components/                # Top-level reusable components
-lib/                       # Database client, auth config, utilities
-prisma/                    # Schema
-public/                    # Static assets
-```
-
-## Setup
+- Node.js 20
+- PostgreSQL
+- A `.env.local` based on `.env.example`
 
 ```bash
-npm install
-cp .env.example .env.local   # Fill in credentials (see .env.example for required vars)
+npm ci
 npx prisma generate
-npx prisma db push           # Push schema to database
+npx prisma db push
 npm run dev
 ```
 
+`prisma db push` is acceptable only for a disposable local database. The production database does not yet have a migration history. Do not use `db push` against production. See [the database section of the engineering assessment](docs/engineering-assessment.md#p0-before-the-next-payment-or-schema-feature).
+
+## Verification
+
+```bash
+npm test
+npm run test:e2e
+npm run audit:prod
+npm run build
+```
+
+`npm run check` runs the unit suite, high-severity production dependency audit, and production build. Browser tests run separately because they start a development server and require Playwright Chromium.
+
 ## Deployment
 
-Auto-deploys from `main` via Railway.
+Merges to `main` deploy automatically through Railway. The service is considered healthy only when `/api/health` can reach PostgreSQL. Stripe payment state is synchronized through `/api/webhooks/stripe`.
+
+Read [docs/operations.md](docs/operations.md) before changing payments, environment variables, deployment configuration, or the production database.
 
 ## License
 
-Proprietary -- All rights reserved.
+Proprietary. All rights reserved.
