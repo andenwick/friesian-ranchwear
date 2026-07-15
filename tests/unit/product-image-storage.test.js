@@ -5,6 +5,7 @@ import {
   ProductImageError,
   deleteProductImage,
   getCloudinaryConfig,
+  getProductImagePublicId,
   getSafeImageErrorDetails,
   uploadProductImage,
   validateProductImage,
@@ -181,6 +182,34 @@ describe('product image storage', () => {
       expect(cloudinaryClient.config).toHaveBeenCalledOnce();
       expect(cloudinaryClient.uploader.destroy).toHaveBeenCalledWith(
         'friesian-ranchwear/products/hat'
+      );
+    });
+
+    it('derives the stored image identifier from its Cloudinary URL', () => {
+      expect(getProductImagePublicId(
+        'https://res.cloudinary.com/friesian-cloud/image/upload/v123/friesian-ranchwear/products/black-hat.webp',
+        validEnvironment
+      )).toBe('friesian-ranchwear/products/black-hat');
+    });
+
+    it('does not derive identifiers for unrelated Cloudinary folders', () => {
+      expect(getProductImagePublicId(
+        'https://res.cloudinary.com/friesian-cloud/image/upload/v123/other/customer-photo.jpg',
+        validEnvironment
+      )).toBeNull();
+    });
+
+    it('can delete a saved image using only its delivery URL', async () => {
+      const cloudinaryClient = createCloudinaryClient();
+
+      await deleteProductImage({
+        url: 'https://res.cloudinary.com/friesian-cloud/image/upload/v123/friesian-ranchwear/products/black-hat.webp',
+        cloudinaryClient,
+        environment: validEnvironment,
+      });
+
+      expect(cloudinaryClient.uploader.destroy).toHaveBeenCalledWith(
+        'friesian-ranchwear/products/black-hat'
       );
     });
   });

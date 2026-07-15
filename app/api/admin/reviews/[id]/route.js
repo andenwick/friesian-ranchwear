@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { decodeReviewRating } from '@/lib/review-rating';
 
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
@@ -43,7 +44,7 @@ export async function GET(request, { params }) {
       productName: review.product.name,
       userId: review.userId,
       userName: review.user.name || review.user.email,
-      rating: review.rating,
+      rating: decodeReviewRating(review.rating),
       title: review.title,
       body: review.body,
       approved: review.approved,

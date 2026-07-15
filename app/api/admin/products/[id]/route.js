@@ -2,6 +2,25 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { v2 as cloudinary } from 'cloudinary';
+import {
+  deleteProductImage,
+  getProductImagePublicId,
+  getSafeImageErrorDetails,
+} from '@/lib/product-image-storage';
+
+async function cleanupStoredProductImages(urls) {
+  for (const url of urls) {
+    const publicId = getProductImagePublicId(url);
+    if (!publicId) continue;
+
+    try {
+      await deleteProductImage({ publicId, cloudinaryClient: cloudinary });
+    } catch (error) {
+      console.error('Stored product image cleanup failed:', getSafeImageErrorDetails(error));
+    }
+  }
+}
 
 // Middleware to check admin access
 async function checkAdmin() {
@@ -65,6 +84,7 @@ export async function PUT(request, { params }) {
       : null;
 
     // Update product in a transaction
+    let removedImageUrls = [];
     const product = await prisma.$transaction(async (tx) => {
       // Update main product
       await tx.product.update({
@@ -89,6 +109,14 @@ export async function PUT(request, { params }) {
       // Delete variants not in incoming list
       const variantsToDelete = existingVariantIds.filter(vid => !incomingVariantIds.includes(vid));
       if (variantsToDelete.length > 0) {
+        const usedVariantCount = await tx.orderItem.count({
+          where: { variantId: { in: variantsToDelete } },
+        });
+        if (usedVariantCount > 0) {
+          const error = new Error('A sold variant cannot be removed. Set its stock to 0 instead.');
+          error.code = 'VARIANT_HAS_ORDER_HISTORY';
+          throw error;
+        }
         await tx.productVariant.deleteMany({
           where: { id: { in: variantsToDelete } },
         });
@@ -133,6 +161,9 @@ export async function PUT(request, { params }) {
       // Delete images not in incoming list
       const imagesToDelete = existingImageIds.filter(iid => !incomingImageIds.includes(iid));
       if (imagesToDelete.length > 0) {
+        removedImageUrls = existingImages
+          .filter(image => imagesToDelete.includes(image.id))
+          .map(image => image.url);
         await tx.productImage.deleteMany({
           where: { id: { in: imagesToDelete } },
         });
@@ -176,9 +207,20 @@ export async function PUT(request, { params }) {
       });
     });
 
+    await cleanupStoredProductImages(removedImageUrls);
+
     return NextResponse.json(product);
   } catch (error) {
     console.error('Failed to update product:', error);
+    if (error?.code === 'VARIANT_HAS_ORDER_HISTORY') {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A SKU is already in use or this size and color variant already exists.' },
+        { status: 409 }
+      );
+    }
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
@@ -193,10 +235,35 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
 
+    const product = await prisma.product.findUnique({
+      where: { id },
+      select: {
+        images: { select: { url: true } },
+        variants: {
+          select: {
+            _count: { select: { orderItems: true } },
+          },
+        },
+      },
+    });
+
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    if (product.variants.some(variant => variant._count.orderItems > 0)) {
+      return NextResponse.json(
+        { error: 'This product has order history and cannot be deleted. Set it inactive instead.' },
+        { status: 409 }
+      );
+    }
+
     // Delete product (cascade will handle variants and images)
     await prisma.product.delete({
       where: { id },
     });
+
+    await cleanupStoredProductImages(product.images.map(image => image.url));
 
     return NextResponse.json({ success: true });
   } catch (error) {

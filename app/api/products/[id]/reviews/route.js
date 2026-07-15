@@ -2,6 +2,11 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
+import {
+  decodeReviewRating,
+  encodeReviewRating,
+  isValidReviewRating,
+} from '@/lib/review-rating';
 
 // GET /api/products/[id]/reviews - Get approved reviews for a product
 export async function GET(request, { params }) {
@@ -22,13 +27,13 @@ export async function GET(request, { params }) {
     });
 
     // Calculate average rating
-    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const totalRating = reviews.reduce((sum, r) => sum + decodeReviewRating(r.rating), 0);
     const averageRating = reviews.length > 0 ? totalRating / reviews.length : 0;
 
     // Transform for frontend
     const transformedReviews = reviews.map(review => ({
       id: review.id,
-      rating: review.rating,
+      rating: decodeReviewRating(review.rating),
       title: review.title,
       body: review.body,
       authorName: review.user.name || 'Customer',
@@ -60,8 +65,8 @@ export async function POST(request, { params }) {
     const { rating, title, body } = await request.json();
 
     // Validate rating (0.5 to 5 in 0.5 increments)
-    if (typeof rating !== 'number' || rating < 0.5 || rating > 5) {
-      return NextResponse.json({ error: 'Rating must be between 0.5 and 5' }, { status: 400 });
+    if (!isValidReviewRating(rating)) {
+      return NextResponse.json({ error: 'Rating must be from 0.5 to 5 in half-star steps' }, { status: 400 });
     }
 
     // Check if product exists
@@ -115,7 +120,7 @@ export async function POST(request, { params }) {
         productId,
         userId: session.user.id,
         orderId: userOrder.id,
-        rating: Math.round(rating * 2) / 2, // Ensure 0.5 increments
+        rating: encodeReviewRating(rating),
         title: title?.trim() || null,
         body: body?.trim() || null,
         approved: false, // Requires admin approval
@@ -127,7 +132,7 @@ export async function POST(request, { params }) {
       message: 'Review submitted and pending approval',
       review: {
         id: review.id,
-        rating: review.rating,
+        rating: decodeReviewRating(review.rating),
       }
     }, { status: 201 });
   } catch (error) {
