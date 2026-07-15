@@ -113,6 +113,9 @@ export async function PUT(request, { params }) {
 
     return NextResponse.json({
       success: true,
+      warning: ['PAID', 'CANCELLED', 'REFUNDED'].includes(status)
+        ? 'Order status changed. No Stripe payment action was performed.'
+        : null,
       order: {
         id: order.id,
         status: order.status,

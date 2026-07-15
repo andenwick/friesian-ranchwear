@@ -37,7 +37,8 @@ export default function ProductsPage() {
       if (res.ok) {
         setProducts(products.filter(p => p.id !== productId));
       } else {
-        alert('Failed to delete product');
+        const data = await res.json().catch(() => null);
+        alert(data?.error || 'Failed to delete product');
       }
     } catch (err) {
       console.error('Delete failed:', err);
@@ -171,7 +172,9 @@ export default function ProductsPage() {
                       </span>
                     </td>
                     <td>
-                      {totalStock === 0 ? (
+                      {!product.active ? (
+                        <span className={`${styles.badge} ${styles.badgeDraft}`}>Inactive</span>
+                      ) : totalStock === 0 ? (
                         <span className={`${styles.badge} ${styles.badgeOutOfStock}`}>Out of Stock</span>
                       ) : isLowStock ? (
                         <span className={`${styles.badge} ${styles.badgeDraft}`}>Low Stock</span>

@@ -183,7 +183,7 @@ model Review {
   productId   String
   userId      String
   orderId     String?      // Link to order to verify purchase
-  rating      Int          // 1-5
+  rating      Int          // Half-star units: 1 = 0.5 stars, 10 = 5 stars
   title       String?
   body        String?
   approved    Boolean      @default(false) // Gustavo approves before showing

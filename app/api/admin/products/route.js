@@ -91,6 +91,12 @@ export async function POST(request) {
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
     console.error('Failed to create product:', error);
+    if (error?.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A SKU is already in use or this size and color variant already exists.' },
+        { status: 409 }
+      );
+    }
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }

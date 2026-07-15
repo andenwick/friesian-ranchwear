@@ -252,16 +252,24 @@ export default function ProductForm() {
   const deleteImage = async (index) => {
     const image = product.images[index];
 
-    // If it has a publicId, delete from Cloudinary
-    if (image.publicId) {
+    // Unsaved uploads can be removed immediately. Saved image cleanup happens
+    // after the product update succeeds so cancelling an edit cannot break it.
+    if (image.publicId && !image.id) {
       try {
-        await fetch('/api/admin/upload', {
+        const response = await fetch('/api/admin/upload', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ publicId: image.publicId }),
         });
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
+          setError(data?.error || 'Failed to delete image');
+          return;
+        }
       } catch (err) {
         console.error('Failed to delete from Cloudinary:', err);
+        setError('Failed to delete image');
+        return;
       }
     }
 

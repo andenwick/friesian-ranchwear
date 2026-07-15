@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import styles from '../admin.module.css';
 
 const STATUS_OPTIONS = [
@@ -146,9 +146,8 @@ export default function ReviewsPage() {
             </thead>
             <tbody>
               {reviews.map((review) => (
-                <>
+                <Fragment key={review.id}>
                   <tr
-                    key={review.id}
                     onClick={() => setExpandedReview(expandedReview === review.id ? null : review.id)}
                     className={styles.clickableRow}
                   >
@@ -221,7 +220,7 @@ export default function ReviewsPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>

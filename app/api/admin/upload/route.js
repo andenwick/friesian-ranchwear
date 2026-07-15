@@ -55,10 +55,11 @@ export async function DELETE(request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { publicId } = await request.json();
+    const { publicId, url } = await request.json();
 
     await deleteProductImage({
       publicId,
+      url,
       cloudinaryClient: cloudinary,
     });
 

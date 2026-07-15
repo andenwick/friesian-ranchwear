@@ -16,6 +16,12 @@ const STATUS_OPTIONS = [
   { value: 'REFUNDED', label: 'Refunded' },
 ];
 
+const FINANCIAL_STATUS_WARNINGS = {
+  PAID: 'This only changes the website status. It does not charge the customer. Continue?',
+  CANCELLED: 'This only changes the website status. It does not cancel or refund the Stripe payment. Continue?',
+  REFUNDED: 'This only changes the website status. It does not send money back through Stripe. Continue?',
+};
+
 export default function OrderDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -45,6 +51,9 @@ export default function OrderDetailPage() {
   }
 
   async function updateStatus(newStatus) {
+    const warning = FINANCIAL_STATUS_WARNINGS[newStatus];
+    if (warning && !confirm(warning)) return;
+
     setUpdating(true);
     try {
       const res = await fetch(`/api/admin/orders/${params.id}`, {
@@ -197,6 +206,9 @@ export default function OrderDetailPage() {
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
+            <p className={`${styles.textXs} ${styles.textMuted}`} style={{ marginTop: '10px', lineHeight: 1.5 }}>
+              Paid, Cancelled, and Refunded only change the website label. Handle the payment in Stripe first.
+            </p>
           </div>
 
           {/* Customer Info */}
