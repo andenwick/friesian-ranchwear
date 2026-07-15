@@ -13,7 +13,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "audit:prod": "npm audit --omit=dev --audit-level=high",
+    "check": "npm run test && npm run audit:prod && npm run build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",
