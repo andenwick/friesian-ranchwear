@@ -124,7 +124,7 @@ function SuccessContent() {
 
         <p className={styles.message}>
           We've received your order and will begin processing it shortly.
-          You'll receive an email confirmation with tracking information once your order ships.
+          Save your order number so you can check its status from the Track Order page.
         </p>
 
         <div className={styles.actions}>

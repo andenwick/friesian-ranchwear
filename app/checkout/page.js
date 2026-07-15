@@ -383,6 +383,10 @@ function CheckoutContent() {
             >
               {loading ? 'Processing...' : 'Continue to Payment'}
             </button>
+            <p style={{ marginTop: '12px', fontSize: '12px', color: 'var(--foreground-muted)', lineHeight: 1.5 }}>
+              By continuing, you agree to our <Link href="/terms">Terms</Link> and acknowledge our{' '}
+              <Link href="/privacy">Privacy Policy</Link>.
+            </p>
           </form>
         )}
       </div>
