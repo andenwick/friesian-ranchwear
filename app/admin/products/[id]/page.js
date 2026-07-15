@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import {
+  MAX_PRODUCT_IMAGE_BYTES,
+  PRODUCT_IMAGE_TYPE_ERROR,
+  isSupportedProductImage,
+} from '@/lib/product-image-rules';
 import styles from '../../admin.module.css';
 import formStyles from './form.module.css';
 
@@ -179,13 +184,13 @@ export default function ProductForm() {
     setError('');
 
     for (const file of files) {
-      if (!file.type.startsWith('image/')) {
-        setError('Please upload only image files');
+      if (!isSupportedProductImage(file)) {
+        setError(PRODUCT_IMAGE_TYPE_ERROR);
         continue;
       }
 
-      if (file.size > 10 * 1024 * 1024) {
-        setError('Image must be less than 10MB');
+      if (file.size > MAX_PRODUCT_IMAGE_BYTES) {
+        setError('Image must be 10MB or smaller');
         continue;
       }
 
@@ -209,8 +214,8 @@ export default function ProductForm() {
             ],
           }));
         } else {
-          const data = await res.json();
-          setError(data.error || 'Failed to upload image');
+          const data = await res.json().catch(() => null);
+          setError(data?.error || `Failed to upload image (${res.status})`);
         }
       } catch (err) {
         console.error('Upload error:', err);
@@ -538,7 +543,7 @@ export default function ProductForm() {
                   Drag & drop images here or click to browse
                 </span>
                 <span className={formStyles.dropZoneHint}>
-                  PNG, JPG up to 10MB
+                  JPG, PNG, WebP, HEIC, or AVIF up to 10MB
                 </span>
               </>
             )}
