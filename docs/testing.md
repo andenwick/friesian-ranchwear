@@ -1,12 +1,13 @@
 # Testing and release verification
 
-Last verified: July 15, 2026
+Last verified: July 16, 2026
 
 ## Current baseline
 
 | Suite | Result | Scope |
 | --- | --- | --- |
 | Vitest | 28 passing tests in 6 files | Email normalization, image storage, rating encoding, payment-status classification, basic validation |
+| PostgreSQL integration | 9 passing tests in 1 file | Reservation atomicity, rollback, concurrency, lifecycle idempotence, and expired cleanup |
 | Playwright | 13 passing, 1 intentionally skipped | Homepage, responsive overflow, policy pages, mocked signup success, invalid subscription API requests |
 | Production build | Passing on Next.js 16.2.10 | Route compilation and static generation |
 | Production dependency audit | Passes at high severity | Low and moderate transitive advisories remain |
@@ -18,6 +19,7 @@ The counts are evidence of a working baseline, not broad domain coverage.
 ```bash
 npm test
 npm run test:watch
+npm run test:integration
 npm run test:e2e
 npm run test:e2e:ui
 npm run audit:prod
@@ -27,14 +29,23 @@ npm run check
 
 `npm run check` runs unit tests, the high-severity production dependency audit, and the production build. It expects the normal application environment to exist.
 
+## PostgreSQL integration tests
+
+`npm run test:integration` requires `DATABASE_URL` to target PostgreSQL on `localhost`, `127.0.0.1`, or `::1`, with the database name exactly `friesian_test`. The runner refuses all other targets before invoking Prisma. It runs `prisma db push` against that disposable database and then executes the integration configuration serially.
+
+The suite owns the entire `friesian_test` database and deletes application records between tests. Do not use a shared development database. This harness does not establish or validate the production migration baseline.
+
 ## CI environment
 
-GitHub Actions runs two jobs:
+GitHub Actions runs three jobs:
 
 1. unit tests, production dependency audit, and production build;
-2. Playwright Chromium tests.
+2. PostgreSQL 17 integration tests against an isolated service container;
+3. Playwright Chromium tests.
 
-CI uses a syntactically valid, unreachable PostgreSQL URL. Existing tests do not require database queries. The catalog response is mocked in homepage tests, and subscription tests stop at validation before Google Sheets access.
+The unit/build and browser jobs use a syntactically valid, unreachable PostgreSQL URL because those suites do not query the database. The catalog response is mocked in homepage tests, and subscription tests stop at validation before Google Sheets access.
+
+The database job overrides that placeholder with its isolated `friesian_test` service. Its static credentials exist only inside the disposable CI job.
 
 If a test starts querying PostgreSQL, it must use an explicit test database service and isolated fixtures. Do not point CI at production.
 
@@ -47,6 +58,17 @@ Good isolated coverage:
 - subscriber email normalization and duplicate comparison
 - basic email validation
 - Stripe PaymentIntent status classification and cancel/success race reread
+
+Good PostgreSQL coverage:
+
+- atomic stock decrement and pending-order creation
+- rollback when a later cart item is unavailable
+- concurrent reservation of the final stock unit
+- concurrent and repeated cancellation without double restocking
+- paid-order protection from later cancellation
+- successful-payment conflict with an already-cancelled order
+- full-refund state projection without inventory mutation
+- expired reservation cancellation and paid-payment preservation
 
 Good browser smoke coverage:
 
@@ -71,13 +93,10 @@ The skipped successful subscription test would write to a real sheet if enabled.
 ### P0
 
 - checkout request validation and server-side price authority
-- atomic stock reservation and order creation
 - insufficient aggregate stock for duplicate cart lines
 - PaymentIntent cancellation when the database transaction fails
 - webhook signature rejection
-- succeeded, failed, canceled, repeated, and out-of-order webhook behavior
-- full refund projection
-- expired reservation cleanup with real transaction behavior
+- event-to-domain routing for succeeded, failed, canceled, and refunded webhooks
 - admin authorization across every protected route
 - public order lookup response privacy
 

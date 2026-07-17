@@ -2,7 +2,7 @@
 
 **Status:** current-state model
 
-**Last verified:** July 15, 2026
+**Last verified:** July 16, 2026
 
 ## Context
 
@@ -53,8 +53,10 @@ The repository currently has no database migration history and the deploy does n
 | `app/components/` | Storefront and account UI components |
 | `components/` | Root providers, cart drawer, consent, analytics, and error boundary |
 | `lib/` | Prisma, auth, Stripe, cart state, image storage, rate limiting, and small domain helpers |
+| `lib/order-lifecycle.js` | Injected database transactions for reservation and payment-state projection |
 | `prisma/schema.prisma` | Relational data model |
 | `tests/unit/` | Vitest tests for isolated helpers |
+| `tests/integration/` | PostgreSQL-backed order and inventory transaction tests |
 | `tests/e2e/` | Playwright browser and shallow API checks |
 | `docs/` | Tracked engineering documentation |
 | `.interface-design/` | Compatibility pointer for older design tooling |
@@ -181,7 +183,7 @@ Both are optional. Analytics loads only after local consent. Sentry code initial
 
 ## Boundary debt
 
-- Checkout, product editing, and webhook routes contain domain orchestration directly.
+- Product editing and parts of checkout and webhook processing still contain domain orchestration directly.
 - Prisma is called from most route handlers, so business behavior is hard to test without module mocking.
 - Request validation is handwritten and inconsistent.
 - Rate limiting is process-local and does not coordinate across replicas or restarts.
@@ -190,4 +192,4 @@ Both are optional. Analytics loads only after local consent. Sentry code initial
 - Financial and fulfillment status share one enum.
 - Large client components combine networking, state machines, validation, and presentation.
 
-The preferred evolution is incremental extraction. Keep the monolith, but move payment, order, inventory, product, and authorization rules into focused services that receive Prisma and provider adapters as inputs. Do not start with a framework or directory rewrite.
+The preferred evolution is incremental extraction. `lib/order-lifecycle.js` is the first example: routes retain HTTP and provider concerns while injected database operations can run against PostgreSQL in integration tests. Continue this pattern for payment, product, and authorization rules without starting a framework or directory rewrite.

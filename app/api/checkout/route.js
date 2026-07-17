@@ -6,6 +6,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { rateLimit, getClientIP } from '@/lib/rate-limit';
 import { cleanupExpiredPendingOrders } from '@/lib/order-reservations';
+import { reserveInventoryAndCreateOrder } from '@/lib/order-lifecycle';
 
 // Shipping constants
 const FREE_SHIPPING_THRESHOLD = 50;
@@ -188,43 +189,27 @@ export async function POST(request) {
     });
 
     // Atomically decrement stock and create order in a single transaction
-    const order = await prisma.$transaction(async (tx) => {
-      // Decrement stock first — fails if insufficient
-      for (const item of orderItems) {
-        const updated = await tx.productVariant.updateMany({
-          where: { id: item.variantId, stock: { gte: item.quantity } },
-          data: { stock: { decrement: item.quantity } },
-        });
-        if (updated.count === 0) {
-          throw new Error(`Insufficient stock for ${item.productName}`);
-        }
-      }
-
-      // Create order inside the same transaction
-      return tx.order.create({
-        data: {
-          userId,
-          status: 'PENDING',
-          subtotal,
-          shipping: shippingCost,
-          tax,
-          total,
-          stripePaymentId: paymentIntent.id,
-          guestEmail: userId ? null : customer.email,
-          guestName: userId ? null : (customer.name || shipping.name),
-          guestPhone: userId ? null : (customer.phone || null),
-          shippingName: shipping.name,
-          shippingStreet: shipping.street,
-          shippingStreet2: shipping.street2 || null,
-          shippingCity: shipping.city,
-          shippingState: stateUpper,
-          shippingZip: shipping.zip,
-          shippingCountry: 'US',
-          items: {
-            create: orderItems,
-          },
-        },
-      });
+    const order = await reserveInventoryAndCreateOrder(prisma, {
+      orderData: {
+        userId,
+        status: 'PENDING',
+        subtotal,
+        shipping: shippingCost,
+        tax,
+        total,
+        stripePaymentId: paymentIntent.id,
+        guestEmail: userId ? null : customer.email,
+        guestName: userId ? null : (customer.name || shipping.name),
+        guestPhone: userId ? null : (customer.phone || null),
+        shippingName: shipping.name,
+        shippingStreet: shipping.street,
+        shippingStreet2: shipping.street2 || null,
+        shippingCity: shipping.city,
+        shippingState: stateUpper,
+        shippingZip: shipping.zip,
+        shippingCountry: 'US',
+      },
+      items: orderItems,
     });
 
     return NextResponse.json({

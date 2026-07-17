@@ -25,6 +25,8 @@ Also run `npm run test:e2e` for customer-facing, navigation, auth, cart, checkou
 
 For payment, inventory, database, admin-write, image-storage, or authentication changes, add focused tests for the failure path as well as the happy path.
 
+Payment, inventory, order-lifecycle, and Prisma query changes must also pass `npm run test:integration` against a disposable local `friesian_test` database. Never point that command at a shared development, preview, or production database.
+
 ## Database rules
 
 - Never run `prisma db push` against production.

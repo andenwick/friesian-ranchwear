@@ -2,6 +2,8 @@
 
 **Assessment date:** July 15, 2026
 
+**Progress updated:** July 16, 2026
+
 **Scope:** application code, data model, external integrations, tests, delivery workflow, operations, and design documentation
 
 **System reviewed:** Friesian Ranchwear at production `main` commit `2d67652`
@@ -70,7 +72,7 @@ The rate limiter resides in application memory. Multiple Railway instances, rest
 ### P0 — before the next payment or schema feature
 
 1. **Establish a Prisma migration baseline.** Compare the Prisma model with a fresh production-schema export, take and test a database backup, create a reviewed baseline, and make `prisma migrate deploy` the production path. Do not guess that the checked-in model perfectly matches production.
-2. **Create a PostgreSQL integration harness.** Test order creation, stock reservation, concurrent checkout, reservation expiry, webhook replay, failed payment, cancellation, and refund/restock behavior against an isolated database.
+2. **Extend the PostgreSQL integration harness.** The isolated harness now proves reservation/order atomicity, rollback, last-unit concurrency, lifecycle idempotence, refund projection, and expired cleanup. Add checkout HTTP price-authority tests, PaymentIntent compensation, webhook signature/routing, and broader out-of-order event coverage.
 3. **Separate financial and fulfillment state.** Add distinct payment and fulfillment fields, make Stripe PaymentIntent identity unique, persist processed webhook event IDs, and define partial-refund behavior.
 4. **Harden order tracking.** Require an order number plus email or use a time-bounded signed tracking link. Preserve response minimization and rate limiting.
 5. **Schedule cleanup and reconciliation.** Run reservation cleanup independently of customer/admin traffic and add a report or job that compares open local payments with Stripe.

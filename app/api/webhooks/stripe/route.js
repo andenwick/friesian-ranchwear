@@ -1,77 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
-
-async function cancelPendingOrderAndRestoreStock(paymentIntentId) {
-  return prisma.$transaction(async (tx) => {
-    // Only cancel pending orders to avoid regressing paid/shipped states.
-    const updated = await tx.order.updateMany({
-      where: { stripePaymentId: paymentIntentId, status: 'PENDING' },
-      data: { status: 'CANCELLED' },
-    });
-
-    if (updated.count === 0) {
-      return false;
-    }
-
-    const cancelledOrder = await tx.order.findFirst({
-      where: { stripePaymentId: paymentIntentId },
-      include: { items: true },
-    });
-
-    if (!cancelledOrder) {
-      return true;
-    }
-
-    for (const item of cancelledOrder.items) {
-      await tx.productVariant.update({
-        where: { id: item.variantId },
-        data: { stock: { increment: item.quantity } },
-      });
-    }
-
-    console.log('Stock restored for cancelled order:', cancelledOrder.id);
-    return true;
-  });
-}
-
-async function markPendingOrderPaid(paymentIntentId) {
-  const updated = await prisma.order.updateMany({
-    where: { stripePaymentId: paymentIntentId, status: 'PENDING' },
-    data: { status: 'PAID' },
-  });
-
-  if (updated.count > 0) return true;
-
-  const existingOrder = await prisma.order.findFirst({
-    where: { stripePaymentId: paymentIntentId },
-    select: { status: true },
-  });
-
-  if (!existingOrder) {
-    throw new Error(`No order found for successful payment ${paymentIntentId}`);
-  }
-
-  if (['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'REFUNDED'].includes(existingOrder.status)) {
-    return false;
-  }
-
-  throw new Error(`Successful payment ${paymentIntentId} is attached to ${existingOrder.status} order`);
-}
-
-async function markOrderRefunded(paymentIntentId) {
-  if (!paymentIntentId) return false;
-
-  const updated = await prisma.order.updateMany({
-    where: {
-      stripePaymentId: paymentIntentId,
-      status: { in: ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'] },
-    },
-    data: { status: 'REFUNDED' },
-  });
-
-  return updated.count > 0;
-}
+import {
+  cancelPendingOrderAndRestoreStock,
+  markOrderRefunded,
+  markPendingOrderPaid,
+} from '@/lib/order-lifecycle';
 
 export async function POST(request) {
   const body = await request.text();
@@ -99,7 +33,7 @@ export async function POST(request) {
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const paymentIntent = event.data.object;
-        const changed = await markPendingOrderPaid(paymentIntent.id);
+        const changed = await markPendingOrderPaid(prisma, paymentIntent.id);
         console.log(changed ? 'Order marked as PAID' : 'Paid order already up to date');
         break;
       }
@@ -107,7 +41,7 @@ export async function POST(request) {
       case 'payment_intent.payment_failed':
       case 'payment_intent.canceled': {
         const paymentIntent = event.data.object;
-        const cancelled = await cancelPendingOrderAndRestoreStock(paymentIntent.id);
+        const cancelled = await cancelPendingOrderAndRestoreStock(prisma, paymentIntent.id);
         console.log(cancelled ? 'Order cancelled and stock restored' : 'Cancelled order already up to date');
         break;
       }
@@ -118,7 +52,7 @@ export async function POST(request) {
           const paymentIntentId = typeof charge.payment_intent === 'string'
             ? charge.payment_intent
             : charge.payment_intent?.id;
-          const changed = await markOrderRefunded(paymentIntentId);
+          const changed = await markOrderRefunded(prisma, paymentIntentId);
           console.log(changed ? 'Order marked as REFUNDED' : 'Refunded order already up to date');
         }
         break;
