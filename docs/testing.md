@@ -6,8 +6,8 @@ Last verified: July 16, 2026
 
 | Suite | Result | Scope |
 | --- | --- | --- |
-| Vitest | 28 passing tests in 6 files | Email normalization, image storage, rating encoding, payment-status classification, basic validation |
-| PostgreSQL integration | 9 passing tests in 1 file | Reservation atomicity, rollback, concurrency, lifecycle idempotence, and expired cleanup |
+| Vitest | 39 passing tests in 8 files | Route contracts, email normalization, image storage, rating encoding, payment-status classification, basic validation |
+| PostgreSQL integration | 10 passing tests in 1 file | Reservation atomicity, rollback, aggregate stock, concurrency, lifecycle idempotence, and expired cleanup |
 | Playwright | 13 passing, 1 intentionally skipped | Homepage, responsive overflow, policy pages, mocked signup success, invalid subscription API requests |
 | Production build | Passing on Next.js 16.2.10 | Route compilation and static generation |
 | Production dependency audit | Passes at high severity | Low and moderate transitive advisories remain |
@@ -58,12 +58,17 @@ Good isolated coverage:
 - subscriber email normalization and duplicate comparison
 - basic email validation
 - Stripe PaymentIntent status classification and cancel/success race reread
+- checkout shipping validation before database/provider work
+- server-authoritative checkout price, product snapshot, tax input, and PaymentIntent amount
+- tax-failure short circuit and PaymentIntent compensation after reservation failure
+- webhook signature rejection, Stripe event mapping, and retry response on processing failure
 
 Good PostgreSQL coverage:
 
 - atomic stock decrement and pending-order creation
 - rollback when a later cart item is unavailable
 - concurrent reservation of the final stock unit
+- aggregate stock protection across duplicate cart lines
 - concurrent and repeated cancellation without double restocking
 - paid-order protection from later cancellation
 - successful-payment conflict with an already-cancelled order
@@ -92,13 +97,10 @@ The skipped successful subscription test would write to a real sheet if enabled.
 
 ### P0
 
-- checkout request validation and server-side price authority
-- insufficient aggregate stock for duplicate cart lines
-- PaymentIntent cancellation when the database transaction fails
-- webhook signature rejection
-- event-to-domain routing for succeeded, failed, canceled, and refunded webhooks
 - admin authorization across every protected route
 - public order lookup response privacy
+- combined route-plus-database checkout behavior using an isolated provider adapter
+- realistic signed webhook fixtures across repeated and out-of-order deliveries
 
 ### P1
 
