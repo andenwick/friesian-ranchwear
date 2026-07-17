@@ -53,4 +53,6 @@ npm run build
 
 Run `npm run test:e2e` when the change affects a browser flow. Payment and inventory changes require failure-path tests, not only a build.
 
+Run `npm run test:integration` for payment, inventory, order-lifecycle, or Prisma query changes. It is destructive to the schema it targets and therefore accepts only a local database named exactly `friesian_test`.
+
 Update the architecture, domain, operations, testing, or design documentation when a change makes any of those documents inaccurate.

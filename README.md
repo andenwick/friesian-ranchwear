@@ -49,12 +49,15 @@ npm run dev
 
 ```bash
 npm test
+npm run test:integration
 npm run test:e2e
 npm run audit:prod
 npm run build
 ```
 
 `npm run check` runs the unit suite, high-severity production dependency audit, and production build. Browser tests run separately because they start a development server and require Playwright Chromium.
+
+Integration tests require `DATABASE_URL` to point to a local PostgreSQL database named exactly `friesian_test`. The test runner refuses every other host or database name, synchronizes only that disposable schema, and then runs the database suite. See [the testing guide](docs/testing.md#postgresql-integration-tests).
 
 ## Deployment
 

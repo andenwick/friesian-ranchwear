@@ -94,6 +94,7 @@ After changing webhook code or environment values:
 Before merge:
 
 - `npm test`
+- `npm run test:integration` for payment, inventory, order-lifecycle, or Prisma query changes
 - `npm run audit:prod`
 - `npm run build`
 - `npm run test:e2e` when browser behavior changes
