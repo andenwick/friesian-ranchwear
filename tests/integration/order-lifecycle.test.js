@@ -153,6 +153,25 @@ describe('order reservation transactions', () => {
       prisma.productVariant.findUnique({ where: { id: variant.id }, select: { stock: true } })
     ).resolves.toEqual({ stock: 0 });
   });
+
+  it('rejects duplicate cart lines whose aggregate quantity exceeds stock', async () => {
+    const variant = await createVariant({ stock: 3 });
+
+    await expect(
+      reserveInventoryAndCreateOrder(prisma, {
+        orderData: orderData('pi_duplicate_lines'),
+        items: [
+          orderItem(variant, { quantity: 2 }),
+          orderItem(variant, { quantity: 2 }),
+        ],
+      })
+    ).rejects.toThrow('Insufficient stock for Test Ranchwear');
+
+    await expect(prisma.order.count()).resolves.toBe(0);
+    await expect(
+      prisma.productVariant.findUnique({ where: { id: variant.id }, select: { stock: true } })
+    ).resolves.toEqual({ stock: 3 });
+  });
 });
 
 describe('payment projection transactions', () => {
