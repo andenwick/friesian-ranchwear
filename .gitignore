@@ -28,6 +28,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+dev-preview.*.log
 .pnpm-debug.log*
 
 # env files

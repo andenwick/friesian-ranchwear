@@ -1,0 +1,223 @@
+.section {
+  padding: 120px 24px;
+  background:
+    radial-gradient(circle at 80% 12%, rgba(128, 103, 77, 0.13), transparent 26%),
+    var(--color-black);
+  overflow: hidden;
+}
+
+.intro,
+.editorialGrid,
+.filmPanel {
+  width: min(1440px, 100%);
+  margin-inline: auto;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 420px);
+  align-items: end;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+.eyebrow {
+  color: var(--color-brass-light);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.heading {
+  grid-column: 1;
+  font-family: var(--font-display);
+  font-size: clamp(64px, 11vw, 168px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 0.75;
+  color: var(--color-parchment);
+}
+
+.copy {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+  max-width: 32ch;
+  padding-bottom: 8px;
+  color: var(--color-stone);
+  font-size: clamp(17px, 2vw, 24px);
+  line-height: 1.35;
+}
+
+.editorialGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-auto-rows: 36vw;
+  max-height: 1320px;
+  gap: 8px;
+}
+
+.card {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  background: #151515;
+}
+
+.image {
+  object-fit: cover;
+  transform: scale(1.002);
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1), filter 900ms ease;
+  filter: saturate(0.82) contrast(1.08);
+}
+
+.card:hover .image {
+  transform: scale(1.035);
+  filter: saturate(1) contrast(1.04);
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 52%, rgba(0, 0, 0, 0.88));
+}
+
+.number,
+.label {
+  position: absolute;
+  z-index: 1;
+}
+
+.number {
+  top: 20px;
+  right: 20px;
+  color: rgba(242, 237, 232, 0.62);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.label {
+  left: 24px;
+  bottom: 22px;
+  color: var(--color-parchment);
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 46px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.filmPanel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  align-items: stretch;
+  margin-top: 120px;
+  border-top: 1px solid rgba(163, 141, 109, 0.35);
+  border-bottom: 1px solid rgba(163, 141, 109, 0.35);
+}
+
+.filmCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 56px clamp(24px, 5vw, 72px) 56px 0;
+}
+
+.filmCopy h3 {
+  margin: 26px 0 20px;
+  color: var(--color-parchment);
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 104px);
+  line-height: 0.82;
+}
+
+.filmCopy > p:not(.eyebrow) {
+  max-width: 38ch;
+  color: var(--color-stone);
+  font-size: 16px;
+}
+
+.link {
+  width: fit-content;
+  margin-top: 32px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-brass-light);
+  color: var(--color-brass-light);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.videoFrame {
+  position: relative;
+  min-height: 620px;
+  overflow: hidden;
+  background: #050505;
+}
+
+.videoFrame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: contrast(1.08) saturate(0.75);
+}
+
+.videoMark {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.62);
+  color: rgba(242, 237, 232, 0.7);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+}
+
+@media (max-width: 760px) {
+  .section {
+    padding: 88px 14px;
+  }
+
+  .intro {
+    display: block;
+    margin-bottom: 30px;
+  }
+
+  .heading {
+    margin: 24px 0;
+    font-size: clamp(66px, 24vw, 112px);
+    line-height: 0.78;
+  }
+
+  .copy {
+    font-size: 17px;
+  }
+
+  .editorialGrid {
+    display: block;
+    max-height: none;
+  }
+
+  .card {
+    min-height: 112vw;
+    margin-bottom: 6px;
+  }
+
+  .filmPanel {
+    display: flex;
+    flex-direction: column-reverse;
+    margin-top: 80px;
+  }
+
+  .filmCopy {
+    padding: 44px 10px 52px;
+  }
+
+  .videoFrame {
+    min-height: 118vw;
+  }
+}

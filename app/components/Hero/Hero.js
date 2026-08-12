@@ -28,12 +28,24 @@ export default function Hero() {
 
   return (
     <section className={styles.hero} ref={sectionRef}>
+      <video
+        className={styles.backdrop}
+        src="/campaign/friesian-liquid-morph-8s.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+      />
+      <div className={styles.scrim} />
+      <div className={styles.frameLabel}>FRIESIAN RANCHWEAR / DROP 001</div>
       <div className={styles.content}>
         <h1 className={styles.title} ref={titleRef}>
           FRIESIAN
         </h1>
         <p className={styles.subtitle}>
-          Nothing you wear is an accident.
+          The dark doesn&apos;t hide the details.
         </p>
         <a href="/products" className={styles.cta}>
           <span>SHOP COLLECTION</span>

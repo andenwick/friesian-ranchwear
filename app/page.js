@@ -1,5 +1,6 @@
 import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
+import CampaignDrop from "./components/CampaignDrop/CampaignDrop";
 import ProductShowcase from "./components/ProductShowcase/ProductShowcase";
 import ShopCta from "./components/ShopCta/ShopCta";
 import EmailSignup from "./components/EmailSignup/EmailSignup";
@@ -10,6 +11,7 @@ export default function Home() {
     <main>
       <Header />
       <Hero />
+      <CampaignDrop />
       <ProductShowcase />
       <ShopCta />
       <EmailSignup />

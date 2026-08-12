@@ -19,7 +19,7 @@ const barlowCondensed = Barlow_Condensed({
 
 export const metadata = {
   title: "Friesian Ranchwear",
-  description: "Nothing you wear is an accident.",
+  description: "Western streetwear built after dark. Limited Friesian Ranchwear drops.",
   icons: {
     icon: '/logo-white.png',
   },
