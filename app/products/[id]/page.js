@@ -11,7 +11,7 @@ import StarRating from '@/app/components/StarRating/StarRating';
 import ReviewCard from '@/app/components/ReviewCard/ReviewCard';
 import ReviewForm from '@/app/components/ReviewForm/ReviewForm';
 import { useCart } from '@/lib/cart-context';
-import { convertDriveUrl } from '@/lib/image-utils';
+import { convertDriveUrl, getProductImages } from '@/lib/image-utils';
 import styles from './page.module.css';
 
 export default function ProductDetailPage() {
@@ -213,6 +213,9 @@ export default function ProductDetailPage() {
 
   if (!product) return null;
 
+  const productImages = getProductImages(product);
+  const selectedImage = productImages[selectedImageIndex] || productImages[0];
+
   return (
     <div className={styles.pageWrapper}>
       <Header alwaysVisible={true} />
@@ -230,16 +233,10 @@ export default function ProductDetailPage() {
             {/* Image Section */}
             <div className={styles.imageSection}>
               <div className={styles.imageWrapper}>
-                {product.imageUrls && product.imageUrls.length > 0 ? (
+                {selectedImage ? (
                   <img
-                    src={convertDriveUrl(product.imageUrls[selectedImageIndex])}
-                    alt={`${product.name} - Image ${selectedImageIndex + 1}`}
-                    className={styles.productImage}
-                  />
-                ) : product.imageUrl ? (
-                  <img
-                    src={convertDriveUrl(product.imageUrl)}
-                    alt={product.name}
+                    src={convertDriveUrl(selectedImage.url)}
+                    alt={selectedImage.alt || `${product.name} - Image ${selectedImageIndex + 1}`}
                     className={styles.productImage}
                   />
                 ) : (
@@ -250,18 +247,19 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Thumbnail Navigation */}
-              {product.imageUrls && product.imageUrls.length > 1 && (
+              {productImages.length > 1 && (
                 <div className={styles.thumbnailNav}>
-                  {product.imageUrls.map((url, index) => (
+                  {productImages.map((image, index) => (
                     <button
-                      key={index}
+                      key={image.url}
                       className={`${styles.thumbnail} ${selectedImageIndex === index ? styles.thumbnailActive : ''}`}
                       onClick={() => setSelectedImageIndex(index)}
                       aria-label={`View image ${index + 1}`}
+                      aria-pressed={selectedImageIndex === index}
                     >
                       <img
-                        src={convertDriveUrl(url)}
-                        alt={`${product.name} thumbnail ${index + 1}`}
+                        src={convertDriveUrl(image.url)}
+                        alt={image.alt || `${product.name} thumbnail ${index + 1}`}
                       />
                     </button>
                   ))}
