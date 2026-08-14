@@ -15,11 +15,12 @@
 .skeletonCard {
   background: var(--color-charcoal);
   overflow: hidden;
+  height: 100%;
 }
 
 .skeletonImage {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 3;
   background: linear-gradient(
     90deg,
     var(--color-smoke) 25%,

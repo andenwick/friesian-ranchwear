@@ -1,5 +1,7 @@
 .card {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--color-charcoal);
   overflow: hidden;
   cursor: pointer;
@@ -12,8 +14,9 @@
 }
 
 .imageWrap {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
+  background: var(--color-black);
 }
 
 .image {
@@ -46,6 +49,9 @@
 
 .info {
   padding: var(--space-md);
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 .category {
@@ -69,11 +75,13 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 2.5em;
 }
 
 .price {
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
   color: var(--color-brass);
-  margin: var(--space-xs) 0 0;
+  margin: auto 0 0;
+  padding-top: var(--space-xs);
 }

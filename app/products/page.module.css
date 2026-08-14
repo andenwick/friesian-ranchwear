@@ -81,7 +81,7 @@
 }
 
 .skeletonImage {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 3;
   background: linear-gradient(
     90deg,
     var(--color-smoke) 25%,
