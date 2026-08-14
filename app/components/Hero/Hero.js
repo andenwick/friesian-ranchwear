@@ -6,29 +6,15 @@ export default function Hero() {
     <section className={styles.hero}>
       <div className={styles.content}>
         <h1 className={styles.title}>
-          <span className={styles.heroMark} aria-hidden="true">
-            <Image
-              src="/logo-white.png"
-              alt=""
-              width={512}
-              height={512}
-              priority
-              className={styles.heroMarkFallback}
-            />
-            <video
-              className={styles.heroMarkVideo}
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              poster="/logo-white.png"
-            >
-              <source
-                src="/friesian-logo-original-alpha.webm"
-                type="video/webm"
-              />
-            </video>
-          </span>
+          <Image
+            src="/logo-white.png"
+            alt=""
+            aria-hidden="true"
+            width={512}
+            height={512}
+            priority
+            className={styles.heroMark}
+          />
           <span className={styles.srOnly}>Friesian Ranchwear</span>
         </h1>
         <p className={styles.subtitle}>
