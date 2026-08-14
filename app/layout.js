@@ -21,7 +21,7 @@ export const metadata = {
   title: "Friesian Ranchwear",
   description: "Nothing you wear is an accident.",
   icons: {
-    icon: '/logo-white.png',
+    icon: '/friesian-favicon.png',
   },
 };
 

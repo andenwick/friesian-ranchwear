@@ -63,6 +63,29 @@
   width: 28px;
   height: 28px;
   object-fit: contain;
+  transform-origin: center;
+  filter:
+    brightness(1.12)
+    drop-shadow(0 0 2px rgba(242, 237, 232, 0.35));
+  animation: logoGlow 3.8s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+  0%,
+  100% {
+    transform: scale(1);
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 2px rgba(242, 237, 232, 0.3));
+  }
+
+  48% {
+    transform: scale(1.035);
+    filter:
+      brightness(1.35)
+      drop-shadow(0 0 4px rgba(242, 237, 232, 0.78))
+      drop-shadow(0 0 10px rgba(181, 210, 255, 0.34));
+  }
 }
 
 .wordmark {

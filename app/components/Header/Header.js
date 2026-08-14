@@ -35,7 +35,7 @@ export default function Header({ alwaysVisible = false }) {
       <div className={styles.container}>
         <a href="/" className={styles.brand}>
           <Image
-            src="/logo-white.png"
+            src="/friesian-logo-chrome.png"
             alt="Friesian Ranchwear"
             width={32}
             height={32}
