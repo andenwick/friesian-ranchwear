@@ -1,36 +1,35 @@
-"use client";
-
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import { gsap } from "@/lib/gsap";
+import Image from "next/image";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-
-  // Scroll-triggered shimmer on title text
-  useGSAP(
-    () => {
-      gsap.to(titleRef.current, {
-        backgroundPosition: "-50% 50%",
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,
-        },
-      });
-    },
-    { scope: sectionRef }
-  );
-
   return (
-    <section className={styles.hero} ref={sectionRef}>
+    <section className={styles.hero}>
       <div className={styles.content}>
-        <h1 className={styles.title} ref={titleRef}>
-          FRIESIAN
+        <h1 className={styles.title}>
+          <span className={styles.heroMark} aria-hidden="true">
+            <Image
+              src="/friesian-logo-chrome.png"
+              alt=""
+              width={512}
+              height={512}
+              priority
+              className={styles.heroMarkFallback}
+            />
+            <video
+              className={styles.heroMarkVideo}
+              autoPlay
+              muted
+              playsInline
+              preload="auto"
+              poster="/friesian-logo-chrome.png"
+            >
+              <source
+                src="/friesian-logo-minimax-alpha.webm"
+                type="video/webm"
+              />
+            </video>
+          </span>
+          <span className={styles.srOnly}>Friesian Ranchwear</span>
         </h1>
         <p className={styles.subtitle}>
           Nothing you wear is an accident.
