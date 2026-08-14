@@ -8,7 +8,7 @@ export default function Hero() {
         <h1 className={styles.title}>
           <span className={styles.heroMark} aria-hidden="true">
             <Image
-              src="/friesian-logo-chrome.png"
+              src="/logo-white.png"
               alt=""
               width={512}
               height={512}
@@ -21,10 +21,10 @@ export default function Hero() {
               muted
               playsInline
               preload="auto"
-              poster="/friesian-logo-chrome.png"
+              poster="/logo-white.png"
             >
               <source
-                src="/friesian-logo-minimax-alpha.webm"
+                src="/friesian-logo-original-alpha.webm"
                 type="video/webm"
               />
             </video>
