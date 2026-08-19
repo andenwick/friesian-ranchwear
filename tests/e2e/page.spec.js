@@ -20,7 +20,7 @@ test.describe('Homepage production behavior', () => {
   test('renders the current customer journey', async ({ page }) => {
     await openHome(page);
 
-    await expect(page.getByRole('heading', { name: 'FRIESIAN FRIESIAN', exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Friesian Ranchwear', exact: true })).toBeVisible();
     await expect(page.getByText('Nothing you wear is an accident.')).toBeVisible();
     await expect(page.getByRole('link', { name: 'SHOP COLLECTION' })).toHaveAttribute('href', '/products');
     await expect(page.getByText('Built for this. Limited runs. No restocks.')).toBeVisible();
