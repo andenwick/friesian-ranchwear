@@ -1,6 +1,10 @@
 # Domain model and invariants
 
-Last verified: July 15, 2026
+Last verified: September 10, 2026
+
+This document describes the reviewed payment-integrity candidate. Production remains
+on commit `1282322c62c5e04bf474fd7a832c4383a4fa696d` until the baseline and additive
+migration are separately approved and applied before the matching app release.
 
 ## Ownership
 
@@ -25,6 +29,10 @@ erDiagram
     PRODUCT ||--o{ PRODUCT_IMAGE : has
     PRODUCT ||--o{ REVIEW : receives
     ORDER ||--|{ ORDER_ITEM : contains
+    ORDER o|--o| CHECKOUT_ATTEMPT : created_by
+    ORDER o|--o{ STRIPE_EVENT : projected_from
+    ORDER ||--o{ FINANCIAL_OPERATION : requires
+    ORDER ||--o{ ADMIN_ORDER_EVENT : audited_by
     PRODUCT_VARIANT ||--o{ ORDER_ITEM : purchased_as
 
     USER {
@@ -37,18 +45,24 @@ erDiagram
       string id PK
       decimal basePrice
       boolean active
-      string featuresJson
+      string features
     }
     PRODUCT_VARIANT {
       string id PK
       string sku UK
       int stock
-      decimal priceOverride
+      decimal price
     }
     ORDER {
       string id PK
       string stripePaymentId
       enum status
+      enum paymentStatus
+      int paymentAmountCents
+      string paymentCurrency
+      int amountRefundedCents
+      string stripeTaxCalculationId
+      string stripeTaxTransactionId
       decimal subtotal
       decimal shipping
       decimal tax
@@ -58,12 +72,44 @@ erDiagram
       string id PK
       int quantity
       decimal unitPrice
-      string productNameSnapshot
+      string productName
     }
     REVIEW {
       string id PK
-      int halfStarUnits
+      int rating
       boolean approved
+    }
+    CHECKOUT_ATTEMPT {
+      string id PK
+      string actorScopeHash
+      string keyHash
+      string payloadHash
+      enum status
+      string leaseToken
+      datetime paymentCallStartedAt
+    }
+    STRIPE_EVENT {
+      string id PK
+      string type
+      string objectId
+      enum status
+      int attempts
+      datetime leaseExpiresAt
+    }
+    FINANCIAL_OPERATION {
+      string id PK
+      enum kind
+      enum status
+      string reference UK
+      string requestHash
+      string providerObjectId UK
+    }
+    ADMIN_ORDER_EVENT {
+      string id PK
+      string actorUserId
+      enum fromStatus
+      enum toStatus
+      string reason
     }
 ```
 
@@ -87,7 +133,8 @@ Known modeling gaps:
 - Product features are JSON stored in a string column rather than a typed JSON field or relation.
 - Category, size, and color are free-form strings.
 - Stock adjustments have no ledger, reason, actor, or audit timestamp beyond the variant update time.
-- Inventory reservation is represented only by decrementing stock and creating a `PENDING` order.
+- Inventory adjustment outside checkout has no reason/actor ledger. Checkout reservation
+  itself is linked to a durable `CheckoutAttempt`.
 
 ## Order totals
 
@@ -105,29 +152,68 @@ Client totals are previews and never authorize a charge.
 
 Amounts are stored as database decimals, but parts of the application calculate with JavaScript numbers before converting to cents for Stripe. A future commerce module should make integer cents the in-memory boundary.
 
-## Order state
+## Payment and fulfillment state
 
 ```mermaid
 stateDiagram-v2
-    [*] --> PENDING: checkout reserves stock
-    PENDING --> PAID: Stripe success webhook
-    PENDING --> CANCELLED: failed, canceled, or expired payment
-    PAID --> PROCESSING: admin fulfillment update
-    PROCESSING --> SHIPPED: admin fulfillment update
-    SHIPPED --> DELIVERED: admin fulfillment update
-    PAID --> REFUNDED: full refund webhook
-    PROCESSING --> REFUNDED: full refund webhook
-    SHIPPED --> REFUNDED: full refund webhook
-    DELIVERED --> REFUNDED: full refund webhook
+    state PaymentProjection {
+      [*] --> UNKNOWN: legacy backfill
+      [*] --> PENDING: candidate checkout
+      PENDING --> PAID: verified success webhook
+      PENDING --> CANCELLED: confirmed cancellation
+      PAID --> PARTIALLY_REFUNDED: cumulative refund below paid amount
+      PARTIALLY_REFUNDED --> PARTIALLY_REFUNDED: additional partial refund
+      PAID --> REFUNDED: full refund
+      PARTIALLY_REFUNDED --> REFUNDED: cumulative full refund
+    }
+
+    state FulfillmentProjection {
+      [*] --> ORDER_PENDING: checkout reservation
+      ORDER_PENDING --> ORDER_PAID: verified payment
+      ORDER_PENDING --> ORDER_CANCELLED: confirmed cancellation + one restock
+      ORDER_PAID --> PROCESSING: authorized admin + reason
+      PROCESSING --> SHIPPED: authorized admin + reason
+      SHIPPED --> DELIVERED: authorized admin + reason
+      ORDER_PAID --> ORDER_REFUNDED: full refund
+      PROCESSING --> ORDER_REFUNDED: full refund
+      SHIPPED --> ORDER_REFUNDED: full refund
+      DELIVERED --> ORDER_REFUNDED: full refund
+    }
 ```
 
-The code does not enforce this transition graph in one place. Admin users can currently set any enum value from any current status. `PAID`, `CANCELLED`, and `REFUNDED` admin changes are labels only and do not perform Stripe actions.
+The `ORDER_*` labels above are diagram aliases used to keep the two projections visually
+distinct. Their persisted values are the `OrderStatus` enum names without that prefix.
 
-The target model should separate:
+The fulfillment graph is enforced in `lib/order-status.js`. Admins cannot create financial
+states; verified payment is required before fulfillment, and actor/reason audit rows are
+committed atomically with the transition.
 
-- payment state: pending, paid, failed, canceled, partially refunded, refunded;
-- fulfillment state: unfulfilled, processing, shipped, delivered, returned;
-- operational exceptions: manual review, payment mismatch, inventory reconciliation.
+The additive expand-phase model separates:
+
+- payment projection: `UNKNOWN`, `PENDING`, `PAID`, `CANCELLED`,
+  `PARTIALLY_REFUNDED`, and `REFUNDED`;
+- fulfillment/order projection: `PENDING`, `PAID`, `PROCESSING`, `SHIPPED`,
+  `DELIVERED`, `CANCELLED`, and `REFUNDED`;
+- unresolved operational work: durable `RETRY`/`RECONCILE` states on Stripe events and
+  financial operations, plus checkout-attempt reconciliation.
+
+`CheckoutAttempt` has its own durable progression:
+
+```mermaid
+stateDiagram-v2
+    [*] --> INITIALIZING: accepted key + payload
+    INITIALIZING --> TAX_READY: Tax calculation persisted
+    TAX_READY --> RESERVED: stock + order committed
+    RESERVED --> READY: PaymentIntent linked
+    INITIALIZING --> FAILED: safe local failure
+    TAX_READY --> FAILED: safe pre-reservation failure
+    RESERVED --> RECONCILE: provider result uncertain past replay window
+```
+
+Leases and fencing allow an expired worker to be replaced without allowing its late
+completion to overwrite the new owner. Stripe events and financial operations follow
+the same `received/pending -> processing -> processed/succeeded` pattern, with retry
+and reconciliation states for unresolved work.
 
 ## Payment reconciliation
 
@@ -137,16 +223,15 @@ Current safeguards:
 
 - Webhooks require a valid Stripe signature.
 - Success updates only `PENDING` orders.
-- Failure or cancellation restores stock only for a `PENDING` order.
-- Repeated failure events do not restore stock twice.
+- A failed payment attempt leaves the order pending so the same PaymentIntent can be retried.
+- Cancellation restores stock only for a `PENDING` order.
+- Repeated cancellation events do not restore stock twice.
 - Cleanup re-reads Stripe after a failed cancellation to avoid releasing inventory for a payment that won a race.
 
-Missing persistence constraints:
-
-- `stripePaymentId` is not unique in the database.
-- Stripe webhook event IDs are not stored.
-- There is no reconciliation job comparing Stripe and order state.
-- Partial refunds have no representation.
+Persistence constraints and durable records now include unique PaymentIntent and Tax IDs,
+`StripeEvent`, `FinancialOperation`, refund cents bounded by the expected payment amount,
+and `CheckoutAttempt`. `npm run reconcile:report` exposes unresolved work; scheduling and
+alert routing remain deployment operations work.
 
 ## Customer identity and addresses
 
@@ -154,7 +239,10 @@ Accounts are optional. Guest order contact and shipping information are snapshot
 
 `Address` exists in the schema but no current checkout or account flow creates or selects address records. `addressId` is effectively dormant.
 
-Public email lookup returns order status, items, and totals for every matching order. It does not return the customer name or shipping address. Email possession is not verified, so this remains a privacy weakness even after address removal.
+Anonymous email-only history is disabled. Account history is scoped by immutable user ID.
+Guests receive a random single-order capability whose hash is stored server-side and whose
+raw value remains in the checkout browser for at most 30 days. It cannot authorize an
+account order or another guest order.
 
 ## Reviews
 

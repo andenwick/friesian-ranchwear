@@ -5,10 +5,16 @@ const mocks = vi.hoisted(() => ({
   getServerSession: vi.fn(),
   rateLimit: vi.fn(),
   reserveInventoryAndCreateOrder: vi.fn(),
+  claimCheckoutAttempt: vi.fn(),
+  claimExistingCheckoutAttempt: vi.fn(),
+  releaseCheckoutAttempt: vi.fn(),
+  prepareCheckoutPaymentCall: vi.fn(),
+  updateClaimedCheckoutAttempt: vi.fn(),
   stripe: {
     paymentIntents: {
       cancel: vi.fn(),
       create: vi.fn(),
+      retrieve: vi.fn(),
     },
     tax: {
       calculations: {
@@ -17,6 +23,7 @@ const mocks = vi.hoisted(() => ({
     },
   },
   prisma: {
+    $transaction: vi.fn(),
     productVariant: {
       findMany: vi.fn(),
     },
@@ -36,6 +43,14 @@ vi.mock('@/lib/order-reservations', () => ({
 }));
 vi.mock('@/lib/order-lifecycle', () => ({
   reserveInventoryAndCreateOrder: mocks.reserveInventoryAndCreateOrder,
+}));
+vi.mock('@/lib/checkout-attempts', () => ({
+  CheckoutAttemptError: class CheckoutAttemptError extends Error {},
+  claimCheckoutAttempt: mocks.claimCheckoutAttempt,
+  claimExistingCheckoutAttempt: mocks.claimExistingCheckoutAttempt,
+  releaseCheckoutAttempt: mocks.releaseCheckoutAttempt,
+  prepareCheckoutPaymentCall: mocks.prepareCheckoutPaymentCall,
+  updateClaimedCheckoutAttempt: mocks.updateClaimedCheckoutAttempt,
 }));
 
 import { POST } from '@/app/api/checkout/route';
@@ -62,10 +77,10 @@ const validCheckout = {
   },
 };
 
-function checkoutRequest(body = validCheckout) {
+function checkoutRequest(body = validCheckout, idempotencyKey = '123e4567-e89b-42d3-a456-426614174000') {
   return new Request('http://localhost/api/checkout', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', 'idempotency-key': idempotencyKey },
     body: JSON.stringify(body),
   });
 }
@@ -77,6 +92,23 @@ beforeEach(() => {
   mocks.rateLimit.mockReturnValue({ success: true });
   mocks.getServerSession.mockResolvedValue(null);
   mocks.cleanupExpiredPendingOrders.mockResolvedValue({ checked: 0 });
+  mocks.claimCheckoutAttempt.mockImplementation(async (_db, input) => ({
+    attempt: {
+      id: 'attempt_1',
+      status: 'INITIALIZING',
+      checkoutData: input.checkoutData,
+    },
+    leaseToken: 'lease_1',
+    created: true,
+  }));
+  mocks.claimExistingCheckoutAttempt.mockResolvedValue(null);
+  mocks.updateClaimedCheckoutAttempt.mockResolvedValue();
+  mocks.releaseCheckoutAttempt.mockResolvedValue();
+  mocks.prepareCheckoutPaymentCall.mockResolvedValue();
+  mocks.prisma.$transaction.mockImplementation(async (operation) => operation({
+    order: { updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+    checkoutAttempt: { updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+  }));
   mocks.prisma.productVariant.findMany.mockResolvedValue([
     {
       id: 'variant_1',
@@ -92,9 +124,18 @@ beforeEach(() => {
       },
     },
   ]);
-  mocks.stripe.tax.calculations.create.mockResolvedValue({ tax_amount_exclusive: 250 });
+  mocks.stripe.tax.calculations.create.mockResolvedValue({
+    id: 'taxcalc_checkout',
+    tax_amount_exclusive: 250,
+    amount_total: 8650,
+  });
   mocks.stripe.paymentIntents.create.mockResolvedValue({
     id: 'pi_checkout',
+    client_secret: 'pi_checkout_secret',
+  });
+  mocks.stripe.paymentIntents.retrieve.mockResolvedValue({
+    id: 'pi_checkout',
+    status: 'requires_payment_method',
     client_secret: 'pi_checkout_secret',
   });
   mocks.stripe.paymentIntents.cancel.mockResolvedValue({ status: 'canceled' });
@@ -133,10 +174,16 @@ describe('POST /api/checkout', () => {
         line_items: [
           expect.objectContaining({ amount: 8400, reference: 'variant_1' }),
         ],
-      })
+      }),
+      { idempotencyKey: 'checkout-tax:attempt_1' }
     );
     expect(mocks.stripe.paymentIntents.create).toHaveBeenCalledWith(
-      expect.objectContaining({ amount: 8650, currency: 'usd' })
+      expect.objectContaining({
+        amount: 8650,
+        currency: 'usd',
+        metadata: { orderId: 'order_1', taxCalculationId: 'taxcalc_checkout' },
+      }),
+      { idempotencyKey: 'checkout-payment:attempt_1' }
     );
     expect(mocks.reserveInventoryAndCreateOrder).toHaveBeenCalledWith(mocks.prisma, {
       orderData: expect.objectContaining({
@@ -145,7 +192,11 @@ describe('POST /api/checkout', () => {
         shipping: 0,
         tax: 2.5,
         total: 86.5,
-        stripePaymentId: 'pi_checkout',
+        paymentStatus: 'PENDING',
+        paymentAmountCents: 8650,
+        paymentCurrency: 'usd',
+        amountRefundedCents: 0,
+        stripeTaxCalculationId: 'taxcalc_checkout',
       }),
       items: [
         {
@@ -157,6 +208,8 @@ describe('POST /api/checkout', () => {
           color: 'Black',
         },
       ],
+      checkoutAttemptId: 'attempt_1',
+      checkoutLeaseToken: 'lease_1',
     });
   });
 
@@ -168,13 +221,13 @@ describe('POST /api/checkout', () => {
 
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
-      error: 'Unable to calculate tax. Please try again or contact support.',
+      error: 'Failed to process checkout. Please try again.',
     });
     expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
     expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
   });
 
-  it('cancels the PaymentIntent when the database reservation fails', async () => {
+  it('does not create or cancel a PaymentIntent when the database reservation fails', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
     mocks.reserveInventoryAndCreateOrder.mockRejectedValue(new Error('insufficient stock race'));
 
@@ -184,6 +237,187 @@ describe('POST /api/checkout', () => {
     await expect(response.json()).resolves.toEqual({
       error: 'Failed to process checkout. Please try again.',
     });
-    expect(mocks.stripe.paymentIntents.cancel).toHaveBeenCalledWith('pi_checkout');
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.stripe.paymentIntents.cancel).not.toHaveBeenCalled();
+    expect(mocks.releaseCheckoutAttempt).toHaveBeenCalled();
+  });
+
+  it('returns the original order and intent for a completed retry', async () => {
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_ready',
+        status: 'READY',
+        orderId: 'order_ready',
+        paymentIntentId: 'pi_checkout',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: null,
+      created: false,
+    });
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({
+      clientSecret: 'pi_checkout_secret',
+      orderId: 'order_ready',
+      subtotal: 84,
+      shipping: 0,
+      tax: 2.5,
+      total: 86.5,
+    });
+    expect(mocks.stripe.tax.calculations.create).not.toHaveBeenCalled();
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('requires a new checkout only when the completed intent is confirmed canceled', async () => {
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_canceled',
+        status: 'READY',
+        orderId: 'order_canceled',
+        paymentIntentId: 'pi_canceled',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: null,
+      created: false,
+    });
+    mocks.stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_canceled',
+      status: 'canceled',
+      client_secret: 'pi_canceled_secret',
+    });
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: 'This checkout expired. Please submit again to start a new payment.',
+      code: 'CHECKOUT_RESTART_REQUIRED',
+      orderId: 'order_canceled',
+    });
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('keeps the original attempt when the completed intent cannot be verified', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_unknown',
+        status: 'READY',
+        orderId: 'order_unknown',
+        paymentIntentId: 'pi_unknown',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: null,
+      created: false,
+    });
+    mocks.stripe.paymentIntents.retrieve.mockRejectedValue(new Error('provider unavailable'));
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      error: 'Failed to process checkout. Please try again.',
+    });
+    expect(mocks.releaseCheckoutAttempt).not.toHaveBeenCalled();
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('returns a concurrently completed attempt found during create conflict recovery', async () => {
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue(null);
+    mocks.claimCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_raced_ready',
+        status: 'READY',
+        orderId: 'order_raced_ready',
+        paymentIntentId: 'pi_checkout',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: null,
+      created: false,
+    });
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      clientSecret: 'pi_checkout_secret',
+      orderId: 'order_raced_ready',
+      total: 86.5,
+    });
+    expect(mocks.stripe.tax.calculations.create).not.toHaveBeenCalled();
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('never cancels a successful remote intent when local finalization fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.prisma.$transaction.mockRejectedValue(new Error('database unavailable after provider success'));
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(500);
+    expect(mocks.stripe.paymentIntents.create).toHaveBeenCalledOnce();
+    expect(mocks.stripe.paymentIntents.cancel).not.toHaveBeenCalled();
+    expect(mocks.releaseCheckoutAttempt).toHaveBeenCalledWith(
+      mocks.prisma,
+      'attempt_1',
+      'lease_1',
+      expect.any(Error)
+    );
+  });
+
+  it('resumes the frozen last-unit reservation after a lost response', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const successfulTransaction = async (operation) => operation({
+      order: { updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+      checkoutAttempt: { updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+    });
+    mocks.prisma.$transaction
+      .mockRejectedValueOnce(new Error('response lost after provider success'))
+      .mockImplementation(successfulTransaction);
+
+    const firstResponse = await POST(checkoutRequest());
+    expect(firstResponse.status).toBe(500);
+
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_1',
+        status: 'RESERVED',
+        orderId: 'order_1',
+        amountCents: 8650,
+        currency: 'usd',
+        taxCalculationId: 'taxcalc_checkout',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: 'lease_2',
+      created: false,
+    });
+    mocks.prisma.productVariant.findMany.mockResolvedValue([]);
+
+    const retryResponse = await POST(checkoutRequest());
+
+    expect(retryResponse.status).toBe(200);
+    expect(mocks.prisma.productVariant.findMany).toHaveBeenCalledOnce();
+    expect(mocks.reserveInventoryAndCreateOrder).toHaveBeenCalledOnce();
+    expect(mocks.stripe.paymentIntents.create).toHaveBeenCalledTimes(2);
+    expect(mocks.stripe.paymentIntents.create.mock.calls[0][1]).toEqual(
+      mocks.stripe.paymentIntents.create.mock.calls[1][1]
+    );
+    expect(mocks.stripe.paymentIntents.cancel).not.toHaveBeenCalled();
   });
 });

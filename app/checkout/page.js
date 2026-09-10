@@ -8,6 +8,11 @@ import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import { getStripe } from '@/lib/stripe-client';
 import { convertDriveUrl } from '@/lib/image-utils';
+import {
+  getOrCreateCheckoutKey,
+  retireConfirmedCanceledCheckout,
+  storeGuestOrderAccess,
+} from '@/lib/browser-checkout-access';
 import styles from './page.module.css';
 
 // US States for dropdown
@@ -96,7 +101,11 @@ function CheckoutForm({ clientSecret, orderId, totals }) {
     });
 
     if (submitError) {
-      setError(submitError.message);
+      setError(
+        submitError.payment_intent?.status === 'canceled'
+          ? 'This checkout expired. Reload this page and submit again to start a new payment.'
+          : submitError.message
+      );
       setProcessing(false);
     }
     // If successful, Stripe will redirect to success page
@@ -163,37 +172,53 @@ function CheckoutContent() {
     setLoading(true);
 
     try {
+      const checkoutPayload = {
+        items: items.map(item => ({
+          variantId: item.variantId,
+          quantity: item.quantity,
+          name: item.name,
+        })),
+        customer: {
+          email,
+          name,
+          phone: phone || null,
+        },
+        shipping: {
+          name,
+          street,
+          street2: street2 || null,
+          city,
+          state,
+          zip,
+        },
+      };
+      // Persist only a hash and opaque key before the request. A page reload after
+      // an uncertain response can safely resume without storing customer PII.
+      const checkoutKey = await getOrCreateCheckoutKey(
+        localStorage,
+        checkoutPayload,
+        crypto
+      );
       const response = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: items.map(item => ({
-            variantId: item.variantId,
-            quantity: item.quantity,
-            name: item.name,
-          })),
-          customer: {
-            email,
-            name,
-            phone: phone || null,
-          },
-          shipping: {
-            name,
-            street,
-            street2: street2 || null,
-            city,
-            state,
-            zip,
-          },
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotency-Key': checkoutKey,
+        },
+        body: JSON.stringify(checkoutPayload),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        // Rotate only after the server re-read Stripe and confirmed the prior
+        // PaymentIntent is terminally canceled. Unknown/provider-error states
+        // deliberately retain the original key for safe reconciliation.
+        retireConfirmedCanceledCheckout(localStorage, checkoutKey, data);
         throw new Error(data.error || 'Failed to create order');
       }
 
+      storeGuestOrderAccess(localStorage, data.orderId, checkoutKey);
       setClientSecret(data.clientSecret);
       setOrderId(data.orderId);
       setTotals({

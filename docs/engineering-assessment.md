@@ -8,6 +8,16 @@
 
 **System reviewed:** Friesian Ranchwear at production `main` commit `2d67652`
 
+> Historical assessment: this document records the July baseline. The September 10,
+> 2026 remediation candidate adds migration history, durable checkout/webhook/Tax
+> operations, separated payment projection, partial refunds, capability-based guest
+> access, constrained audited admin fulfillment, Node 24 CI/runtime declarations,
+> privacy-safe telemetry, and substantially expanded PostgreSQL tests. Production
+> logical production export/local PostgreSQL restore proof is complete; Railway snapshot
+> restore/PITR, baseline adoption, scheduled reconciliation alerts, branch protection,
+> and release of the exact candidate remain external gates. See
+> `payment-operations.md`, `database-migrations.md`, and `operations.md` for current truth.
+
 ## Executive assessment
 
 Friesian Ranchwear is a working production application with several sound commerce invariants, but it has been operating as an early-stage codebase rather than a complete engineering system. The correct direction is to strengthen the existing modular monolith—not rewrite it or divide it into services.

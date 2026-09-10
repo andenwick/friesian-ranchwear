@@ -5,6 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
+import {
+  loadGuestOrderAccess,
+  retireActiveCheckoutKey,
+  shouldClearCartForOrderStatus,
+} from '@/lib/browser-checkout-access';
 import styles from './page.module.css';
 
 function SuccessContent() {
@@ -15,11 +20,6 @@ function SuccessContent() {
   const [verifying, setVerifying] = useState(true);
   const [orderData, setOrderData] = useState(null);
 
-  // Clear cart on mount
-  useEffect(() => {
-    clearCart();
-  }, [clearCart]);
-
   // Verify order on mount
   useEffect(() => {
     if (!orderId) {
@@ -28,16 +28,23 @@ function SuccessContent() {
     }
 
     let pollInterval;
+    const accessKey = loadGuestOrderAccess(localStorage, orderId);
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(accessKey ? { 'X-Order-Access-Key': accessKey } : {}),
+    };
 
     fetch('/api/orders/verify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ orderId }),
     })
       .then(res => res.json())
       .then(data => {
         if (data.valid) {
           setOrderData(data);
+          if (data.status !== 'PENDING') retireActiveCheckoutKey(localStorage, accessKey);
+          if (shouldClearCartForOrderStatus(data.status)) clearCart();
 
           // If still pending, poll up to 5 times
           if (data.status === 'PENDING') {
@@ -47,12 +54,14 @@ function SuccessContent() {
               try {
                 const res = await fetch('/api/orders/verify', {
                   method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
+                  headers,
                   body: JSON.stringify({ orderId }),
                 });
                 const d = await res.json();
                 if (d.valid && d.status !== 'PENDING') {
                   setOrderData(d);
+                  retireActiveCheckoutKey(localStorage, accessKey);
+                  if (shouldClearCartForOrderStatus(d.status)) clearCart();
                   clearInterval(pollInterval);
                 }
               } catch {}
@@ -65,7 +74,7 @@ function SuccessContent() {
       .finally(() => setVerifying(false));
 
     return () => { if (pollInterval) clearInterval(pollInterval); };
-  }, [orderId]);
+  }, [clearCart, orderId]);
 
   if (verifying) {
     return (
@@ -84,7 +93,8 @@ function SuccessContent() {
           <h1 className={styles.title}>Order Not Found</h1>
           <p className={styles.message}>
             We couldn't verify this order. If you just placed an order, it may still be processing.
-            Please check your email or track your order below.
+            Signed-in customers can check account history. Guest confirmation works
+            in the same browser used at checkout for 30 days.
           </p>
           <div className={styles.actions}>
             <Link href="/track-order" className={styles.button}>
@@ -108,13 +118,17 @@ function SuccessContent() {
           </svg>
         </div>
 
-        <h1 className={styles.title}>
-          {orderData.status === 'PENDING' ? 'Payment Processing...' : 'Order Confirmed'}
-        </h1>
+        <h1 className={styles.title}>{({
+          PENDING: 'Payment Processing...',
+          CANCELLED: 'Payment Cancelled',
+          REFUNDED: 'Order Refunded',
+        })[orderData.status] || 'Order Confirmed'}</h1>
         <p className={styles.subtitle}>
-          {orderData.status === 'PENDING'
-            ? 'Your payment is being processed. This page will update automatically.'
-            : 'Thank you for your purchase!'}
+          {({
+            PENDING: 'Your payment is being processed. This page will update automatically.',
+            CANCELLED: 'Stripe confirmed that this payment was cancelled.',
+            REFUNDED: 'This order has been refunded.',
+          })[orderData.status] || 'Thank you for your purchase!'}
         </p>
 
         <div className={styles.orderId}>
@@ -123,8 +137,9 @@ function SuccessContent() {
         </div>
 
         <p className={styles.message}>
-          We've received your order and will begin processing it shortly.
-          Save your order number so you can check its status from the Track Order page.
+          {orderData.status === 'CANCELLED'
+            ? 'Your cart has been preserved so you can try checkout again.'
+            : 'Save your order number. Guest access remains available in this browser for 30 days.'}
         </p>
 
         <div className={styles.actions}>

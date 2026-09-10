@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { cleanupExpiredPendingOrders } from '@/lib/order-reservations';
+import { operationalErrorCode } from '@/lib/operational-errors';
 
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
@@ -23,7 +24,10 @@ export async function GET(request) {
     try {
       await cleanupExpiredPendingOrders({ limit: 50 });
     } catch (cleanupError) {
-      console.error('Failed to cleanup stale pending orders:', cleanupError);
+      console.error(JSON.stringify({
+        event: 'admin_order_reservation_cleanup_failed',
+        code: operationalErrorCode(cleanupError, 'RESERVATION_CLEANUP_FAILED'),
+      }));
     }
 
     const { searchParams } = new URL(request.url);
@@ -83,7 +87,10 @@ export async function GET(request) {
 
     return NextResponse.json({ orders: transformedOrders });
   } catch (error) {
-    console.error('Failed to fetch orders:', error);
+    console.error(JSON.stringify({
+      event: 'admin_order_list_failed',
+      code: operationalErrorCode(error, 'ADMIN_ORDER_LIST_FAILED'),
+    }));
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
   }
 }

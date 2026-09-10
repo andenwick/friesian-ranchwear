@@ -10,14 +10,25 @@ if (!rawDatabaseUrl) {
 const databaseUrl = new URL(rawDatabaseUrl);
 const databaseName = databaseUrl.pathname.replace(/^\//, '');
 const localHosts = new Set(['localhost', '127.0.0.1', '::1']);
+const allowedQueryParameters = new Set(['schema', 'connection_limit']);
+const hasUnsafeQueryParameter = [...databaseUrl.searchParams.keys()]
+  .some(key => !allowedQueryParameters.has(key));
+const schema = databaseUrl.searchParams.get('schema');
+const connectionLimit = databaseUrl.searchParams.get('connection_limit');
 
 if (!['postgres:', 'postgresql:'].includes(databaseUrl.protocol)) {
   throw new Error('Integration tests require PostgreSQL');
 }
 
-if (!localHosts.has(databaseUrl.hostname) || databaseName !== 'friesian_test') {
+if (
+  !localHosts.has(databaseUrl.hostname) ||
+  databaseName !== 'friesian_test' ||
+  hasUnsafeQueryParameter ||
+  (schema && schema !== 'public') ||
+  (connectionLimit && !/^\d+$/.test(connectionLimit))
+) {
   throw new Error(
-    'Refusing to synchronize a database unless it is the local friesian_test database'
+    'Refusing to synchronize anything except local friesian_test with safe query parameters'
   );
 }
 
@@ -31,7 +42,12 @@ function run(entrypoint, args) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 
-run(path.resolve('node_modules/prisma/build/index.js'), ['db', 'push', '--skip-generate']);
+run(path.resolve('node_modules/prisma/build/index.js'), [
+  'migrate',
+  'reset',
+  '--force',
+  '--skip-seed',
+]);
 run(path.resolve('node_modules/vitest/vitest.mjs'), [
   'run',
   '--config',

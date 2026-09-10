@@ -152,6 +152,10 @@ async function main() {
       const order = await prisma.order.create({
         data: {
           ...orderData,
+          paymentStatus: orderData.status === 'PENDING' ? 'PENDING' : 'PAID',
+          paymentAmountCents: Math.round(orderData.total * 100),
+          paymentCurrency: 'usd',
+          amountRefundedCents: 0,
           items: {
             create: [{
               variantId: variant.id,

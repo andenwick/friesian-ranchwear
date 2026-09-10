@@ -8,6 +8,7 @@ import {
   getProductImagePublicId,
   getSafeImageErrorDetails,
 } from '@/lib/product-image-storage';
+import { inventoryRevision } from '@/lib/product-edit-version';
 
 async function cleanupStoredProductImages(urls) {
   for (const url of urls) {
@@ -25,10 +26,14 @@ async function cleanupStoredProductImages(urls) {
 // Middleware to check admin access
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user?.id) {
     return null;
   }
-  return session;
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isAdmin: true },
+  });
+  return user?.isAdmin ? session : null;
 }
 
 // GET /api/admin/products/[id] - Get single product
@@ -55,7 +60,13 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    return NextResponse.json(product);
+    return NextResponse.json({
+      ...product,
+      editVersion: {
+        productUpdatedAt: product.updatedAt.toISOString(),
+        inventoryRevision: inventoryRevision(product.variants),
+      },
+    });
   } catch (error) {
     console.error('Failed to fetch product:', error);
     return NextResponse.json({ error: 'Failed to fetch product' }, { status: 500 });
@@ -72,10 +83,30 @@ export async function PUT(request, { params }) {
   try {
     const { id } = await params;
     const data = await request.json();
-    const { name, description, basePrice, category, features, active, variants, images } = data;
+    const {
+      name,
+      description,
+      basePrice,
+      category,
+      features,
+      active,
+      variants,
+      images,
+      editVersion,
+    } = data;
 
     if (!name || basePrice === undefined) {
       return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
+    }
+    const expectedProductUpdatedAt = new Date(editVersion?.productUpdatedAt || '');
+    if (
+      Number.isNaN(expectedProductUpdatedAt.getTime()) ||
+      !/^[a-f0-9]{64}$/.test(editVersion?.inventoryRevision || '')
+    ) {
+      return NextResponse.json(
+        { error: 'This edit is missing its concurrency version. Reload and try again.' },
+        { status: 409 }
+      );
     }
 
     // Convert features array to JSON string for storage
@@ -86,9 +117,19 @@ export async function PUT(request, { params }) {
     // Update product in a transaction
     let removedImageUrls = [];
     const product = await prisma.$transaction(async (tx) => {
-      // Update main product
-      await tx.product.update({
-        where: { id },
+      const existingVariants = await tx.productVariant.findMany({
+        where: { productId: id },
+      });
+      if (inventoryRevision(existingVariants) !== editVersion.inventoryRevision) {
+        const error = new Error('Product inventory changed while this page was open. Reload before saving.');
+        error.code = 'STALE_PRODUCT_EDIT';
+        throw error;
+      }
+
+      // Compare-and-set the product so a second admin cannot silently overwrite
+      // edits made after this page loaded.
+      const updatedProduct = await tx.product.updateMany({
+        where: { id, updatedAt: expectedProductUpdatedAt },
         data: {
           name,
           description: description || '',
@@ -98,13 +139,21 @@ export async function PUT(request, { params }) {
           active: active !== false,
         },
       });
+      if (updatedProduct.count === 0) {
+        const error = new Error('Product changed while this page was open. Reload before saving.');
+        error.code = 'STALE_PRODUCT_EDIT';
+        throw error;
+      }
 
       // Handle variants: delete removed, update existing, create new
-      const existingVariants = await tx.productVariant.findMany({
-        where: { productId: id },
-      });
       const existingVariantIds = existingVariants.map(v => v.id);
+      const existingVariantMap = new Map(existingVariants.map(v => [v.id, v]));
       const incomingVariantIds = (variants || []).filter(v => v.id).map(v => v.id);
+      if (incomingVariantIds.some(variantId => !existingVariantMap.has(variantId))) {
+        const error = new Error('The edit contains a variant that does not belong to this product. Reload and try again.');
+        error.code = 'INVALID_PRODUCT_EDIT';
+        throw error;
+      }
 
       // Delete variants not in incoming list
       const variantsToDelete = existingVariantIds.filter(vid => !incomingVariantIds.includes(vid));
@@ -117,17 +166,34 @@ export async function PUT(request, { params }) {
           error.code = 'VARIANT_HAS_ORDER_HISTORY';
           throw error;
         }
-        await tx.productVariant.deleteMany({
-          where: { id: { in: variantsToDelete } },
-        });
+        for (const variantId of variantsToDelete) {
+          const deleted = await tx.productVariant.deleteMany({
+            where: {
+              id: variantId,
+              productId: id,
+              updatedAt: existingVariantMap.get(variantId).updatedAt,
+              stock: existingVariantMap.get(variantId).stock,
+            },
+          });
+          if (deleted.count === 0) {
+            const error = new Error('Product inventory changed while this page was open. Reload before saving.');
+            error.code = 'STALE_PRODUCT_EDIT';
+            throw error;
+          }
+        }
       }
 
       // Update or create variants
       for (const v of variants || []) {
         if (v.id && existingVariantIds.includes(v.id)) {
           // Update existing
-          await tx.productVariant.update({
-            where: { id: v.id },
+          const updatedVariant = await tx.productVariant.updateMany({
+            where: {
+              id: v.id,
+              productId: id,
+              updatedAt: existingVariantMap.get(v.id).updatedAt,
+              stock: existingVariantMap.get(v.id).stock,
+            },
             data: {
               size: v.size || null,
               color: v.color || null,
@@ -136,6 +202,11 @@ export async function PUT(request, { params }) {
               sku: v.sku || null,
             },
           });
+          if (updatedVariant.count === 0) {
+            const error = new Error('Product inventory changed while this page was open. Reload before saving.');
+            error.code = 'STALE_PRODUCT_EDIT';
+            throw error;
+          }
         } else if (!v.id) {
           // Create new
           await tx.productVariant.create({
@@ -157,6 +228,11 @@ export async function PUT(request, { params }) {
       });
       const existingImageIds = existingImages.map(i => i.id);
       const incomingImageIds = (images || []).filter(i => i.id).map(i => i.id);
+      if (incomingImageIds.some(imageId => !existingImageIds.includes(imageId))) {
+        const error = new Error('The edit contains an image that does not belong to this product. Reload and try again.');
+        error.code = 'INVALID_PRODUCT_EDIT';
+        throw error;
+      }
 
       // Delete images not in incoming list
       const imagesToDelete = existingImageIds.filter(iid => !incomingImageIds.includes(iid));
@@ -213,6 +289,12 @@ export async function PUT(request, { params }) {
   } catch (error) {
     console.error('Failed to update product:', error);
     if (error?.code === 'VARIANT_HAS_ORDER_HISTORY') {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    if (error?.code === 'STALE_PRODUCT_EDIT') {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+    if (error?.code === 'INVALID_PRODUCT_EDIT') {
       return NextResponse.json({ error: error.message }, { status: 409 });
     }
     if (error?.code === 'P2002') {

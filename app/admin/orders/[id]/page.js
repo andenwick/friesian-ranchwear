@@ -6,20 +6,14 @@ import Link from 'next/link';
 import { convertImageUrl } from '@/lib/image-utils';
 import styles from '../../admin.module.css';
 
-const STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'PAID', label: 'Paid' },
-  { value: 'PROCESSING', label: 'Processing' },
-  { value: 'SHIPPED', label: 'Shipped' },
-  { value: 'DELIVERED', label: 'Delivered' },
-  { value: 'CANCELLED', label: 'Cancelled' },
-  { value: 'REFUNDED', label: 'Refunded' },
-];
-
-const FINANCIAL_STATUS_WARNINGS = {
-  PAID: 'This only changes the website status. It does not charge the customer. Continue?',
-  CANCELLED: 'This only changes the website status. It does not cancel or refund the Stripe payment. Continue?',
-  REFUNDED: 'This only changes the website status. It does not send money back through Stripe. Continue?',
+const STATUS_LABELS = {
+  PENDING: 'Pending',
+  PAID: 'Paid',
+  PROCESSING: 'Processing',
+  SHIPPED: 'Shipped',
+  DELIVERED: 'Delivered',
+  CANCELLED: 'Cancelled',
+  REFUNDED: 'Refunded',
 };
 
 export default function OrderDetailPage() {
@@ -51,19 +45,27 @@ export default function OrderDetailPage() {
   }
 
   async function updateStatus(newStatus) {
-    const warning = FINANCIAL_STATUS_WARNINGS[newStatus];
-    if (warning && !confirm(warning)) return;
-
+    const reason = window.prompt('Reason for this fulfillment update (required):');
+    if (!reason || reason.trim().length < 3) return;
     setUpdating(true);
     try {
       const res = await fetch(`/api/admin/orders/${params.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, reason: reason.trim() }),
       });
 
       if (res.ok) {
-        setOrder({ ...order, status: newStatus });
+        const data = await res.json();
+        setOrder({
+          ...order,
+          status: data.order.status,
+          allowedStatusTransitions: data.order.status === 'PROCESSING'
+            ? ['SHIPPED']
+            : data.order.status === 'SHIPPED'
+              ? ['DELIVERED']
+              : [],
+        });
       } else {
         alert('Failed to update status');
       }
@@ -202,12 +204,12 @@ export default function OrderDetailPage() {
               disabled={updating}
               className={styles.filterSelectFull}
             >
-              {STATUS_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              {[order.status, ...(order.allowedStatusTransitions || [])].map(status => (
+                <option key={status} value={status}>{STATUS_LABELS[status] || status}</option>
               ))}
             </select>
             <p className={`${styles.textXs} ${styles.textMuted}`} style={{ marginTop: '10px', lineHeight: 1.5 }}>
-              Paid, Cancelled, and Refunded only change the website label. Handle the payment in Stripe first.
+              Financial states are controlled by verified Stripe events. Admins can only advance fulfillment.
             </p>
           </div>
 
