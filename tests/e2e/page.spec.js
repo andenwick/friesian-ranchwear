@@ -24,6 +24,10 @@ test.describe('Homepage production behavior', () => {
     await expect(page.getByText('Nothing you wear is an accident.')).toBeVisible();
     await expect(page.getByRole('link', { name: 'SHOP COLLECTION' })).toHaveAttribute('href', '/products');
     await expect(page.getByText('Built for this. Limited runs. No restocks.')).toBeVisible();
+    await expect(page.locator('#shop')).toHaveCSS(
+      'background-image',
+      /friesian-washed-material-texture-v1\.webp/
+    );
     await expect(page.getByRole('heading', { name: 'STAY POSTED.' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
     await expect(page.locator('footer').getByText('FRIESIAN RANCHWEAR', { exact: true })).toBeVisible();

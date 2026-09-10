@@ -1,7 +1,11 @@
 .section {
   padding: var(--space-3xl) var(--space-lg) var(--space-2xl);
   text-align: center;
-  background: var(--color-black);
+  background-color: var(--color-black);
+  background-image: url("/friesian-washed-material-texture-v1.webp");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .divider {
