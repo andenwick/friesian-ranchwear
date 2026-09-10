@@ -2,6 +2,8 @@ import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { convertImageUrl } from '@/lib/image-utils';
 import { rateLimit, getClientIP } from '@/lib/rate-limit';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 // POST /api/orders/lookup - Look up orders by email
 export async function POST(request) {
@@ -14,20 +16,17 @@ export async function POST(request) {
         { status: 429 }
       );
     }
-    const { email } = await request.json();
-
-    if (!email || typeof email !== 'string') {
-      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Sign in to view order history' },
+        { status: 401 }
+      );
     }
-
-    const normalizedEmail = email.toLowerCase().trim();
 
     const orders = await prisma.order.findMany({
       where: {
-        OR: [
-          { guestEmail: normalizedEmail },
-          { user: { email: normalizedEmail } }
-        ]
+        userId: session.user.id,
       },
       include: {
         items: {

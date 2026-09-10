@@ -7,10 +7,28 @@ import { authOptions } from '@/lib/auth';
 import { rateLimit, getClientIP } from '@/lib/rate-limit';
 import { cleanupExpiredPendingOrders } from '@/lib/order-reservations';
 import { reserveInventoryAndCreateOrder } from '@/lib/order-lifecycle';
+import {
+  CheckoutAttemptError,
+  claimCheckoutAttempt,
+  claimExistingCheckoutAttempt,
+  prepareCheckoutPaymentCall,
+  releaseCheckoutAttempt,
+  updateClaimedCheckoutAttempt,
+} from '@/lib/checkout-attempts';
+import { operationalErrorCode } from '@/lib/operational-errors';
 
 // Shipping constants
 const FREE_SHIPPING_THRESHOLD = 50;
 const FLAT_RATE_SHIPPING = 5.99;
+
+async function readyCheckoutResponse(attempt) {
+  const readyIntent = await stripe.paymentIntents.retrieve(attempt.paymentIntentId);
+  return NextResponse.json({
+    clientSecret: readyIntent.client_secret,
+    orderId: attempt.orderId,
+    ...attempt.checkoutData.totals,
+  });
+}
 
 // Valid US states
 const US_STATES = [
@@ -29,7 +47,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Too many checkout attempts. Please try again later.' }, { status: 429 });
   }
 
-  let paymentIntent;
+  let attemptClaim;
   try {
     const body = await request.json();
     const { items, customer, shipping } = body;
@@ -63,11 +81,51 @@ export async function POST(request) {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id || null;
 
+    const normalizedCustomer = {
+      email: customer.email.toLowerCase().trim(),
+      name: (customer.name || shipping.name).trim(),
+      phone: customer.phone || null,
+    };
+    if (userId && session.user.email?.toLowerCase() !== normalizedCustomer.email) {
+      return NextResponse.json({ error: 'Checkout email must match the signed-in account' }, { status: 400 });
+    }
+    const normalizedShipping = {
+      name: shipping.name.trim(),
+      street: shipping.street.trim(),
+      street2: shipping.street2?.trim() || null,
+      city: shipping.city.trim(),
+      state: stateUpper,
+      zip: shipping.zip,
+      country: 'US',
+    };
+    const idempotencyKey = request.headers.get('idempotency-key');
+    const actorScope = userId ? `user:${userId}` : 'guest-checkout';
+    const checkoutPayload = {
+      items: items.map((item) => ({ variantId: item.variantId, quantity: item.quantity })),
+      customer: normalizedCustomer,
+      shipping: normalizedShipping,
+    };
+    attemptClaim = await claimExistingCheckoutAttempt(prisma, {
+      idempotencyKey,
+      actorScope,
+      payload: checkoutPayload,
+    });
+    let attempt = attemptClaim?.attempt;
+    let leaseToken = attemptClaim?.leaseToken;
+    if (attempt?.status === 'READY') {
+      return readyCheckoutResponse(attempt);
+    }
+
+    if (!attempt) {
+
     // Release stale unpaid reservations before checking fresh stock.
     try {
       await cleanupExpiredPendingOrders({ limit: 25 });
     } catch (cleanupError) {
-      console.error('Failed to cleanup stale pending orders:', cleanupError);
+      console.error(JSON.stringify({
+        event: 'checkout_reservation_cleanup_failed',
+        code: operationalErrorCode(cleanupError, 'RESERVATION_CLEANUP_FAILED'),
+      }));
     }
 
     // Validate cart items against database
@@ -130,105 +188,195 @@ export async function POST(request) {
     // Calculate shipping
     const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_RATE_SHIPPING;
 
-    // Calculate tax using Stripe Tax
-    let tax = 0;
-    try {
-      const taxLineItems = orderItems.map(item => ({
-        amount: Math.round(item.unitPrice * item.quantity * 100),
-        reference: item.variantId,
+    const taxLineItems = orderItems.map(item => ({
+      amount: Math.round(item.unitPrice * item.quantity * 100),
+      reference: item.variantId,
+      tax_behavior: 'exclusive',
+      tax_code: 'txcd_99999999', // general physical goods
+    }));
+
+    if (shippingCost > 0) {
+      taxLineItems.push({
+        amount: Math.round(shippingCost * 100),
+        reference: 'shipping_cost',
         tax_behavior: 'exclusive',
-        tax_code: 'txcd_99999999', // general physical goods
-      }));
-
-      if (shippingCost > 0) {
-        taxLineItems.push({
-          amount: Math.round(shippingCost * 100),
-          reference: 'shipping_cost',
-          tax_behavior: 'exclusive',
-          tax_code: 'txcd_92010001', // shipping
-        });
-      }
-
-      const taxCalculation = await stripe.tax.calculations.create({
-        currency: 'usd',
-        line_items: taxLineItems,
-        customer_details: {
-          address: {
-            line1: shipping.street,
-            line2: shipping.street2 || undefined,
-            city: shipping.city,
-            state: stateUpper,
-            postal_code: shipping.zip,
-            country: 'US',
-          },
-          address_source: 'shipping',
-        },
+        tax_code: 'txcd_92010001', // shipping
       });
-
-      tax = taxCalculation.tax_amount_exclusive / 100;
-    } catch (taxError) {
-      console.error('Stripe Tax calculation failed:', taxError.message);
-      return NextResponse.json(
-        { error: 'Unable to calculate tax. Please try again or contact support.' },
-        { status: 500 }
-      );
     }
 
-    // Calculate total
-    const total = subtotal + shippingCost + tax;
-
-    // Create Stripe PaymentIntent
-    paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(total * 100), // Convert to cents
+    const taxRequest = {
       currency: 'usd',
+      line_items: taxLineItems,
+      customer_details: {
+        address: {
+          line1: normalizedShipping.street,
+          line2: normalizedShipping.street2 || undefined,
+          city: normalizedShipping.city,
+          state: normalizedShipping.state,
+          postal_code: normalizedShipping.zip,
+          country: 'US',
+        },
+        address_source: 'shipping',
+      },
+    };
+    attemptClaim = await claimCheckoutAttempt(prisma, {
+      idempotencyKey,
+      actorScope,
+      payload: checkoutPayload,
+      checkoutData: {
+        items: orderItems,
+        customer: normalizedCustomer,
+        shipping: normalizedShipping,
+        subtotal,
+        shippingCost,
+        taxRequest,
+      },
+    });
+    attempt = attemptClaim.attempt;
+    leaseToken = attemptClaim.leaseToken;
+    }
+
+    // Another request can complete the attempt after the early lookup but before
+    // the create hits its unique constraint. Reuse that completed result too.
+    if (attempt.status === 'READY') {
+      return readyCheckoutResponse(attempt);
+    }
+
+    if (attempt.status === 'INITIALIZING') {
+      const taxCalculation = await stripe.tax.calculations.create(
+        attempt.checkoutData.taxRequest,
+        { idempotencyKey: `checkout-tax:${attempt.id}` }
+      );
+      const tax = taxCalculation.tax_amount_exclusive / 100;
+      const totalCents = taxCalculation.amount_total;
+      const expectedTotalCents = Math.round(
+        (attempt.checkoutData.subtotal + attempt.checkoutData.shippingCost) * 100
+      ) + taxCalculation.tax_amount_exclusive;
+      if (
+        !Number.isInteger(totalCents) ||
+        totalCents < 0 ||
+        totalCents !== expectedTotalCents
+      ) {
+        throw new Error('Stripe Tax returned an invalid total');
+      }
+      const totals = {
+        subtotal: attempt.checkoutData.subtotal,
+        shipping: attempt.checkoutData.shippingCost,
+        tax,
+        total: totalCents / 100,
+      };
+      const checkoutData = { ...attempt.checkoutData, totals };
+      await updateClaimedCheckoutAttempt(prisma, attempt.id, leaseToken, {
+        status: 'TAX_READY',
+        taxCalculationId: taxCalculation.id,
+        amountCents: totalCents,
+        currency: 'usd',
+        checkoutData,
+      });
+      attempt = {
+        ...attempt,
+        status: 'TAX_READY',
+        taxCalculationId: taxCalculation.id,
+        amountCents: totalCents,
+        currency: 'usd',
+        checkoutData,
+      };
+    }
+
+    let orderId = attempt.orderId;
+    if (attempt.status === 'TAX_READY') {
+      const snapshot = attempt.checkoutData;
+      const totals = snapshot.totals;
+      const order = await reserveInventoryAndCreateOrder(prisma, {
+        checkoutAttemptId: attempt.id,
+        checkoutLeaseToken: leaseToken,
+        orderData: {
+          userId,
+          status: 'PENDING',
+          subtotal: totals.subtotal,
+          shipping: totals.shipping,
+          tax: totals.tax,
+          total: totals.total,
+          paymentStatus: 'PENDING',
+          paymentAmountCents: attempt.amountCents,
+          paymentCurrency: attempt.currency,
+          amountRefundedCents: 0,
+          stripeTaxCalculationId: attempt.taxCalculationId,
+          guestEmail: userId ? null : snapshot.customer.email,
+          guestName: userId ? null : snapshot.customer.name,
+          guestPhone: userId ? null : snapshot.customer.phone,
+          shippingName: snapshot.shipping.name,
+          shippingStreet: snapshot.shipping.street,
+          shippingStreet2: snapshot.shipping.street2,
+          shippingCity: snapshot.shipping.city,
+          shippingState: snapshot.shipping.state,
+          shippingZip: snapshot.shipping.zip,
+          shippingCountry: snapshot.shipping.country,
+        },
+        items: snapshot.items,
+      });
+      orderId = order.id;
+      attempt = { ...attempt, status: 'RESERVED', orderId };
+    }
+
+    if (attempt.status !== 'RESERVED' || !orderId) {
+      throw new Error(`Checkout attempt ${attempt.id} is not ready for payment creation`);
+    }
+
+    await prepareCheckoutPaymentCall(prisma, attempt.id, leaseToken);
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: attempt.amountCents,
+      currency: attempt.currency,
       automatic_payment_methods: { enabled: true },
       metadata: {
-        customerEmail: customer.email,
-        customerName: customer.name || shipping.name,
+        orderId,
+        taxCalculationId: attempt.taxCalculationId,
       },
+    }, { idempotencyKey: `checkout-payment:${attempt.id}` });
+
+    await prisma.$transaction(async (tx) => {
+      const linkedOrder = await tx.order.updateMany({
+        where: { id: orderId, stripePaymentId: null, paymentStatus: 'PENDING' },
+        data: { stripePaymentId: paymentIntent.id },
+      });
+      const completedAttempt = await tx.checkoutAttempt.updateMany({
+        where: { id: attempt.id, leaseToken, status: 'RESERVED', orderId },
+        data: {
+          status: 'READY',
+          paymentIntentId: paymentIntent.id,
+          leaseToken: null,
+          leaseExpiresAt: null,
+          lastError: null,
+        },
+      });
+      if (linkedOrder.count === 0 || completedAttempt.count === 0) {
+        throw new Error('Checkout payment link changed while it was being finalized');
+      }
     });
 
-    // Atomically decrement stock and create order in a single transaction
-    const order = await reserveInventoryAndCreateOrder(prisma, {
-      orderData: {
-        userId,
-        status: 'PENDING',
-        subtotal,
-        shipping: shippingCost,
-        tax,
-        total,
-        stripePaymentId: paymentIntent.id,
-        guestEmail: userId ? null : customer.email,
-        guestName: userId ? null : (customer.name || shipping.name),
-        guestPhone: userId ? null : (customer.phone || null),
-        shippingName: shipping.name,
-        shippingStreet: shipping.street,
-        shippingStreet2: shipping.street2 || null,
-        shippingCity: shipping.city,
-        shippingState: stateUpper,
-        shippingZip: shipping.zip,
-        shippingCountry: 'US',
-      },
-      items: orderItems,
-    });
-
+    const totals = attempt.checkoutData.totals;
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
-      orderId: order.id,
-      subtotal,
-      shipping: shippingCost,
-      tax,
-      total,
+      orderId,
+      ...totals,
     });
   } catch (error) {
-    console.error('Checkout error:', error);
-    if (paymentIntent?.id) {
-      try {
-        await stripe.paymentIntents.cancel(paymentIntent.id);
-      } catch (cancelError) {
-        console.error('Failed to cancel PaymentIntent:', cancelError.message);
-      }
+    if (attemptClaim?.leaseToken) {
+      await releaseCheckoutAttempt(
+        prisma,
+        attemptClaim.attempt.id,
+        attemptClaim.leaseToken,
+        error
+      );
     }
+    if (error instanceof CheckoutAttemptError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    console.error(JSON.stringify({
+      event: 'checkout_failed',
+      attemptId: attemptClaim?.attempt?.id || null,
+      code: operationalErrorCode(error, 'CHECKOUT_FAILED'),
+    }));
     return NextResponse.json(
       { error: 'Failed to process checkout. Please try again.' },
       { status: 500 }

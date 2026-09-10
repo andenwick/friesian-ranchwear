@@ -10,6 +10,8 @@ Production: [friesianranchwear.com](https://friesianranchwear.com)
 - [Domain model and invariants](docs/domain-model.md)
 - [Operations and incident runbook](docs/operations.md)
 - [Testing and release checks](docs/testing.md)
+- [Database migrations](docs/database-migrations.md)
+- [Payment, tax, checkout, and reconciliation](docs/payment-operations.md)
 - [Design system](docs/design-system.md)
 - [Engineering assessment and roadmap](docs/engineering-assessment.md)
 - [Contributing workflow](CONTRIBUTING.md)
@@ -32,18 +34,18 @@ Production: [friesianranchwear.com](https://friesianranchwear.com)
 
 Requirements:
 
-- Node.js 20
+- Node.js 24
 - PostgreSQL
 - A `.env.local` based on `.env.example`
 
 ```bash
 npm ci
 npx prisma generate
-npx prisma db push
+npx prisma migrate dev
 npm run dev
 ```
 
-`prisma db push` is acceptable only for a disposable local database. The production database does not yet have a migration history. Do not use `db push` against production. See [the database section of the engineering assessment](docs/engineering-assessment.md#p0-before-the-next-payment-or-schema-feature).
+`prisma db push` is acceptable only for disposable experiments. Normal development and deployment use the checked-in migration history. Do not use `db push` against production.
 
 ## Verification
 

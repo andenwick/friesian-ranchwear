@@ -2,13 +2,20 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { canAdminTransitionOrder, getAllowedAdminOrderTransitions } from '@/lib/order-status';
 
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.isAdmin) {
+  if (!session?.user?.id) {
     return null;
   }
-  return session;
+
+  const admin = await prisma.user.findFirst({
+    where: { id: session.user.id, isAdmin: true },
+    select: { id: true },
+  });
+
+  return admin ? session : null;
 }
 
 // GET /api/admin/orders/[id] - Get single order with full details
@@ -52,6 +59,8 @@ export async function GET(request, { params }) {
       id: order.id,
       orderNumber: order.id.slice(-8).toUpperCase(),
       status: order.status,
+      paymentStatus: order.paymentStatus,
+      allowedStatusTransitions: getAllowedAdminOrderTransitions(order.status, order.paymentStatus),
       customerName: order.user?.name || order.guestName || 'Guest',
       customerEmail: order.user?.email || order.guestEmail,
       customerPhone: order.guestPhone,
@@ -99,26 +108,65 @@ export async function PUT(request, { params }) {
 
   try {
     const { id } = await params;
-    const { status } = await request.json();
+    const { status, reason } = await request.json();
 
-    const validStatuses = ['PENDING', 'PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'];
-    if (!validStatuses.includes(status)) {
-      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    if (typeof status !== 'string') {
+      return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+    }
+    if (typeof reason !== 'string' || reason.trim().length < 3 || reason.trim().length > 500) {
+      return NextResponse.json(
+        { error: 'A reason between 3 and 500 characters is required' },
+        { status: 400 }
+      );
     }
 
-    const order = await prisma.order.update({
+    const existingOrder = await prisma.order.findUnique({
       where: { id },
-      data: { status },
+      select: { status: true, paymentStatus: true },
     });
+
+    if (!existingOrder) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    if (!canAdminTransitionOrder(existingOrder.status, status, existingOrder.paymentStatus)) {
+      return NextResponse.json(
+        { error: `Order cannot transition from ${existingOrder.status} to ${status}` },
+        { status: 409 }
+      );
+    }
+
+    const changed = await prisma.$transaction(async (tx) => {
+      const result = await tx.order.updateMany({
+        where: { id, status: existingOrder.status, paymentStatus: 'PAID' },
+        data: { status },
+      });
+      if (result.count > 0) {
+        await tx.adminOrderEvent.create({
+          data: {
+            orderId: id,
+            actorUserId: session.user.id,
+            fromStatus: existingOrder.status,
+            toStatus: status,
+            reason: reason.trim(),
+          },
+        });
+      }
+      return result;
+    });
+
+    if (changed.count === 0) {
+      return NextResponse.json(
+        { error: 'Order changed while this update was in progress. Refresh and try again.' },
+        { status: 409 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      warning: ['PAID', 'CANCELLED', 'REFUNDED'].includes(status)
-        ? 'Order status changed. No Stripe payment action was performed.'
-        : null,
       order: {
-        id: order.id,
-        status: order.status,
+        id,
+        status,
       }
     });
   } catch (error) {

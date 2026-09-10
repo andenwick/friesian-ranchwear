@@ -15,37 +15,38 @@ datasource db {
 // ============================================
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  passwordHash  String?
-  name          String?
-  isAdmin       Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String?
+  name         String?
+  isAdmin      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
-  addresses     Address[]
-  orders        Order[]
-  reviews       Review[]
+  addresses        Address[]
+  orders           Order[]
+  reviews          Review[]
+  adminOrderEvents AdminOrderEvent[]
 }
 
 model Address {
-  id          String   @id @default(cuid())
-  userId      String
-  name        String   // Recipient name
-  street      String
-  street2     String?
-  city        String
-  state       String
-  zip         String
-  country     String   @default("US")
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  name      String // Recipient name
+  street    String
+  street2   String?
+  city      String
+  state     String
+  zip       String
+  country   String   @default("US")
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders      Order[]
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
 
   @@index([userId])
 }
@@ -59,47 +60,47 @@ model Product {
   name        String
   description String?
   basePrice   Decimal  @db.Decimal(10, 2)
-  category    String?  // e.g., "Hats", "Shirts", "Accessories"
-  features    String?  // JSON array of bullet points
+  category    String? // e.g., "Hats", "Shirts", "Accessories"
+  features    String? // JSON array of bullet points
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  variants    ProductVariant[]
-  images      ProductImage[]
-  reviews     Review[]
+  variants ProductVariant[]
+  images   ProductImage[]
+  reviews  Review[]
 }
 
 model ProductVariant {
-  id          String   @id @default(cuid())
-  productId   String
-  size        String?  // S, M, L, XL, etc. or null if no sizes
-  color       String?  // Color name or null if no colors
-  sku         String?  @unique
-  price       Decimal? @db.Decimal(10, 2) // Override base price if different
-  stock       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  productId String
+  size      String? // S, M, L, XL, etc. or null if no sizes
+  color     String? // Color name or null if no colors
+  sku       String?  @unique
+  price     Decimal? @db.Decimal(10, 2) // Override base price if different
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  orderItems  OrderItem[]
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
 
   @@unique([productId, size, color])
   @@index([productId])
 }
 
 model ProductImage {
-  id          String   @id @default(cuid())
-  productId   String
-  url         String   // Cloudinary URL
-  alt         String?
-  position    Int      @default(0) // For ordering images
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  productId String
+  url       String // Cloudinary URL
+  alt       String?
+  position  Int      @default(0) // For ordering images
+  createdAt DateTime @default(now())
 
   // Relations
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
 }
@@ -109,20 +110,26 @@ model ProductImage {
 // ============================================
 
 model Order {
-  id              String      @id @default(cuid())
-  userId          String?     // Null for guest checkout
-  addressId       String?
-  status          OrderStatus @default(PENDING)
-  subtotal        Decimal     @db.Decimal(10, 2)
-  shipping        Decimal     @db.Decimal(10, 2)
-  tax             Decimal     @db.Decimal(10, 2)
-  total           Decimal     @db.Decimal(10, 2)
-  stripePaymentId String?
+  id                     String        @id @default(cuid())
+  userId                 String? // Null for guest checkout
+  addressId              String?
+  status                 OrderStatus   @default(PENDING)
+  subtotal               Decimal       @db.Decimal(10, 2)
+  shipping               Decimal       @db.Decimal(10, 2)
+  tax                    Decimal       @db.Decimal(10, 2)
+  total                  Decimal       @db.Decimal(10, 2)
+  stripePaymentId        String?
+  paymentStatus          PaymentStatus @default(UNKNOWN)
+  paymentAmountCents     Int?
+  paymentCurrency        String        @default("usd") @db.VarChar(3)
+  amountRefundedCents    Int           @default(0)
+  stripeTaxCalculationId String?
+  stripeTaxTransactionId String?
 
   // Guest checkout info (when no user account)
-  guestEmail      String?
-  guestName       String?
-  guestPhone      String?
+  guestEmail String?
+  guestName  String?
+  guestPhone String?
 
   // Shipping snapshot (in case address changes later)
   shippingName    String?
@@ -133,16 +140,33 @@ model Order {
   shippingZip     String?
   shippingCountry String?
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user            User?       @relation(fields: [userId], references: [id])
-  address         Address?    @relation(fields: [addressId], references: [id])
-  items           OrderItem[]
+  user                User?                @relation(fields: [userId], references: [id])
+  address             Address?             @relation(fields: [addressId], references: [id])
+  items               OrderItem[]
+  checkoutAttempt     CheckoutAttempt?
+  stripeEvents        StripeEvent[]
+  financialOperations FinancialOperation[]
+  adminEvents         AdminOrderEvent[]
 
+  @@unique([stripePaymentId])
+  @@unique([stripeTaxCalculationId])
+  @@unique([stripeTaxTransactionId])
   @@index([userId])
   @@index([status])
+  @@index([paymentStatus])
+}
+
+enum PaymentStatus {
+  UNKNOWN
+  PENDING
+  PAID
+  CANCELLED
+  PARTIALLY_REFUNDED
+  REFUNDED
 }
 
 enum OrderStatus {
@@ -156,11 +180,11 @@ enum OrderStatus {
 }
 
 model OrderItem {
-  id          String   @id @default(cuid())
-  orderId     String
-  variantId   String
-  quantity    Int
-  unitPrice   Decimal  @db.Decimal(10, 2)
+  id        String  @id @default(cuid())
+  orderId   String
+  variantId String
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
 
   // Snapshot of product info at time of order
   productName String
@@ -168,10 +192,127 @@ model OrderItem {
   color       String?
 
   // Relations
-  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id])
 
   @@index([orderId])
+}
+
+enum CheckoutAttemptStatus {
+  INITIALIZING
+  TAX_READY
+  RESERVED
+  READY
+  FAILED
+  RECONCILE
+}
+
+model CheckoutAttempt {
+  id                   String                @id @default(cuid())
+  actorScopeHash       String
+  keyHash              String
+  payloadHash          String
+  checkoutData         Json
+  status               CheckoutAttemptStatus @default(INITIALIZING)
+  orderId              String?               @unique
+  paymentIntentId      String?               @unique
+  taxCalculationId     String?
+  amountCents          Int?
+  currency             String?               @db.VarChar(3)
+  paymentCallStartedAt DateTime?
+  leaseToken           String?
+  leaseExpiresAt       DateTime?
+  lastError            String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@unique([actorScopeHash, keyHash])
+  @@index([status, leaseExpiresAt])
+}
+
+enum StripeEventStatus {
+  RECEIVED
+  PROCESSING
+  PROCESSED
+  RETRY
+  RECONCILE
+}
+
+model StripeEvent {
+  id             String            @id
+  type           String
+  objectId       String?
+  orderId        String?
+  status         StripeEventStatus @default(RECEIVED)
+  attempts       Int               @default(0)
+  leaseExpiresAt DateTime?
+  lastError      String?
+  processedAt    DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([status, leaseExpiresAt])
+  @@index([objectId])
+  @@index([orderId])
+}
+
+enum FinancialOperationKind {
+  COMMIT_TAX
+  REVERSE_TAX_FULL
+  REVERSE_TAX_PARTIAL
+}
+
+enum FinancialOperationStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  RETRY
+  RECONCILE
+}
+
+model FinancialOperation {
+  id                    String                   @id @default(cuid())
+  orderId               String
+  kind                  FinancialOperationKind
+  status                FinancialOperationStatus @default(PENDING)
+  reference             String                   @unique
+  requestData           Json
+  requestHash           String
+  providerObjectId      String?                  @unique
+  attempts              Int                      @default(0)
+  leaseToken            String?
+  leaseExpiresAt        DateTime?
+  lastAttemptAt         DateTime?
+  externalCallStartedAt DateTime?
+  nextAttemptAt         DateTime?
+  lastError             String?
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+
+  @@index([status, nextAttemptAt, leaseExpiresAt])
+  @@index([orderId])
+}
+
+model AdminOrderEvent {
+  id          String      @id @default(cuid())
+  orderId     String
+  actorUserId String
+  fromStatus  OrderStatus
+  toStatus    OrderStatus
+  reason      String
+  createdAt   DateTime    @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  actor User  @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([orderId, createdAt])
+  @@index([actorUserId, createdAt])
 }
 
 // ============================================
@@ -179,20 +320,20 @@ model OrderItem {
 // ============================================
 
 model Review {
-  id          String       @id @default(cuid())
-  productId   String
-  userId      String
-  orderId     String?      // Link to order to verify purchase
-  rating      Int          // Half-star units: 1 = 0.5 stars, 10 = 5 stars
-  title       String?
-  body        String?
-  approved    Boolean      @default(false) // Gustavo approves before showing
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  orderId   String? // Link to order to verify purchase
+  rating    Int // Half-star units: 1 = 0.5 stars, 10 = 5 stars
+  title     String?
+  body      String?
+  approved  Boolean  @default(false) // Gustavo approves before showing
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([productId, userId]) // One review per user per product
   @@index([productId])

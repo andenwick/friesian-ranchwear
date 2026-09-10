@@ -1,16 +1,18 @@
 # Testing and release verification
 
-Last verified: July 16, 2026
+Last verified: September 10, 2026
 
 ## Current baseline
 
 | Suite | Result | Scope |
 | --- | --- | --- |
-| Vitest | 39 passing tests in 8 files | Route contracts, email normalization, image storage, rating encoding, payment-status classification, basic validation |
-| PostgreSQL integration | 10 passing tests in 1 file | Reservation atomicity, rollback, aggregate stock, concurrency, lifecycle idempotence, and expired cleanup |
+| Vitest | 86 passing tests in 19 files | Route/domain contracts, checkout replay and leases, authorization/privacy, telemetry scrubbing, admin concurrency, validation and adapters |
+| PostgreSQL integration | 26 passing tests in 1 file | Migrations, reservation/payment/refund transactions, concurrent event delivery, Tax operation fencing, rollback and stale inventory edits |
 | Playwright | 13 passing, 1 intentionally skipped | Homepage, responsive overflow, policy pages, mocked signup success, invalid subscription API requests |
-| Production build | Passing on Next.js 16.2.10 | Route compilation and static generation |
-| Production dependency audit | Passes at high severity | Low and moderate transitive advisories remain |
+| Production build | Passing on Node 24.21.0 and Next.js 16.3.4 | Route compilation and static generation |
+| Production dependency audit | Passing | Candidate install tree; Auth core override pins the fixed 0.41.3 optional peer |
+| Production logical recovery | Passing | Read-only export restored to isolated local PostgreSQL 17; baseline match, candidate migration, preserved counts, zero core integrity findings |
+| Stripe sandbox contract | Not run; accepted review limitation | Available access required Gustavo MFA and no authorized test secret existed; no live key was used |
 
 The counts are evidence of a working baseline, not broad domain coverage.
 
@@ -31,7 +33,7 @@ npm run check
 
 ## PostgreSQL integration tests
 
-`npm run test:integration` requires `DATABASE_URL` to target PostgreSQL on `localhost`, `127.0.0.1`, or `::1`, with the database name exactly `friesian_test`. The runner refuses all other targets before invoking Prisma. It runs `prisma db push` against that disposable database and then executes the integration configuration serially.
+`npm run test:integration` requires `DATABASE_URL` to target PostgreSQL on `localhost`, `127.0.0.1`, or `::1`, with the database name exactly `friesian_test`. The runner rejects libpq host/service/database overrides and every query parameter except a public schema and numeric connection limit before invoking Prisma. It resets and replays checked-in migrations against that disposable database, then executes the integration configuration serially.
 
 The suite owns the entire `friesian_test` database and deletes application records between tests. Do not use a shared development database. This harness does not establish or validate the production migration baseline.
 
@@ -60,8 +62,14 @@ Good isolated coverage:
 - Stripe PaymentIntent status classification and cancel/success race reread
 - checkout shipping validation before database/provider work
 - server-authoritative checkout price, product snapshot, tax input, and PaymentIntent amount
-- tax-failure short circuit and PaymentIntent compensation after reservation failure
-- webhook signature rejection, Stripe event mapping, and retry response on processing failure
+- tax-failure short circuit, reservation-before-PaymentIntent ordering, and replay-safe
+  recovery when the provider result is uncertain
+- webhook signature rejection, retryable failed-payment handling, Stripe event mapping, and retry response on processing failure
+- guest-only, 30-day single-order capabilities and authenticated user-ID ownership
+- checkout browser continuity without persisted PII and pending/cancelled cart preservation
+- Sentry request, header, URL, referrer, and breadcrumb secret scrubbing
+- database-backed admin role recheck and optimistic product edit conflict responses
+- subscriber writes use literal Sheets values instead of formula-parsed input
 
 Good PostgreSQL coverage:
 
@@ -74,6 +82,10 @@ Good PostgreSQL coverage:
 - successful-payment conflict with an already-cancelled order
 - full-refund state projection without inventory mutation
 - expired reservation cancellation and paid-payment preservation
+- durable event deduplication under concurrent delivery and unknown-order retry
+- partial/full refund projection and ordered Tax commit/reversal operations
+- first-call replay cutoffs, expired lease recovery, and stale completion fencing
+- stale admin inventory write rollback while preserving a racing checkout decrement
 
 Good browser smoke coverage:
 
@@ -97,10 +109,11 @@ The skipped successful subscription test would write to a real sheet if enabled.
 
 ### P0
 
-- admin authorization across every protected route
-- public order lookup response privacy
-- combined route-plus-database checkout behavior using an isolated provider adapter
-- realistic signed webhook fixtures across repeated and out-of-order deliveries
+- authorization matrix across every protected admin route (representative order/product routes are covered)
+- combined HTTP route-plus-PostgreSQL checkout with a Stripe test adapter
+- realistic Stripe-signed fixture verification beyond mocked signature construction
+- provider-managed Railway snapshot/PITR restore and documented production RPO/RTO
+- nonzero-tax Stripe TEST-mode commit/partial-reversal evidence plus locally signed webhook-to-ledger evidence
 
 ### P1
 
@@ -108,7 +121,6 @@ The skipped successful subscription test would write to a real sheet if enabled.
 - sold-variant and sold-product deletion guards
 - image cleanup after product updates
 - verified-purchaser review rules
-- account order ownership
 - status query validation
 - signup normalization, limits, and duplicate handling
 - cookie consent and analytics loading
@@ -119,7 +131,7 @@ The skipped successful subscription test would write to a real sheet if enabled.
 - visual regression for the storefront and admin
 - cross-browser coverage beyond Chromium
 - load or concurrency tests for checkout and subscriptions
-- provider contract tests in test mode
+- broader provider contract cases beyond the deferred critical payment/Tax path
 
 ## Target test shape
 
@@ -150,3 +162,8 @@ Do not make browser tests carry all business correctness. Payment and inventory 
 ## Release evidence
 
 Record commands and exact results in the pull request. A green build does not replace behavioral tests. A successful local test does not replace watching the exact Railway deployment become active.
+
+The prepared TEST-only Stripe harness is intentionally external to the application
+candidate and rejects missing, non-test, live, and connected-account inputs. Publishing
+a review branch does not claim it ran. Execute it later through normal authorized
+sandbox access without asking Gustavo to interrupt an MFA session for this review.

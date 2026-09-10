@@ -34,6 +34,7 @@ export default function ProductForm() {
     active: true,
     variants: [{ size: '', color: '', price: '', stock: '', sku: '' }],
     images: [{ url: '', alt: '' }],
+    editVersion: null,
   });
 
   useEffect(() => {
@@ -77,6 +78,7 @@ export default function ProductForm() {
           images: data.images?.length > 0
             ? data.images.map(i => ({ id: i.id, url: i.url || '', alt: i.alt || '' }))
             : [{ url: '', alt: '' }],
+          editVersion: data.editVersion,
         });
       } else {
         setError('Product not found');
@@ -114,6 +116,7 @@ export default function ProductForm() {
         images: product.images
           .filter(i => i.url)
           .map(i => ({ id: i.id, url: i.url, alt: i.alt || product.name })),
+        ...(!isNew ? { editVersion: product.editVersion } : {}),
       };
 
       const url = isNew ? '/api/admin/products' : `/api/admin/products/${params.id}`;
