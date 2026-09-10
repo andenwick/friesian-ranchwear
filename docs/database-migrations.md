@@ -4,26 +4,27 @@ The migration history begins with `prisma/migrations/0_init`. It represents the
 schema that existed before migrations were introduced; it is not an instruction
 to recreate populated tables.
 
-## Existing production database
+## Production database
 
-On September 10, 2026, an authorized read-only production export was restored into
-isolated local PostgreSQL 17. It matched the exact baseline; the additive migration
-applied; all eight application-table counts were preserved; and negative-stock,
-invalid-money, orphan-order-item, and orphan-attempt checks were zero. No production
-write occurred. This proves the fresh logical-export migration path, not Railway
-snapshot/PITR restore, provider truth, production RTO, or off-device key recovery.
+On September 10, 2026, an authorized release-time read-only production export was
+restored into isolated local PostgreSQL 17. It matched the exact baseline; the additive
+migration applied; all eight original application-table counts were preserved; and
+negative-stock, invalid-money, orphan-order-item, and orphan-attempt checks were zero.
+Production then marked `0_init` applied and applied
+`20260910120000_payment_integrity` while the app had zero instances. Post-migration
+counts and integrity checks passed before main commit `d78bcd8...` was restored to one
+replica. This proves the logical-export migration path, not Railway snapshot/PITR
+restore, provider truth, production RTO, or off-device key recovery.
 
-Do not run production migration commands until a fresh release-time backup has been
-restored and the schema comparison is still clean. With an explicitly approved
-production connection and exact SQL:
+For future production schema changes, do not run migration commands until a fresh
+release-time backup has been restored and schema comparison is clean. With an explicitly
+approved production connection and exact SQL:
 
 1. Compare tables, columns, indexes, constraints, enum values, and Prisma's
    generated baseline with the live schema.
 2. Restore a fresh logical export into a disposable PostgreSQL database and run
    application/schema/data smoke checks.
-3. Mark only the baseline as already applied:
-   `npx prisma migrate resolve --applied 0_init`.
-4. Run `npx prisma migrate status`, review the exact pending SQL, then use
+3. Run `npx prisma migrate status`, review the exact pending SQL, then use
    `npx prisma migrate deploy` only under the approved release plan.
 
 Never use `prisma db push` against production. `migrate resolve` changes migration

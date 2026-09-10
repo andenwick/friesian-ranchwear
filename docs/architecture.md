@@ -1,6 +1,6 @@
 # System architecture
 
-**Status:** deployed base plus reviewed release candidate
+**Status:** production-hardening release deployed
 
 **Last verified:** September 10, 2026
 
@@ -8,7 +8,10 @@
 
 Friesian Ranchwear is a modular monolith. One Next.js application serves the public storefront, customer account, admin interface, API routes, and Stripe webhooks. Railway runs one web service connected to one PostgreSQL service. There is no separate worker, scheduler, queue, or internal API.
 
-The deployed production service remains Git commit `1282322c62c5e04bf474fd7a832c4383a4fa696d`. The payment-integrity implementation described below is a reviewed release candidate, not yet deployed. Production database and provider state therefore remain the authority when deciding whether a behavior is active.
+Production runs Git commit `d78bcd8422d4c0a1383c2563065fe7bd8e6feb7e`.
+Its tree exactly matches independently reviewed candidate
+`1a8bdb4095082b7c0a1f6d52707afddd9113d40c`. The payment-integrity schema and
+application described below were deployed on September 10, 2026.
 
 ```mermaid
 flowchart LR
@@ -37,13 +40,13 @@ flowchart LR
 
 ## Deployment model
 
-| Concern | Deployed production | Reviewed candidate |
+| Concern | Deployed production state | Evidence |
 | --- | --- | --- |
-| Git source | `main` at `1282322...` | Isolated review branch and pull request |
-| Node runtime | Node 20 in the active Railway deployment | Node 24 in CI, Nixpacks, `.nvmrc`, and package engines |
-| Database history | Legacy schema with no `_prisma_migrations` table | Checked-in `0_init` baseline plus additive `20260910120000_payment_integrity` migration |
-| Migration execution | No automatic migration | Still no automatic migration; separately approved migration-before-app release |
-| Payment hardening | Legacy behavior | Durable checkout attempts, event ledger, payment projection, and financial operations |
+| Git source | `main` at `d78bcd8...` | Merge tree equals reviewed `1a8bdb4...` tree |
+| Node runtime | Node 24 | GitHub CI and Railway build/start verification |
+| Database history | `0_init` plus `20260910120000_payment_integrity` | Production `prisma migrate status` is up to date |
+| Migration execution | Explicit migration-before-app release; never at startup | September 10 maintenance-window record |
+| Payment hardening | Durable checkout attempts, event ledger, payment projection, and financial operations | Unit, PostgreSQL, browser, reconciliation, and live boundary checks |
 
 - GitHub `main` is the release branch and Railway's production service is linked to it.
 - `npm run build` generates the Prisma client and builds Next.js.
@@ -52,7 +55,12 @@ flowchart LR
 - The web process handles pages, APIs, opportunistic cleanup, and webhooks.
 - PostgreSQL and all external providers are production dependencies. There is no degraded read-only mode.
 
-The production schema was exported read-only and restored into isolated local PostgreSQL 17. It matched the exact baseline, the additive migration applied successfully, all table counts were preserved, and core integrity checks remained zero. That proves the logical export and migration path; it does not prove Railway snapshot/PITR recovery, production RTO, or provider payment truth. Production migration remains a separately approved release step that must complete before the matching application deployment.
+The release-time production schema was exported read-only and restored into isolated
+local PostgreSQL 17. It matched the exact baseline, the additive migration applied
+successfully, all table counts were preserved, and core integrity checks remained zero.
+Production then resolved `0_init`, applied the additive migration, and deployed the
+matching application tree. This does not prove Railway snapshot/PITR recovery,
+production RTO, or provider payment truth for future transactions.
 
 ## Code map
 

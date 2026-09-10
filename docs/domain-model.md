@@ -2,9 +2,9 @@
 
 Last verified: September 10, 2026
 
-This document describes the reviewed payment-integrity candidate. Production remains
-on commit `1282322c62c5e04bf474fd7a832c4383a4fa696d` until the baseline and additive
-migration are separately approved and applied before the matching app release.
+This document describes the deployed payment-integrity model. Production runs main
+commit `d78bcd8422d4c0a1383c2563065fe7bd8e6feb7e`; its tree matches independently
+reviewed candidate `1a8bdb4095082b7c0a1f6d52707afddd9113d40c`.
 
 ## Ownership
 
@@ -158,7 +158,7 @@ Amounts are stored as database decimals, but parts of the application calculate 
 stateDiagram-v2
     state PaymentProjection {
       [*] --> UNKNOWN: legacy backfill
-      [*] --> PENDING: candidate checkout
+      [*] --> PENDING: hardened checkout
       PENDING --> PAID: verified success webhook
       PENDING --> CANCELLED: confirmed cancellation
       PAID --> PARTIALLY_REFUNDED: cumulative refund below paid amount

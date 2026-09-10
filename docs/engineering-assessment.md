@@ -9,13 +9,14 @@
 **System reviewed:** Friesian Ranchwear at production `main` commit `2d67652`
 
 > Historical assessment: this document records the July baseline. The September 10,
-> 2026 remediation candidate adds migration history, durable checkout/webhook/Tax
+> 2026 deployed remediation adds migration history, durable checkout/webhook/Tax
 > operations, separated payment projection, partial refunds, capability-based guest
 > access, constrained audited admin fulfillment, Node 24 CI/runtime declarations,
 > privacy-safe telemetry, and substantially expanded PostgreSQL tests. Production
-> logical production export/local PostgreSQL restore proof is complete; Railway snapshot
-> restore/PITR, baseline adoption, scheduled reconciliation alerts, branch protection,
-> and release of the exact candidate remain external gates. See
+> logical production export/local PostgreSQL restore proof, baseline adoption, additive
+> migration, exact-tree deployment, and live boundary checks are complete. Railway
+> snapshot restore/PITR, scheduled reconciliation alerts, branch protection, credential
+> rotation, and Stripe TEST-mode contract evidence remain external work. See
 > `payment-operations.md`, `database-migrations.md`, and `operations.md` for current truth.
 
 ## Executive assessment
