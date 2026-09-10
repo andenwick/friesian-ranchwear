@@ -29,6 +29,11 @@ created. A failed local finalization never blindly cancels a PaymentIntent; a
 retry uses the same Stripe idempotency key. Cleanup does not restock an attempt
 whose remote PaymentIntent result may be uncertain.
 
+A `READY` replay re-reads its PaymentIntent. Only a provider-confirmed `canceled`
+status returns `CHECKOUT_RESTART_REQUIRED`, which lets the browser retire that exact
+key and create a new checkout on the user's next explicit submission. Pending,
+unknown, provider-error, and reconciliation states retain the original key.
+
 Signed Stripe events are recorded in `StripeEvent` before projection. Local
 projection and ledger state share one database transaction. Duplicate and
 out-of-order delivery is safe. A non-2xx response is returned while local or

@@ -10,6 +10,7 @@ import { getStripe } from '@/lib/stripe-client';
 import { convertDriveUrl } from '@/lib/image-utils';
 import {
   getOrCreateCheckoutKey,
+  retireConfirmedCanceledCheckout,
   storeGuestOrderAccess,
 } from '@/lib/browser-checkout-access';
 import styles from './page.module.css';
@@ -100,7 +101,11 @@ function CheckoutForm({ clientSecret, orderId, totals }) {
     });
 
     if (submitError) {
-      setError(submitError.message);
+      setError(
+        submitError.payment_intent?.status === 'canceled'
+          ? 'This checkout expired. Reload this page and submit again to start a new payment.'
+          : submitError.message
+      );
       setProcessing(false);
     }
     // If successful, Stripe will redirect to success page
@@ -206,6 +211,10 @@ function CheckoutContent() {
       const data = await response.json();
 
       if (!response.ok) {
+        // Rotate only after the server re-read Stripe and confirmed the prior
+        // PaymentIntent is terminally canceled. Unknown/provider-error states
+        // deliberately retain the original key for safe reconciliation.
+        retireConfirmedCanceledCheckout(localStorage, checkoutKey, data);
         throw new Error(data.error || 'Failed to create order');
       }
 

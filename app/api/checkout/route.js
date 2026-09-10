@@ -23,6 +23,16 @@ const FLAT_RATE_SHIPPING = 5.99;
 
 async function readyCheckoutResponse(attempt) {
   const readyIntent = await stripe.paymentIntents.retrieve(attempt.paymentIntentId);
+  if (readyIntent.status === 'canceled') {
+    return NextResponse.json(
+      {
+        error: 'This checkout expired. Please submit again to start a new payment.',
+        code: 'CHECKOUT_RESTART_REQUIRED',
+        orderId: attempt.orderId,
+      },
+      { status: 409 }
+    );
+  }
   return NextResponse.json({
     clientSecret: readyIntent.client_secret,
     orderId: attempt.orderId,
@@ -113,7 +123,7 @@ export async function POST(request) {
     let attempt = attemptClaim?.attempt;
     let leaseToken = attemptClaim?.leaseToken;
     if (attempt?.status === 'READY') {
-      return readyCheckoutResponse(attempt);
+      return await readyCheckoutResponse(attempt);
     }
 
     if (!attempt) {
@@ -239,7 +249,7 @@ export async function POST(request) {
     // Another request can complete the attempt after the early lookup but before
     // the create hits its unique constraint. Reuse that completed result too.
     if (attempt.status === 'READY') {
-      return readyCheckoutResponse(attempt);
+      return await readyCheckoutResponse(attempt);
     }
 
     if (attempt.status === 'INITIALIZING') {

@@ -90,7 +90,7 @@ The split between `app/components/` and top-level `components/` is historical, n
 | `/api/checkout` | POST | Public or signed in | Tax, PaymentIntent, stock reservation, order creation |
 | `/api/health` | GET | Public | Database-backed liveness check |
 | `/api/image` | GET | Public | Legacy Google Drive image proxy |
-| `/api/orders/lookup` | POST | Guest capability | One guest order in the same browser; email-only history is disabled |
+| `/api/orders/lookup` | POST | Account owner | Signed-in order history scoped by immutable user ID |
 | `/api/orders/verify` | POST | Account owner or guest capability | Checkout success verification |
 | `/api/products` | GET | Public | Active catalog and product detail payloads |
 | `/api/products/[id]/reviews` | GET, POST | Public read, signed-in write | Approved reviews and verified-purchase submission |

@@ -135,6 +135,7 @@ beforeEach(() => {
   });
   mocks.stripe.paymentIntents.retrieve.mockResolvedValue({
     id: 'pi_checkout',
+    status: 'requires_payment_method',
     client_secret: 'pi_checkout_secret',
   });
   mocks.stripe.paymentIntents.cancel.mockResolvedValue({ status: 'canceled' });
@@ -268,6 +269,66 @@ describe('POST /api/checkout', () => {
       total: 86.5,
     });
     expect(mocks.stripe.tax.calculations.create).not.toHaveBeenCalled();
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('requires a new checkout only when the completed intent is confirmed canceled', async () => {
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_canceled',
+        status: 'READY',
+        orderId: 'order_canceled',
+        paymentIntentId: 'pi_canceled',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: null,
+      created: false,
+    });
+    mocks.stripe.paymentIntents.retrieve.mockResolvedValue({
+      id: 'pi_canceled',
+      status: 'canceled',
+      client_secret: 'pi_canceled_secret',
+    });
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      error: 'This checkout expired. Please submit again to start a new payment.',
+      code: 'CHECKOUT_RESTART_REQUIRED',
+      orderId: 'order_canceled',
+    });
+    expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
+    expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
+  });
+
+  it('keeps the original attempt when the completed intent cannot be verified', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mocks.claimExistingCheckoutAttempt.mockResolvedValue({
+      attempt: {
+        id: 'attempt_unknown',
+        status: 'READY',
+        orderId: 'order_unknown',
+        paymentIntentId: 'pi_unknown',
+        checkoutData: {
+          totals: { subtotal: 84, shipping: 0, tax: 2.5, total: 86.5 },
+        },
+      },
+      leaseToken: null,
+      created: false,
+    });
+    mocks.stripe.paymentIntents.retrieve.mockRejectedValue(new Error('provider unavailable'));
+
+    const response = await POST(checkoutRequest());
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      error: 'Failed to process checkout. Please try again.',
+    });
+    expect(mocks.releaseCheckoutAttempt).not.toHaveBeenCalled();
     expect(mocks.stripe.paymentIntents.create).not.toHaveBeenCalled();
     expect(mocks.reserveInventoryAndCreateOrder).not.toHaveBeenCalled();
   });

@@ -4,6 +4,7 @@ import {
   getOrCreateCheckoutKey,
   loadGuestOrderAccess,
   retireActiveCheckoutKey,
+  retireConfirmedCanceledCheckout,
   shouldClearCartForOrderStatus,
   storeGuestOrderAccess,
 } from '@/lib/browser-checkout-access';
@@ -69,6 +70,36 @@ describe('browser checkout continuity', () => {
 
     expect(afterTwoDays).toBe('key-1');
     expect(cryptoApi.randomUUID).toHaveBeenCalledOnce();
+  });
+
+  it('allows a new key only after the server confirms the prior checkout was canceled', async () => {
+    const storage = memoryStorage();
+    const cryptoApi = {
+      subtle: webcrypto.subtle,
+      randomUUID: vi.fn()
+        .mockReturnValueOnce('key-canceled')
+        .mockReturnValueOnce('key-restarted'),
+    };
+    const payload = { items: [{ id: 'v1' }] };
+    const canceledKey = await getOrCreateCheckoutKey(storage, payload, cryptoApi, 1000);
+
+    expect(retireConfirmedCanceledCheckout(
+      storage,
+      canceledKey,
+      { code: 'CHECKOUT_PROVIDER_UNAVAILABLE' }
+    )).toBe(false);
+    expect(await getOrCreateCheckoutKey(storage, payload, cryptoApi, 1500)).toBe(canceledKey);
+
+    expect(retireConfirmedCanceledCheckout(
+      storage,
+      canceledKey,
+      { code: 'CHECKOUT_RESTART_REQUIRED' }
+    )).toBe(true);
+    const restartedKey = await getOrCreateCheckoutKey(storage, payload, cryptoApi, 2000);
+
+    expect(canceledKey).toBe('key-canceled');
+    expect(restartedKey).toBe('key-restarted');
+    expect(cryptoApi.randomUUID).toHaveBeenCalledTimes(2);
   });
 
   it('preserves the cart while pending and when pending later becomes cancelled', () => {
