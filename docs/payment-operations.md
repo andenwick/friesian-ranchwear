@@ -112,12 +112,12 @@ provider or database error messages.
 
 ## External contract evidence
 
-The September 10 candidate has comprehensive mocked and PostgreSQL-backed contract
+The September 10 deployed release has comprehensive mocked and PostgreSQL-backed contract
 coverage, but no real Stripe sandbox run was executed because the available account
 requires Gustavo's MFA and no authorized test secret was available. Anden accepted
 that limitation for review-branch publication and asked that Gustavo not be interrupted.
 It is deferred evidence, not a permanent blocker or permission to use live keys.
 
-Before a production payment release, run the prepared TEST-only procedure when normal
+Before a future production payment change, run the prepared TEST-only procedure when normal
 authorized sandbox access is available. Retain nonzero-tax commit/reversal evidence and
 locally signed webhook-to-ledger evidence. Never substitute a live charge.

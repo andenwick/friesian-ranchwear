@@ -1,8 +1,8 @@
 # Engineering documentation
 
-These documents distinguish the deployed production base from the reviewed September 10,
-2026 release candidate. They are part of the codebase and should change in the same pull
-request when implementation or verified operating state changes.
+These documents describe the September 10, 2026 deployed production-hardening release
+and remaining operating limitations. They are part of the codebase and should change in
+the same pull request when implementation or verified operating state changes.
 
 ## Documents
 

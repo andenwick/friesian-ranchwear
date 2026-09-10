@@ -6,10 +6,10 @@ Last verified: September 10, 2026
 
 - Application: one Railway web service
 - Database: one Railway PostgreSQL service
-- Release source: GitHub `main`; active deployment is base commit `1282322...`
+- Release source: GitHub `main`; active deployment is commit `d78bcd8...`
 - Public domain: `https://friesianranchwear.com`
 - Health endpoint: `GET /api/health`
-- Current runtime: Node 20; reviewed candidate runtime: Node 24
+- Current runtime: Node 24
 - Current resilience: one app replica, one database member, no HA, PITR disabled,
   no backup schedule, and no wired PITR bucket
 
@@ -21,8 +21,8 @@ currently has `checkSuites=false`. Railway's project-level `prDeploys`,
 the only environment was non-ephemeral `production`. An isolated review branch or draft
 pull request therefore does not create a Railway preview or target production under the
 verified configuration. Recheck those flags before opening a later pull request. Merging
-or pushing to `main` is deployment-sensitive and must not occur until the migration-first
-release window is approved.
+or pushing to `main` is deployment-sensitive. The September 10 migration-first release
+completed; future production changes still require their own reviewed rollout.
 
 ## Build and start
 
@@ -43,8 +43,10 @@ PostgreSQL 17 databases. Baseline resolve and migration deploy are separate, exp
 approved release actions that must finish before the schema-dependent application is
 rolled out. Ordinary restarts must never apply pending financial migrations.
 
-The September 10 read-only production export/local PostgreSQL 17 restore proved the
-logical recovery and candidate migration path without mutating production. It did not
+The September 10 release-time read-only production export/local PostgreSQL 17 restore
+proved the logical recovery and migration path before production was changed. Production
+then resolved `0_init`, applied `20260910120000_payment_integrity`, and deployed the exact
+reviewed tree. The rehearsal did not
 validate Railway's manual volume backup restore. The only unexpired manual backup seen
 during review expires September 22, 2026. Establish scheduled recovery/PITR, a tested
 provider restore cadence, documented RPO/RTO, and off-device recovery for encryption
@@ -162,13 +164,13 @@ Before merge:
 - for payment or Tax changes, retain Stripe test-mode contract evidence for the
   exact pinned API/version before release; local mocks do not satisfy this gate
 
-The current candidate's real Stripe sandbox run is deferred because normal access
+The deployed release's real Stripe sandbox run is deferred because normal access
 requires Gustavo's MFA and no authorized test secret was available. Anden accepted
 that limitation for a review branch and asked that Gustavo not be interrupted. Do not
 use live keys. Complete the TEST-only evidence when ordinary authorized sandbox access
 is available; do not describe the deferred check as permanently impossible.
 
-Before the first production migration:
+The first production migration completed on September 10, 2026 using this sequence:
 
 1. Enter a short approved maintenance window and quiesce the old checkout path.
    Preserve incoming Stripe events for retry; do not disable or discard provider
@@ -199,7 +201,7 @@ Before the first production migration:
 9. Reconcile any legacy pending/unknown payment work, confirm webhook processing, and
    reopen checkout only after the hardened build and schema are both healthy.
 
-After the separately approved migration and merge:
+After every separately approved migration and merge:
 
 1. Confirm the exact commit is building in Railway.
 2. Wait for the exact deployment to become Active.

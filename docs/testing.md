@@ -6,11 +6,11 @@ Last verified: September 10, 2026
 
 | Suite | Result | Scope |
 | --- | --- | --- |
-| Vitest | 86 passing tests in 19 files | Route/domain contracts, checkout replay and leases, authorization/privacy, telemetry scrubbing, admin concurrency, validation and adapters |
+| Vitest | 89 passing tests in 19 files | Route/domain contracts, checkout replay and leases, confirmed-cancellation restart, authorization/privacy, telemetry scrubbing, admin concurrency, validation and adapters |
 | PostgreSQL integration | 26 passing tests in 1 file | Migrations, reservation/payment/refund transactions, concurrent event delivery, Tax operation fencing, rollback and stale inventory edits |
 | Playwright | 13 passing, 1 intentionally skipped | Homepage, responsive overflow, policy pages, mocked signup success, invalid subscription API requests |
 | Production build | Passing on Node 24.21.0 and Next.js 16.3.4 | Route compilation and static generation |
-| Production dependency audit | Passing | Candidate install tree; Auth core override pins the fixed 0.41.3 optional peer |
+| Production dependency audit | Passing | Deployed install tree; Auth core override pins the fixed 0.41.3 optional peer |
 | Production logical recovery | Passing | Read-only export restored to isolated local PostgreSQL 17; baseline match, candidate migration, preserved counts, zero core integrity findings |
 | Stripe sandbox contract | Not run; accepted review limitation | Available access required Gustavo MFA and no authorized test secret existed; no live key was used |
 
