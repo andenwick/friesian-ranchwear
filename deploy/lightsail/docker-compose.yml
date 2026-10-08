@@ -1,14 +1,21 @@
-# Runs on the Lightsail instance in /opt/friesian. Secrets live in /opt/friesian/app.env (mode 600, never in git).
+# Runs on the Lightsail instance in /opt/friesian. Secrets live in /opt/friesian/app.prod.env (mode 600, never in git).
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
 services:
   app:
     image: friesian:${APP_TAG:-current}
     env_file: /opt/friesian/${APP_ENV_FILE:-app.env}
     restart: unless-stopped
+    logging: *logging
     expose:
       - "3000"
   caddy:
     image: caddy:2
     restart: unless-stopped
+    logging: *logging
     depends_on:
       - app
     ports:
