@@ -22,6 +22,9 @@ function SignInForm() {
     if (searchParams.get('registered') === 'true') {
       setSuccess('Account created! Please sign in.');
     }
+    if (searchParams.get('reset') === 'true') {
+      setSuccess('Password updated. Sign in with your new password.');
+    }
     // Show error from NextAuth
     const errorParam = searchParams.get('error');
     if (errorParam) {
@@ -113,6 +116,9 @@ function SignInForm() {
                 required
                 autoComplete="current-password"
               />
+              <Link href="/auth/forgot" className={styles.forgotLink}>
+                Forgot password?
+              </Link>
             </div>
 
             <button type="submit" className={styles.button} disabled={loading}>
