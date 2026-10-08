@@ -30,13 +30,38 @@
 }
 
 .subtitle {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
 }
 
 .form {
   margin-bottom: var(--space-2xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: var(--space-sm);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  text-align: center;
+}
+
+.notice {
+  margin-top: var(--space-sm);
+  color: var(--color-stone-deep);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .inputGroup {
+    flex-direction: column;
+  }
 }
 
 .inputGroup {
@@ -57,7 +82,7 @@
 }
 
 .input::placeholder {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   opacity: 0.6;
 }
 
@@ -78,6 +103,12 @@
   cursor: pointer;
   transition: background 0.2s ease;
   white-space: nowrap;
+}
+
+.header .button {
+  display: inline-block;
+  margin-top: var(--space-lg);
+  text-decoration: none;
 }
 
 .button:hover:not(:disabled) {
@@ -102,7 +133,7 @@
 }
 
 .resultCount {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
   margin-bottom: var(--space-md);
@@ -122,7 +153,7 @@
 }
 
 .emptyIcon {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   opacity: 0.4;
   margin-bottom: var(--space-md);
 }
@@ -137,7 +168,7 @@
 }
 
 .emptyText {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
   max-width: 400px;

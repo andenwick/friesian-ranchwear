@@ -99,8 +99,18 @@ IDs.
 Guest checkout creates a single-order capability. Its raw value is kept in the
 same browser's local storage and its hash is stored server-side. Both browser
 and server enforce a 30-day lifetime. It cannot authorize an account-owned
-order or disclose order history. Other-device recovery remains unavailable
-until a verified transactional-email channel exists.
+order or disclose order history. From another device, a guest can request an
+order-history email; it goes only to the address that placed the orders and
+contains no address or name.
+
+## Customer emails
+
+The webhook sends the order confirmation after `payment_intent.succeeded` is first
+projected and before financial operations drain, so a drain failure (and the
+duplicate redelivery that follows) cannot suppress it. Sending never throws and never
+changes the webhook response. Resend idempotency keys (`order-confirmation-<id>`,
+`order-shipped-<id>`) drop repeats for 24 hours. The shipping email is sent when an
+admin moves an order to `SHIPPED`.
 
 ## Telemetry boundaries
 

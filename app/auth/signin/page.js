@@ -22,6 +22,9 @@ function SignInForm() {
     if (searchParams.get('registered') === 'true') {
       setSuccess('Account created! Please sign in.');
     }
+    if (searchParams.get('reset') === 'true') {
+      setSuccess('Password updated. Sign in with your new password.');
+    }
     // Show error from NextAuth
     const errorParam = searchParams.get('error');
     if (errorParam) {
@@ -77,7 +80,11 @@ function SignInForm() {
           />
 
           <h1 className={styles.title}>Sign In</h1>
-          <p className={styles.subtitle}>Welcome back</p>
+          <p className={styles.subtitle}>
+            {searchParams.get('callbackUrl')?.includes('/account/orders')
+              ? 'Sign in to view your orders'
+              : 'Welcome back'}
+          </p>
 
           <form onSubmit={handleSubmit} className={styles.form}>
             {error && <div className={styles.error}>{error}</div>}
@@ -109,6 +116,9 @@ function SignInForm() {
                 required
                 autoComplete="current-password"
               />
+              <Link href="/auth/forgot" className={styles.forgotLink}>
+                Forgot password?
+              </Link>
             </div>
 
             <button type="submit" className={styles.button} disabled={loading}>

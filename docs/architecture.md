@@ -228,8 +228,9 @@ credentials, capabilities, client secrets, referrers, and breadcrumbs.
 - Request validation is handwritten and inconsistent.
 - Rate limiting is process-local and does not coordinate across replicas or restarts.
 - There is no worker or scheduler for expired reservations.
-- Rate-limited guest recovery is limited to a 30-day, same-browser single-order capability;
-  verified other-device recovery requires a future transactional-email channel.
+- Guest order detail is limited to a 30-day, same-browser single-order capability. From
+  another device a guest can only ask for an order-history email (order number, date,
+  status, total) sent to the address that placed the orders.
 - The legacy fulfillment enum remains for compatibility, while `paymentStatus` is the
   financial authority during the expand phase.
 - Large client components combine networking, state machines, validation, and presentation.

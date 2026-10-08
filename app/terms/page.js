@@ -3,7 +3,7 @@ import Footer from '@/app/components/Footer/Footer';
 import styles from '@/app/legal.module.css';
 
 export const metadata = {
-  title: 'Terms | Friesian Ranchwear',
+  title: 'Terms',
 };
 
 export default function TermsPage() {

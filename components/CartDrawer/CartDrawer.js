@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart-context';
 import { convertDriveUrl } from '@/lib/image-utils';
@@ -9,6 +9,7 @@ import styles from './CartDrawer.module.css';
 
 export default function CartDrawer() {
   const router = useRouter();
+  const pathname = usePathname();
   const {
     items,
     itemCount,
@@ -23,6 +24,13 @@ export default function CartDrawer() {
     closeCart();
     router.push('/checkout');
   };
+
+  // Close when the page changes (including browser back/forward)
+  useEffect(() => {
+    closeCart();
+    // closeCart is recreated every render; only a page change should close the drawer.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   // Lock body scroll when drawer is open
   useEffect(() => {

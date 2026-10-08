@@ -111,3 +111,69 @@ test.describe('Policy pages', () => {
     await expect(page.getByRole('heading', { name: 'TERMS' })).toBeVisible();
   });
 });
+
+test.describe('Header and site chrome', () => {
+  test('cart and menu work on mobile before scrolling', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await openHome(page);
+
+    await page.getByRole('button', { name: 'Open menu' }).click();
+    const menu = page.locator('#site-menu');
+    await expect(menu.getByRole('link', { name: 'Shop' })).toHaveAttribute('href', '/products');
+    await expect(menu.getByRole('link', { name: 'Track Order' })).toHaveAttribute('href', '/track-order');
+    await page.keyboard.press('Escape');
+    await expect(menu).toHaveCount(0);
+
+    await page.getByRole('button', { name: /Shopping cart/ }).click();
+    await expect(page.getByText('Your cart is empty', { exact: false }).first()).toBeVisible();
+  });
+
+  test('renders brand fonts', async ({ page }) => {
+    await openHome(page);
+    const heading = page.getByRole('heading', { name: 'STAY POSTED.' });
+    const fonts = {
+      body: await page.evaluate(() => getComputedStyle(document.body).fontFamily),
+      heading: await heading.evaluate((element) => getComputedStyle(element).fontFamily),
+    };
+    expect(fonts.body).toContain('Barlow');
+    expect(fonts.heading).toContain('Barlow Condensed');
+  });
+
+  test('cookie choice closes the banner without reloading the page', async ({ page }) => {
+    await openHome(page);
+    await page.evaluate(() => { window.__noReload = true; });
+    await page.getByRole('button', { name: 'Accept' }).click();
+    await expect(page.getByRole('region', { name: 'Cookie consent' })).toHaveCount(0);
+    expect(await page.evaluate(() => window.__noReload)).toBe(true);
+  });
+
+  test('shares a branded preview card', async ({ page }) => {
+    await openHome(page);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/og-default\.jpg$/);
+    const image = await page.request.get('/og-default.jpg');
+    expect(image.status()).toBe(200);
+  });
+});
+
+test.describe('Account recovery', () => {
+  test('sign-in links to password reset, which answers generically', async ({ page }) => {
+    await page.goto('/auth/signin');
+    await page.getByRole('link', { name: 'Forgot password?' }).click();
+    await expect(page).toHaveURL(/\/auth\/forgot$/);
+    await page.getByLabel('Email').fill('someone@example.test');
+    await page.getByRole('button', { name: 'Send Reset Link' }).click();
+    await expect(page.getByRole('status')).toContainText('If that email has an account');
+  });
+
+  test('a reset page without a token offers a new link', async ({ page }) => {
+    await page.goto('/auth/reset');
+    await expect(page.getByRole('link', { name: 'Request a new one' })).toHaveAttribute('href', '/auth/forgot');
+  });
+
+  test('guests can ask for their order history by email', async ({ page }) => {
+    await page.goto('/track-order');
+    await page.getByLabel(/Checked out as a guest/).fill('guest@example.test');
+    await page.getByRole('button', { name: 'Email Me' }).click();
+    await expect(page.getByRole('status')).toContainText('If we have orders for that email');
+  });
+});

@@ -1,10 +1,68 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import styles from './page.module.css';
+
+function GuestOrderEmailForm() {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/orders/email-lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setError(data.error || 'Something went wrong. Please try again.');
+      } else {
+        setMessage(data.message || 'If we have orders for that email, we just sent them there.');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <label htmlFor="order-email" className={styles.formLabel}>
+        Checked out as a guest? We&apos;ll email you your orders.
+      </label>
+      <div className={styles.inputGroup}>
+        <input
+          id="order-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={styles.input}
+          placeholder="you@example.com"
+          required
+          autoComplete="email"
+        />
+        <button type="submit" className={styles.button} disabled={loading}>
+          {loading ? 'Sending...' : 'Email Me'}
+        </button>
+      </div>
+      {error && <p className={styles.error} role="alert">{error}</p>}
+      {message && <p className={styles.notice} role="status">{message}</p>}
+    </form>
+  );
+}
 
 export default function TrackOrderPage() {
   const { data: session, status } = useSession();
@@ -30,19 +88,15 @@ export default function TrackOrderPage() {
             ) : (
               <>
                 <p className={styles.subtitle}>
-                  Sign in to view account orders. Guest orders can be viewed from the
-                  secure confirmation page in the browser used for checkout.
+                  Have an account? Sign in to see every order and its status.
                 </p>
-                <p className={styles.subtitle}>
-                  Guest order recovery by email is unavailable until verified email
-                  delivery is configured.
-                </p>
-                <Link href="/auth/signin" className={styles.button}>
+                <Link href="/auth/signin?callbackUrl=%2Faccount%2Forders" className={styles.button}>
                   Sign In
                 </Link>
               </>
             )}
           </div>
+          {status !== 'loading' && !session && <GuestOrderEmailForm />}
         </div>
       </main>
       <Footer />

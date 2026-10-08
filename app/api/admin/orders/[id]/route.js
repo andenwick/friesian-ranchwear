@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { canAdminTransitionOrder, getAllowedAdminOrderTransitions } from '@/lib/order-status';
+import { sendOrderShipped } from '@/lib/order-emails';
 
 async function checkAdmin() {
   const session = await getServerSession(authOptions);
@@ -160,6 +161,10 @@ export async function PUT(request, { params }) {
         { error: 'Order changed while this update was in progress. Refresh and try again.' },
         { status: 409 }
       );
+    }
+
+    if (status === 'SHIPPED') {
+      await sendOrderShipped(prisma, id);
     }
 
     return NextResponse.json({
