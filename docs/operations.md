@@ -59,9 +59,12 @@ during review expires September 22, 2026. Establish scheduled recovery/PITR, a t
 provider restore cadence, documented RPO/RTO, and off-device recovery for encryption
 material before treating backup operations as production-ready.
 
-The application currently connects with a PostgreSQL superuser that can create roles,
-databases, and replication state. Replace it with a least-privilege runtime role only
-under a reviewed and separately approved privilege rollout.
+Since October 8, 2026 the AWS application connects as `friesian_app`, which has only
+SELECT, INSERT, UPDATE and DELETE on the public tables (plus sequence usage) and cannot
+create objects or roles. Default privileges from `dbmasteruser` extend those grants to
+tables created by future migrations. Migrations run as `dbmasteruser` (password in
+`/opt/friesian/.dbpass`), never as the runtime role. Railway, kept only for rollback,
+still uses its own superuser connection.
 
 ## Configuration
 
