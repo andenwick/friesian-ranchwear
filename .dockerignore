@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.github
+coverage
+tests
+playwright-report
+test-results
+*.log
+.env
+.env.*
+.DS_Store
+Dockerfile
+.dockerignore
