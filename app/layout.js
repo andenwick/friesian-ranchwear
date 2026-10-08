@@ -4,6 +4,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import CookieConsent from "@/components/CookieConsent";
 import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import Providers from "@/components/Providers";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const barlow = Barlow({
   variable: "--font-barlow",
@@ -18,17 +19,33 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata = {
-  title: "Friesian Ranchwear",
-  description: "Nothing you wear is an accident.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
   icons: {
     icon: '/friesian-favicon.png',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: '/',
+    images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og-default.jpg'],
   },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${barlow.variable} ${barlowCondensed.variable}`}>
+    <html lang="en" className={`${barlow.variable} ${barlowCondensed.variable}`}>
+      <body>
         <Providers>
           <GoogleAnalytics />
           <ErrorBoundary>

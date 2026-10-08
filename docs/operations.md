@@ -81,6 +81,7 @@ Never place real values in documentation, commits, test fixtures, CI variables, 
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Mailing-list reads and writes |
 | `GOOGLE_PRIVATE_KEY` | Mailing-list reads and writes |
 | `GOOGLE_SHEET_ID` | Mailing-list reads and writes |
+| `RESEND_API_KEY` | Order confirmation and shipping emails, password reset, guest order-history email. When absent these are skipped silently and the forms still answer generically |
 
 ### Optional
 
@@ -92,6 +93,8 @@ Never place real values in documentation, commits, test fixtures, CI variables, 
 | `SENTRY_ORG` | Required only for configured Sentry build integration |
 | `SENTRY_PROJECT` | Required only for configured Sentry build integration |
 | `NEXT_PUBLIC_GA_ID` | Analytics disabled when absent; consent required when present |
+| `EMAIL_FROM` | Defaults to `Friesian Ranchwear <orders@friesianranchwear.com>`; the domain must be verified in Resend |
+| `EMAIL_REPLY_TO` | Where customer replies go; without it replies reach an address with no inbox |
 
 ## Credential exposure response
 

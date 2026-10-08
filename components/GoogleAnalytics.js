@@ -2,16 +2,19 @@
 
 import Script from 'next/script';
 import { useEffect, useState } from 'react';
+import { COOKIE_CONSENT_EVENT } from './CookieConsent';
 
 export default function GoogleAnalytics() {
   const [consentGiven, setConsentGiven] = useState(false);
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (consent === 'accepted') {
-      setConsentGiven(true);
-    }
+    const readConsent = () => {
+      setConsentGiven(localStorage.getItem('cookie-consent') === 'accepted');
+    };
+    readConsent();
+    window.addEventListener(COOKIE_CONSENT_EVENT, readConsent);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, readConsent);
   }, []);
 
   if (!gaId || !consentGiven) {

@@ -262,7 +262,9 @@ There is no moderation audit trail, rejection reason, or record of the admin act
 - JWT sessions carry user ID and admin status.
 - Admin status is rechecked against PostgreSQL for existing admin tokens.
 
-Input length limits, password maximum length, account verification, password reset, and session revocation are not implemented.
+Password reset uses a stateless signed link (`lib/password-reset.js`): user ID, expiry and an HMAC over the current password hash, valid 30 minutes. Changing the password invalidates every outstanding link, so no reset table exists. Existing JWT sessions are not revoked by a reset.
+
+Input length limits, account verification, and session revocation are not implemented.
 
 ## Subscriber model
 

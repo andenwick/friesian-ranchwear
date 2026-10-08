@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import styles from './CookieConsent.module.css';
+
+export const COOKIE_CONSENT_EVENT = 'cookie-consent-change';
 
 export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
+  const bannerRef = useRef(null);
 
   useEffect(() => {
     const consent = localStorage.getItem('cookie-consent');
@@ -12,15 +16,28 @@ export default function CookieConsent() {
     }
   }, []);
 
-  const acceptCookies = () => {
-    localStorage.setItem('cookie-consent', 'accepted');
-    setShowBanner(false);
-    window.location.reload();
-  };
+  // Reserve space at the bottom of the page so the banner never covers buttons.
+  useEffect(() => {
+    if (!showBanner || !bannerRef.current) return;
 
-  const declineCookies = () => {
-    localStorage.setItem('cookie-consent', 'declined');
+    const banner = bannerRef.current;
+    const reserve = () => {
+      document.body.style.paddingBottom = `${banner.offsetHeight}px`;
+    };
+    reserve();
+    const observer = new ResizeObserver(reserve);
+    observer.observe(banner);
+
+    return () => {
+      observer.disconnect();
+      document.body.style.paddingBottom = '';
+    };
+  }, [showBanner]);
+
+  const choose = (value) => {
+    localStorage.setItem('cookie-consent', value);
     setShowBanner(false);
+    window.dispatchEvent(new Event(COOKIE_CONSENT_EVENT));
   };
 
   if (!showBanner) {
@@ -28,48 +45,15 @@ export default function CookieConsent() {
   }
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: '#1a1a1a',
-      color: '#fff',
-      padding: '1rem',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: '1rem',
-      flexWrap: 'wrap',
-      zIndex: 9999,
-    }}>
-      <p style={{ margin: 0 }}>
+    <div ref={bannerRef} className={styles.banner} role="region" aria-label="Cookie consent">
+      <p className={styles.text}>
         We use cookies to analyze site traffic.
       </p>
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <button
-          onClick={acceptCookies}
-          style={{
-            backgroundColor: '#fff',
-            color: '#1a1a1a',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
-        >
+      <div className={styles.actions}>
+        <button onClick={() => choose('accepted')} className={styles.accept}>
           Accept
         </button>
-        <button
-          onClick={declineCookies}
-          style={{
-            backgroundColor: 'transparent',
-            color: '#fff',
-            border: '1px solid #fff',
-            padding: '0.5rem 1rem',
-            cursor: 'pointer',
-          }}
-        >
+        <button onClick={() => choose('declined')} className={styles.decline}>
           Decline
         </button>
       </div>

@@ -27,7 +27,8 @@ The older `.interface-design/system.md` path points here for compatibility. Do n
 | `--color-black` | `#0C0C0C` | Page background |
 | `--color-charcoal` | `#1A1816` | Elevated dark surface |
 | `--color-smoke` | `#2A2724` | Dark cards and borders |
-| `--color-stone` | `#A8998A` | Muted text |
+| `--color-stone` | `#A8998A` | Muted text on dark surfaces |
+| `--color-stone-deep` | `#6B5F53` | Muted text on light surfaces (checkout, track order) |
 | `--color-parchment` | `#F2EDE8` | Primary dark-surface text |
 | `--color-brass` | `#8B7355` | Primary accent |
 | `--color-brass-light` | `#A38D6D` | Accent hover |

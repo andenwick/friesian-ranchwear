@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/lib/cart-context';
 import { getStripe } from '@/lib/stripe-client';
 import { convertDriveUrl } from '@/lib/image-utils';
@@ -13,6 +14,7 @@ import {
   retireConfirmedCanceledCheckout,
   storeGuestOrderAccess,
 } from '@/lib/browser-checkout-access';
+import Footer from '@/app/components/Footer/Footer';
 import styles from './page.module.css';
 
 // US States for dropdown
@@ -484,6 +486,28 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
+    <>
+    <div className={styles.topBar}>
+      <div className={styles.topBarInner}>
+        <a href="/" className={styles.topBarBrand}>
+          <Image
+            src="/friesian-logo-chrome.png"
+            alt="Friesian Ranchwear"
+            width={28}
+            height={28}
+            className={styles.topBarLogo}
+          />
+          <span className={styles.topBarWordmark}>FRIESIAN</span>
+        </a>
+        <span className={styles.secure}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Secure checkout
+        </span>
+      </div>
+    </div>
     <div className={styles.container}>
       <main className={styles.main}>
         <Link href="/products" className={styles.backLink}>
@@ -498,5 +522,7 @@ export default function CheckoutPage() {
         <CheckoutContent />
       </main>
     </div>
+    <Footer />
+    </>
   );
 }

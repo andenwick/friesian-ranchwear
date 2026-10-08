@@ -4,6 +4,7 @@ import { stripe } from '@/lib/stripe';
 import { drainOrderFinancialOperations } from '@/lib/financial-operations';
 import { projectStripeEvent, recordStripeEventFailure } from '@/lib/stripe-event-ledger';
 import { operationalErrorCode } from '@/lib/operational-errors';
+import { sendOrderConfirmation } from '@/lib/order-emails';
 
 export async function POST(request) {
   const body = await request.text();
@@ -29,6 +30,11 @@ export async function POST(request) {
 
   try {
     const projection = await projectStripeEvent(prisma, event);
+    // Before draining: a drain failure returns 500, and the retried event is then a
+    // duplicate, so this is the one chance to send. sendOrderConfirmation never throws.
+    if (event.type === 'payment_intent.succeeded' && !projection.duplicate && projection.orderId) {
+      await sendOrderConfirmation(prisma, projection.orderId);
+    }
     if (projection.orderId) {
       await drainOrderFinancialOperations(prisma, stripe, projection.orderId);
     }
