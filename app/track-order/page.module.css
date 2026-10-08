@@ -30,7 +30,7 @@
 }
 
 .subtitle {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   font-size: var(--font-size-base);
 }
@@ -57,7 +57,7 @@
 }
 
 .input::placeholder {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   opacity: 0.6;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .resultCount {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
   margin-bottom: var(--space-md);
@@ -122,7 +122,7 @@
 }
 
 .emptyIcon {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   opacity: 0.4;
   margin-bottom: var(--space-md);
 }
@@ -137,7 +137,7 @@
 }
 
 .emptyText {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
   max-width: 400px;

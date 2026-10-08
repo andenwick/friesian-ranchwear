@@ -77,7 +77,11 @@ function SignInForm() {
           />
 
           <h1 className={styles.title}>Sign In</h1>
-          <p className={styles.subtitle}>Welcome back</p>
+          <p className={styles.subtitle}>
+            {searchParams.get('callbackUrl')?.includes('/account/orders')
+              ? 'Sign in to view your orders'
+              : 'Welcome back'}
+          </p>
 
           <form onSubmit={handleSubmit} className={styles.form}>
             {error && <div className={styles.error}>{error}</div>}

@@ -3,15 +3,18 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useCart } from "@/lib/cart-context";
 import styles from "./Header.module.css";
 
 export default function Header({ alwaysVisible = false }) {
   const [isVisible, setIsVisible] = useState(alwaysVisible);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const { data: session, status } = useSession();
   const { itemCount, openCart } = useCart();
+  const pathname = usePathname();
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -30,10 +33,27 @@ export default function Header({ alwaysVisible = false }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [alwaysVisible]);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
+
+  const solid = isVisible || menuOpen;
+
   return (
-    <header className={`${styles.header} ${alwaysVisible ? styles.alwaysVisible : ''} ${isVisible ? styles.visible : ""}`}>
+    <header className={`${styles.header} ${alwaysVisible ? styles.alwaysVisible : ''} ${solid ? styles.visible : ""}`}>
       <div className={styles.container}>
-        <a href="/" className={styles.brand}>
+        <a href="/" className={styles.brand} tabIndex={solid ? undefined : -1} aria-hidden={solid ? undefined : true}>
           <Image
             src="/friesian-logo-chrome.png"
             alt="Friesian Ranchwear"
@@ -44,7 +64,10 @@ export default function Header({ alwaysVisible = false }) {
           <span className={styles.wordmark}>FRIESIAN</span>
         </a>
 
-        <nav className={styles.nav}>
+        <nav className={styles.nav} aria-label="Main">
+          <Link href="/products" className={styles.shopLink}>
+            Shop
+          </Link>
           {status === 'loading' ? null : session ? (
             <div className={styles.authMenu}>
               <button
@@ -92,8 +115,60 @@ export default function Header({ alwaysVisible = false }) {
               <span className={styles.cartCount}>{itemCount}</span>
             )}
           </button>
+          <button
+            onClick={() => setMenuOpen((open) => !open)}
+            className={styles.iconButton}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            aria-controls="site-menu"
+          >
+            {menuOpen ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="7" x2="21" y2="7" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="17" x2="21" y2="17" />
+              </svg>
+            )}
+          </button>
         </nav>
       </div>
+
+      {menuOpen && (
+        <div id="site-menu" className={styles.menu} onClick={() => setMenuOpen(false)}>
+          <nav className={styles.menuLinks} aria-label="Site">
+            <Link href="/products" className={styles.menuLink}>Shop</Link>
+            <Link href="/track-order" className={styles.menuLink}>Track Order</Link>
+            {session ? (
+              <Link href="/account/orders" className={styles.menuLink}>My Orders</Link>
+            ) : (
+              <Link href="/auth/signin" className={styles.menuLink}>Sign In</Link>
+            )}
+          </nav>
+          <div className={styles.menuSocial}>
+            <a
+              href="https://instagram.com/friesianranchwear"
+              className={styles.menuSocialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Instagram
+            </a>
+            <a
+              href="https://tiktok.com/@friesianranchwear"
+              className={styles.menuSocialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              TikTok
+            </a>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

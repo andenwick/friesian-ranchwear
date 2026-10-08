@@ -1,3 +1,56 @@
+/* Minimal checkout bar: brand + trust cue, no cart controls mid-payment */
+.topBar {
+  background: var(--color-black);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0 var(--space-md);
+  height: 56px;
+}
+
+.topBarInner {
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topBarBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 44px;
+  text-decoration: none;
+}
+
+.topBarLogo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(1.12) drop-shadow(0 0 2px rgba(242, 237, 232, 0.35));
+}
+
+.topBarWordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-parchment);
+  line-height: 1;
+}
+
+.secure {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-stone);
+}
+
 .container {
   min-height: 100vh;
   padding: var(--space-lg);
@@ -13,7 +66,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   text-decoration: none;
   font-size: var(--font-size-xs);
   font-family: var(--font-body);
@@ -135,7 +188,7 @@
 }
 
 .input::placeholder {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   opacity: 0.6;
 }
 
@@ -224,7 +277,7 @@
 
 .itemMeta {
   font-size: var(--font-size-xs);
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
 }
 
 .itemPrice {
@@ -248,7 +301,7 @@
   justify-content: space-between;
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
 }
 
 .totalRow.grand {
@@ -319,7 +372,7 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
 }
 
@@ -341,7 +394,7 @@
 }
 
 .emptyText {
-  color: var(--color-stone);
+  color: var(--color-stone-deep);
   font-family: var(--font-body);
   margin-bottom: var(--space-xl);
 }

@@ -532,8 +532,8 @@
 /* Reviews Section */
 
 .reviewsSection {
-  margin-top: var(--space-4xl);
-  padding-top: var(--space-3xl);
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-2xl);
   border-top: 1px solid rgba(139, 115, 85, 0.1);
 }
 
