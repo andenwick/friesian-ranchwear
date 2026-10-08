@@ -1,0 +1,27 @@
+# Runs on the Lightsail instance in /opt/friesian. Secrets live in /opt/friesian/app.env (mode 600, never in git).
+services:
+  app:
+    image: friesian:${APP_TAG:-current}
+    env_file: /opt/friesian/${APP_ENV_FILE:-app.env}
+    restart: unless-stopped
+    expose:
+      - "3000"
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_HOSTS: ${SITE_HOSTS}
+      STAGING_NOINDEX: ${STAGING_NOINDEX:-0}
+    volumes:
+      - ./${CADDYFILE:-Caddyfile}:/etc/caddy/Caddyfile:ro
+      - ./cloudflare-ips.caddy:/etc/caddy/cloudflare-ips.caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  caddy_data:
+  caddy_config:
