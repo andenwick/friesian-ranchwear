@@ -15,8 +15,11 @@ Production has run on AWS since 2026-10-07. Railway (see `operations.md`) stays 
 ## Secrets
 Never in git or on the laptop. Production `app.prod.env` was built on the server by `railway-to-env.py` from Railway's variables (no values displayed), with a new database password and `NEXTAUTH_SECRET`. Add or rotate a value by editing that file on the server (mode 600) and recreating the app container. For a fresh environment, `deploy/lightsail/intake-secrets.sh` runs on the instance, prompts without echo, and writes `/opt/friesian/app.env` (mode 600) from `app.public.env` plus the pasted values. It generates `NEXTAUTH_SECRET` on the server and refuses a live Stripe key for staging (and a test key for production).
 
+## Firewall
+`firewall-cloudflare.sh` (systemd unit `friesian-firewall.service`, reapplied after reboots and Docker restarts) lets only Cloudflare's IPv4 ranges (from `cloudflare-ips.caddy`) reach the published web ports, via the `DOCKER-USER` chain, and drops IPv6 80/443. Requests straight to the instance IP time out; SSH is unchanged. After `refresh-cloudflare-ips.sh`, run `sudo systemctl restart friesian-firewall` so the firewall picks up new ranges. Container logs rotate at 10 MB x 5 files.
+
 ## Deploy
-From a clean checkout of the commit to release: `bash deploy/lightsail/deploy.sh`. It packages tracked files, builds `friesian:prod-<sha>` on the instance with the live publishable key from `/opt/friesian/.pk_live`, points `APP_TAG` in `/opt/friesian/.env` at it and waits for the container health check. If the new container is not healthy it switches `APP_TAG` back to the previous tag. The script prints the previous tag and the one-line manual rollback.
+From a clean checkout of the commit to release: `bash deploy/lightsail/deploy.sh`. It packages tracked files and starts `release.sh` on the instance under `nohup`, so a dropped SSH connection cannot interrupt it. `release.sh` builds `friesian:prod-<sha>` with the live publishable key from `/opt/friesian/.pk_live`, points `APP_TAG` in `/opt/friesian/.env` at it, waits for the health check and switches back to the previous tag if the new container is unhealthy. `deploy.sh` follows `/opt/friesian/release.log` and prints the result and the one-line manual rollback.
 
 ## Data
 `deploy/lightsail/migrate-db.sh` (on the instance) runs `pg_dump --format=custom` against Railway (read-only) and `pg_restore --no-owner --no-acl --clean` into Lightsail, then prints exact per-table row counts for both. Connection strings travel as container environment variables, not arguments. Migrations stay a separate approved step (`prisma migrate status`, then `prisma migrate deploy`).
@@ -27,5 +30,4 @@ Pause admin edits and checkout, run the final copy, deploy production secrets an
 ## Open
 - Cloudflare Origin CA certificate on Caddy, then SSL mode Full (strict).
 - A non-superuser application role in the Lightsail database.
-- Restrict ports 80/443 to Cloudflare ranges after cutover.
 - CI-driven deploys (GitHub Actions over SSH) once the manual path is proven.
