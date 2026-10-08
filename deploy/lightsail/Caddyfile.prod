@@ -1,0 +1,19 @@
+{
+	servers {
+		# Keep the visitor IP Cloudflare puts in X-Forwarded-For; lib/rate-limit.js reads its first entry.
+		import /etc/caddy/cloudflare-ips.caddy
+	}
+}
+
+# Cloudflare SSL mode is Full, so a Caddy-issued origin certificate is accepted.
+# Upgrade path: Cloudflare Origin CA certificate + SSL mode Full (strict).
+friesianranchwear.com {
+	tls internal
+	encode zstd gzip
+	reverse_proxy app:3000
+}
+
+www.friesianranchwear.com {
+	tls internal
+	redir https://friesianranchwear.com{uri} permanent
+}

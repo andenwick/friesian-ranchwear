@@ -1,0 +1,14 @@
+{
+	servers {
+		# Keep the visitor IP Cloudflare puts in X-Forwarded-For; lib/rate-limit.js reads its first entry.
+		import /etc/caddy/cloudflare-ips.caddy
+	}
+}
+
+{$SITE_HOSTS} {
+	encode zstd gzip
+	# Set STAGING_NOINDEX=1 in .env on staging so search engines skip it.
+	@staging expression {env.STAGING_NOINDEX} == "1"
+	header @staging X-Robots-Tag "noindex, nofollow"
+	reverse_proxy app:3000
+}

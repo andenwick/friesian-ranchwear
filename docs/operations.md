@@ -4,6 +4,13 @@ Last verified: September 10, 2026
 
 ## Production topology
 
+Since October 7, 2026 production runs on AWS Lightsail; see `deploy-aws.md` for the
+topology, deploy and rollback. Railway (below) still auto-deploys `main` and is kept
+as the DNS rollback target during a 1-2 week soak. Its database stopped receiving
+writes at the cutover, so a rollback after new orders needs a data copy back.
+
+Railway, as it was before the cutover:
+
 - Application: one Railway web service
 - Database: one Railway PostgreSQL service
 - Release source: GitHub `main`; active deployment is commit `d78bcd8...`

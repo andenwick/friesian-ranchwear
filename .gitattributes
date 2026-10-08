@@ -1,0 +1,5 @@
+# Server-side scripts and configs run on Linux; Windows checkouts must not convert them to CRLF.
+*.sh text eol=lf
+deploy/lightsail/Caddyfile* text eol=lf
+deploy/lightsail/*.yml text eol=lf
+deploy/lightsail/*.py text eol=lf
