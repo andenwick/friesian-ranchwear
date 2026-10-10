@@ -24,23 +24,33 @@
   width: min(100%, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
 }
 
-/* Edges fade out so the render melts into the page black */
+/* Edges fade out so the render melts into the page black. The bottom fade starts just under the rendered
+   tagline (ends at 88.5%) so the lit table never ends in a visible line */
 .video {
   width: 100%;
   height: 100%;
   display: block;
   -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
-    linear-gradient(to bottom, transparent, #000 3%, #000 96%, transparent);
+    linear-gradient(to right, transparent, #000 22%, #000 78%, transparent),
+    linear-gradient(to bottom, transparent, #000 6%, #000 89%, transparent);
   -webkit-mask-composite: source-in;
   mask-image:
-    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
-    linear-gradient(to bottom, transparent, #000 3%, #000 96%, transparent);
+    linear-gradient(to right, transparent, #000 22%, #000 78%, transparent),
+    linear-gradient(to bottom, transparent, #000 6%, #000 89%, transparent);
   mask-composite: intersect;
 }
 
-/* Portrait phones: run the frame wider than the screen so the scene fills the width */
+/* Portrait phones: run the frame wider than the screen so the scene fills the width, and let the hero end
+   under the button so the products follow without an empty band */
 @media (max-aspect-ratio: 3/4) {
+  .hero {
+    min-height: 0;
+  }
+
+  .media {
+    position: relative;
+  }
+
   .frame {
     width: min(175vw, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
     flex-shrink: 0;

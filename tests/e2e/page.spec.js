@@ -52,6 +52,16 @@ test.describe('Homepage production behavior', () => {
     await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/whip-hero-poster.jpg');
   });
 
+  test('hero shows the landed frame when the video never decodes', async ({ page }) => {
+    // Requests that never answer leave the video without a frame, as Safari does when it cannot decode a source
+    await page.route('**/hero/whip-hero.{mp4,webm}', () => {});
+    await openHome(page);
+
+    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/whip-hero-poster.jpg', {
+      timeout: 8_000,
+    });
+  });
+
   test('hero does not play with reduced motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openHome(page);
