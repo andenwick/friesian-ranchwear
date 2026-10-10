@@ -32,8 +32,8 @@
   aspect-ratio: 3840 / 8376;
   z-index: -1;
   pointer-events: none;
-  background: url("/hero/page-plate.jpg") top center / 100% auto no-repeat;
-  background-image: image-set(url("/hero/page-plate.webp") type("image/webp"), url("/hero/page-plate.jpg") type("image/jpeg"));
+  background: url("/hero/v3/page-plate.jpg") top center / 100% auto no-repeat;
+  background-image: image-set(url("/hero/v3/page-plate.webp") type("image/webp"), url("/hero/v3/page-plate.jpg") type("image/jpeg"));
   -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
   mask-image: linear-gradient(to bottom, #000 85%, transparent);
 }
@@ -45,7 +45,7 @@
   top: 0;
   left: 0;
   width: 125.734%;
-  aspect-ratio: 2400 / 1616;
+  aspect-ratio: 2560 / 1724;
   height: auto;
   display: block;
   -webkit-mask-image:
