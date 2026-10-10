@@ -9,6 +9,7 @@ export default function Hero() {
       <p className={styles.srOnly}>Nothing you wear is an accident.</p>
       <div className={styles.media}>
         <div className={styles.frame}>
+          <div className={styles.backdrop} aria-hidden="true" />
           <HeroVideo />
           <a href="/products" className={styles.cta}>
             <span>SHOP COLLECTION</span>
