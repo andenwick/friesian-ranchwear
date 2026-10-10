@@ -33,6 +33,34 @@ test.describe('Homepage production behavior', () => {
     await expect(page.locator('footer').getByText('FRIESIAN RANCHWEAR', { exact: true })).toBeVisible();
   });
 
+  test('hero plays the whip drop once and holds on the landed frame', async ({ page }) => {
+    await openHome(page);
+    const video = page.locator('section video');
+
+    await expect(video).toHaveAttribute('poster', '/hero/whip-hero-start.jpg');
+    await expect(video.locator('source')).toHaveCount(2);
+    await expect.poll(() => video.evaluate((v) => v.ended), { timeout: 10_000 }).toBe(true);
+    await expect(page.getByRole('link', { name: 'SHOP COLLECTION' })).toBeVisible();
+  });
+
+  test('hero shows the landed frame when autoplay is blocked', async ({ page }) => {
+    await page.addInitScript(() => {
+      HTMLMediaElement.prototype.play = () => Promise.reject(new DOMException('blocked', 'NotAllowedError'));
+    });
+    await openHome(page);
+
+    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/whip-hero-poster.jpg');
+  });
+
+  test('hero does not play with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await openHome(page);
+    const video = page.locator('section video');
+
+    await expect(video).toHaveAttribute('poster', '/hero/whip-hero-poster.jpg');
+    expect(await video.evaluate((v) => v.paused && v.currentTime === 0)).toBe(true);
+  });
+
   test('product card points to its detail page', async ({ page }) => {
     await openHome(page);
     await expect(page.getByRole('link', { name: product.name })).toHaveAttribute(

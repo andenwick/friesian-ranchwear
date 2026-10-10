@@ -1,65 +1,50 @@
 .hero {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   position: relative;
   background: var(--color-black);
   overflow: hidden;
 }
 
-.content {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: var(--space-lg);
-}
-
-/* Entrance animation — gated behind hydration to prevent double-play */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-:global([data-hydrated]) .title,
-:global([data-hydrated]) .subtitle,
-:global([data-hydrated]) .cta {
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-:global([data-hydrated]) .title {
-  animation-delay: 0.1s;
-}
-
-:global([data-hydrated]) .subtitle {
-  animation-delay: 0.35s;
-}
-
-:global([data-hydrated]) .cta {
-  animation-delay: 0.55s;
-}
-
-
-.title {
-  margin: 0;
-  position: relative;
+/* The whole render (logo, whip and tagline on the table) always shows, as large as the screen allows */
+.media {
+  --hero-gap: clamp(28px, 7vh, 80px);
+  --hero-top: max(72px, var(--hero-gap)); /* keep the scene clear of the 64px header */
+  position: absolute;
+  inset: 0;
+  padding-top: var(--hero-top);
+  padding-bottom: var(--hero-gap);
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
-.heroMark {
-  width: clamp(280px, 42vw, 500px);
+.frame {
+  position: relative;
+  aspect-ratio: 1920 / 1396;
+  width: min(100%, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
+}
+
+/* Edges fade out so the render melts into the page black */
+.video {
+  width: 100%;
+  height: 100%;
   display: block;
-  height: auto;
-  object-fit: contain;
-  opacity: 0.5;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(to bottom, transparent, #000 3%, #000 96%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(to bottom, transparent, #000 3%, #000 96%, transparent);
+  mask-composite: intersect;
+}
+
+/* Portrait phones: run the frame wider than the screen so the scene fills the width */
+@media (max-aspect-ratio: 3/4) {
+  .frame {
+    width: min(175vw, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
+    flex-shrink: 0;
+  }
 }
 
 .srOnly {
@@ -74,22 +59,17 @@
   border: 0;
 }
 
-.subtitle {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: var(--font-size-xl);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  color: var(--color-stone);
-  margin-top: var(--space-lg);
-}
-
+/* The live button sits on the table, in the clear strip under the rendered tagline */
 .cta {
+  position: absolute;
+  left: 50%;
+  top: 94.3%; /* middle of the clear strip between the rendered tagline (ends at 88.5%) and the frame bottom */
+  transform: translate(-50%, -50%);
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-top: var(--space-2xl);
-  padding: var(--space-md) var(--space-xl);
+  padding: 10px var(--space-xl);
   border: 0;
   color: var(--color-brass);
   font-family: var(--font-display);
@@ -98,6 +78,7 @@
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
   text-decoration: none;
+  white-space: nowrap;
   transition:
     background var(--transition-base),
     color var(--transition-base);
@@ -109,21 +90,26 @@
 }
 
 .cta:active {
-  transform: scale(0.98);
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+/* The button fades in after the whip has landed (0.5s hold + ~1.1s drop) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:global([data-hydrated]) .cta {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.7s both;
 }
 
 @media (max-width: 767px) {
-  .heroMark {
-    width: min(78vw, 350px);
-  }
-
-  .subtitle {
-    font-size: var(--font-size-md);
-    letter-spacing: var(--tracking-wider);
-  }
-
   .cta {
-    padding: var(--space-md) var(--space-lg);
+    padding: 8px var(--space-lg);
     font-size: var(--font-size-xs);
   }
 }
