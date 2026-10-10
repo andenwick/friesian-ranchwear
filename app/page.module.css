@@ -5,3 +5,11 @@
 
 /* This file is intentionally minimal as all section styling
    is managed through individual component CSS modules */
+
+/* The hero's rendered table runs on behind every section; clip it at the end of the page so it never adds
+   scroll length (overflow: hidden is the fallback for browsers without clip) */
+.page {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;
+}

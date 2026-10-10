@@ -1,8 +1,6 @@
 .hero {
   min-height: 100vh;
   position: relative;
-  background: var(--color-black);
-  overflow: hidden;
 }
 
 /* The whole render (logo, whip and tagline on the table) always shows, as large as the screen allows */
@@ -24,23 +22,53 @@
   width: min(100%, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
 }
 
-/* Edges fade out so the render melts into the page black */
+/* The rendered table runs on behind the whole page: one still from the same scene (no whip), anchored to the
+   frame's top-left and twice its width, behind every section. Its far end fades into the page black. */
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  aspect-ratio: 3840 / 8376;
+  z-index: -1;
+  pointer-events: none;
+  background: url("/hero/page-plate.jpg") top center / 100% auto no-repeat;
+  background-image: image-set(url("/hero/page-plate.webp") type("image/webp"), url("/hero/page-plate.jpg") type("image/jpeg"));
+  -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
+  mask-image: linear-gradient(to bottom, #000 85%, transparent);
+}
+
+/* The video starts at the frame's top-left and runs further right and down so the whip's long tail can swoop
+   off the side of the screen. Its edges ease into the backdrop, which is the same render without the whip. */
 .video {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 125.734%;
+  aspect-ratio: 2400 / 1616;
+  height: auto;
   display: block;
   -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
-    linear-gradient(to bottom, transparent, #000 3%, #000 96%, transparent);
+    linear-gradient(to right, transparent, #000 10%, #000 97%, transparent),
+    linear-gradient(to bottom, transparent, #000 5%, #000 92%, transparent);
   -webkit-mask-composite: source-in;
   mask-image:
-    linear-gradient(to right, transparent, #000 12%, #000 88%, transparent),
-    linear-gradient(to bottom, transparent, #000 3%, #000 96%, transparent);
+    linear-gradient(to right, transparent, #000 10%, #000 97%, transparent),
+    linear-gradient(to bottom, transparent, #000 5%, #000 92%, transparent);
   mask-composite: intersect;
 }
 
-/* Portrait phones: run the frame wider than the screen so the scene fills the width */
+/* Portrait phones: run the frame wider than the screen so the scene fills the width, and let the hero end
+   under the button so the products follow without an empty band */
 @media (max-aspect-ratio: 3/4) {
+  .hero {
+    min-height: 0;
+  }
+
+  .media {
+    position: relative;
+  }
+
   .frame {
     width: min(175vw, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
     flex-shrink: 0;

@@ -24,10 +24,9 @@ test.describe('Homepage production behavior', () => {
     await expect(page.getByText('Nothing you wear is an accident.')).toBeVisible();
     await expect(page.getByRole('link', { name: 'SHOP COLLECTION' })).toHaveAttribute('href', '/products');
     await expect(page.getByText('Built for this. Limited runs. No restocks.')).toBeVisible();
-    await expect(page.locator('#shop')).toHaveCSS(
-      'background-image',
-      /friesian-washed-material-texture-v1\.webp/
-    );
+    // The rendered table runs behind every section from the hero down
+    await expect(page.locator('section [aria-hidden="true"][class*="backdrop"]')).toHaveCSS('background-image', /page-plate/);
+    await expect(page.locator('#shop')).toHaveCSS('background-image', 'none');
     await expect(page.getByRole('heading', { name: 'STAY POSTED.' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
     await expect(page.locator('footer').getByText('FRIESIAN RANCHWEAR', { exact: true })).toBeVisible();
@@ -50,6 +49,16 @@ test.describe('Homepage production behavior', () => {
     await openHome(page);
 
     await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/whip-hero-poster.jpg');
+  });
+
+  test('hero shows the landed frame when the video never decodes', async ({ page }) => {
+    // Requests that never answer leave the video without a frame, as Safari does when it cannot decode a source
+    await page.route('**/hero/whip-hero.{mp4,webm}', () => {});
+    await openHome(page);
+
+    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/whip-hero-poster.jpg', {
+      timeout: 8_000,
+    });
   });
 
   test('hero does not play with reduced motion', async ({ page }) => {
