@@ -13,7 +13,7 @@ export default function HeroVideo() {
     const video = videoRef.current;
     if (!video) return;
     const showFinalFrame = () => {
-      video.poster = "/hero/v3/whip-hero-poster.jpg";
+      video.poster = "/hero/v4/whip-hero-poster.jpg";
     };
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       showFinalFrame();
@@ -35,7 +35,7 @@ export default function HeroVideo() {
     <video
       ref={videoRef}
       className={styles.video}
-      poster="/hero/v3/whip-hero-start.jpg"
+      poster="/hero/v4/whip-hero-start.jpg"
       muted
       playsInline
       preload="auto"
@@ -44,9 +44,9 @@ export default function HeroVideo() {
       {/* MP4 first: iOS Safari reports WebM support but can fail to decode it without an error. HEVC is sharper
           per byte where it is supported (Apple devices, most current Chrome/Edge); H.264 and WebM are fallbacks.
           Files live in a versioned folder so a tab left open from an older release never mixes old and new. */}
-      <source src="/hero/v3/whip-hero-hevc.mp4" type='video/mp4; codecs="hvc1"' />
-      <source src="/hero/v3/whip-hero.mp4" type="video/mp4" />
-      <source src="/hero/v3/whip-hero.webm" type="video/webm" />
+      <source src="/hero/v4/whip-hero-hevc.mp4" type='video/mp4; codecs="hvc1"' />
+      <source src="/hero/v4/whip-hero.mp4" type="video/mp4" />
+      <source src="/hero/v4/whip-hero.webm" type="video/webm" />
     </video>
   );
 }
