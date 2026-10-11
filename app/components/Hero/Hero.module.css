@@ -32,8 +32,8 @@
   aspect-ratio: 3840 / 8557;
   z-index: -1;
   pointer-events: none;
-  background: url("/hero/v4/page-plate.jpg") top center / 100% auto no-repeat;
-  background-image: image-set(url("/hero/v4/page-plate.webp") type("image/webp"), url("/hero/v4/page-plate.jpg") type("image/jpeg"));
+  background: url("/hero/v5/page-plate.jpg") top center / 100% auto no-repeat;
+  background-image: image-set(url("/hero/v5/page-plate.webp") type("image/webp"), url("/hero/v5/page-plate.jpg") type("image/jpeg"));
   -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
   mask-image: linear-gradient(to bottom, #000 85%, transparent);
 }
