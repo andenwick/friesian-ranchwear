@@ -6,13 +6,13 @@
 /* The whole render (logo, whip and tagline on the table) always shows, as large as the screen allows */
 .media {
   --hero-gap: clamp(28px, 7vh, 80px);
-  --hero-top: max(72px, var(--hero-gap)); /* keep the scene clear of the 64px header */
+  --hero-top: 0px; /* the scene starts at the very top; the header is transparent until the page scrolls */
   position: absolute;
   inset: 0;
   padding-top: var(--hero-top);
   padding-bottom: var(--hero-gap);
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* pinned to the top so no black band shows above the scene on squarish windows */
   justify-content: center;
 }
 
@@ -39,7 +39,8 @@
 }
 
 /* The video starts at the frame's top-left and runs further right and down so the whip's long tail can swoop
-   off the side of the screen. Its edges ease into the backdrop, which is the same render without the whip. */
+   off the side of the screen. Its edges ease into the backdrop, which is the same render without the whip; the top
+   edge has no fade because the whip coils right up against it. */
 .video {
   position: absolute;
   top: 0;
@@ -50,11 +51,11 @@
   display: block;
   -webkit-mask-image:
     linear-gradient(to right, transparent, #000 10%, #000 97%, transparent),
-    linear-gradient(to bottom, transparent, #000 5%, #000 92%, transparent);
+    linear-gradient(to bottom, #000, #000 92%, transparent);
   -webkit-mask-composite: source-in;
   mask-image:
     linear-gradient(to right, transparent, #000 10%, #000 97%, transparent),
-    linear-gradient(to bottom, transparent, #000 5%, #000 92%, transparent);
+    linear-gradient(to bottom, #000, #000 92%, transparent);
   mask-composite: intersect;
 }
 
