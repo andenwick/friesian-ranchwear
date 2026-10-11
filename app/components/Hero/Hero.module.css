@@ -18,8 +18,8 @@
 
 .frame {
   position: relative;
-  aspect-ratio: 1920 / 1396;
-  width: min(100%, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
+  aspect-ratio: 1920 / 1577.06; /* the render plus a strip of table above the whip's coil */
+  width: min(100%, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1577.06));
 }
 
 /* The rendered table runs on behind the whole page: one still from the same scene (no whip), anchored to the
@@ -29,24 +29,24 @@
   top: 0;
   left: -50%;
   width: 200%;
-  aspect-ratio: 3840 / 8376;
+  aspect-ratio: 3840 / 8557;
   z-index: -1;
   pointer-events: none;
-  background: url("/hero/v3/page-plate.jpg") top center / 100% auto no-repeat;
-  background-image: image-set(url("/hero/v3/page-plate.webp") type("image/webp"), url("/hero/v3/page-plate.jpg") type("image/jpeg"));
+  background: url("/hero/v4/page-plate.jpg") top center / 100% auto no-repeat;
+  background-image: image-set(url("/hero/v4/page-plate.webp") type("image/webp"), url("/hero/v4/page-plate.jpg") type("image/jpeg"));
   -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
   mask-image: linear-gradient(to bottom, #000 85%, transparent);
 }
 
 /* The video starts at the frame's top-left and runs further right and down so the whip's long tail can swoop
    off the side of the screen. Its edges ease into the backdrop, which is the same render without the whip; the top
-   edge has no fade because the whip coils right up against it. */
+   edge has no fade because it is the top of the screen. */
 .video {
   position: absolute;
   top: 0;
   left: 0;
   width: 125.734%;
-  aspect-ratio: 2560 / 1724;
+  aspect-ratio: 2560 / 1916;
   height: auto;
   display: block;
   -webkit-mask-image:
@@ -71,7 +71,7 @@
   }
 
   .frame {
-    width: min(175vw, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1396));
+    width: min(175vw, calc((100vh - var(--hero-top) - var(--hero-gap)) * 1920 / 1577.06));
     flex-shrink: 0;
   }
 }
@@ -92,7 +92,7 @@
 .cta {
   position: absolute;
   left: 50%;
-  top: 94.3%; /* middle of the clear strip between the rendered tagline (ends at 88.5%) and the frame bottom */
+  top: 94.955%; /* middle of the clear strip between the rendered tagline (ends at 89.8%) and the frame bottom */
   transform: translate(-50%, -50%);
   z-index: 2;
   display: inline-flex;
