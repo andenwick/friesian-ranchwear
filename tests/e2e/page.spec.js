@@ -21,7 +21,6 @@ test.describe('Homepage production behavior', () => {
     await openHome(page);
 
     await expect(page.getByRole('heading', { name: 'Friesian Ranchwear', exact: true })).toBeVisible();
-    await expect(page.getByText('Nothing you wear is an accident.')).toBeVisible();
     await expect(page.getByRole('link', { name: 'SHOP COLLECTION' })).toHaveAttribute('href', '/products');
     await expect(page.getByText('Built for this. Limited runs. No restocks.')).toBeVisible();
     // The rendered table runs behind every section from the hero down
@@ -36,7 +35,7 @@ test.describe('Homepage production behavior', () => {
     await openHome(page);
     const video = page.locator('section video');
 
-    await expect(video).toHaveAttribute('poster', '/hero/v5/whip-hero-start.jpg');
+    await expect(video).toHaveAttribute('poster', '/hero/v6/whip-hero-start.jpg');
     await expect(video.locator('source')).toHaveCount(3);
     await expect.poll(() => video.evaluate((v) => v.ended), { timeout: 10_000 }).toBe(true);
     await expect(page.getByRole('link', { name: 'SHOP COLLECTION' })).toBeVisible();
@@ -48,15 +47,15 @@ test.describe('Homepage production behavior', () => {
     });
     await openHome(page);
 
-    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/v5/whip-hero-poster.jpg');
+    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/v6/whip-hero-poster.jpg');
   });
 
   test('hero shows the landed frame when the video never decodes', async ({ page }) => {
     // Requests that never answer leave the video without a frame, as Safari does when it cannot decode a source
-    await page.route('**/hero/v5/whip-hero*.{mp4,webm}', () => {});
+    await page.route('**/hero/v6/whip-hero*.{mp4,webm}', () => {});
     await openHome(page);
 
-    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/v5/whip-hero-poster.jpg', {
+    await expect(page.locator('section video')).toHaveAttribute('poster', '/hero/v6/whip-hero-poster.jpg', {
       timeout: 8_000,
     });
   });
@@ -66,7 +65,7 @@ test.describe('Homepage production behavior', () => {
     await openHome(page);
     const video = page.locator('section video');
 
-    await expect(video).toHaveAttribute('poster', '/hero/v5/whip-hero-poster.jpg');
+    await expect(video).toHaveAttribute('poster', '/hero/v6/whip-hero-poster.jpg');
     expect(await video.evaluate((v) => v.paused && v.currentTime === 0)).toBe(true);
   });
 

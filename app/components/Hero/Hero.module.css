@@ -92,7 +92,7 @@
 .cta {
   position: absolute;
   left: 50%;
-  top: 94.955%; /* middle of the clear strip between the rendered tagline (ends at 89.8%) and the frame bottom */
+  top: 94.955%; /* in the clear strip under the rendered wordmark */
   transform: translate(-50%, -50%);
   z-index: 2;
   display: inline-flex;

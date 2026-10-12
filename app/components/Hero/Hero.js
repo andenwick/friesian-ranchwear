@@ -5,8 +5,6 @@ export default function Hero() {
   return (
     <section className={styles.hero}>
       <h1 className={styles.srOnly}>Friesian Ranchwear</h1>
-      {/* The tagline is part of the rendered scene; this copy is for search engines and screen readers */}
-      <p className={styles.srOnly}>Nothing you wear is an accident.</p>
       <div className={styles.media}>
         <div className={styles.frame}>
           <div className={styles.backdrop} aria-hidden="true" />
